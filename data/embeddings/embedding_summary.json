@@ -1,0 +1,44 @@
+{
+  "total_cases": 61,
+  "total_chunks": 2841,
+  "embedding_dim": 384,
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "file_size_mb": 4.1617431640625,
+  "sample_metadata": [
+    {
+      "case_id": "Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1",
+      "chunk_id": 0,
+      "word_count": 205,
+      "date": "14/03/1950",
+      "court": "Supreme Court of India"
+    },
+    {
+      "case_id": "Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1",
+      "chunk_id": 1,
+      "word_count": 197,
+      "date": "14/03/1950",
+      "court": "Supreme Court of India"
+    },
+    {
+      "case_id": "Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1",
+      "chunk_id": 2,
+      "word_count": 203,
+      "date": "14/03/1950",
+      "court": "Supreme Court of India"
+    },
+    {
+      "case_id": "Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1",
+      "chunk_id": 3,
+      "word_count": 198,
+      "date": "14/03/1950",
+      "court": "Supreme Court of India"
+    },
+    {
+      "case_id": "Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1",
+      "chunk_id": 4,
+      "word_count": 211,
+      "date": "14/03/1950",
+      "court": "Supreme Court of India"
+    }
+  ]
+}
