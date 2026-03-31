@@ -1,9 +1,9 @@
 {
-  "total_cases": 61,
-  "total_chunks": 2841,
+  "total_cases": 460,
+  "total_chunks": 19786,
   "embedding_dim": 384,
   "model_name": "sentence-transformers/all-MiniLM-L6-v2",
-  "file_size_mb": 4.1617431640625,
+  "file_size_mb": 28.9835205078125,
   "sample_metadata": [
     {
       "case_id": "Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1",

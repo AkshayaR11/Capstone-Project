@@ -1,7 +1,7 @@
 {
-  "total_files": 61,
-  "successful": 61,
+  "total_files": 460,
+  "successful": 460,
   "failed": [],
-  "total_chunks": 2841,
-  "avg_chunks_per_case": 46.57377049180328
+  "total_chunks": 19786,
+  "avg_chunks_per_case": 43.01304347826087
 }
