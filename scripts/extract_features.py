@@ -27,15 +27,83 @@ def extract_case_type(text):
     text_lower = text.lower()
 
     # Criminal indicators
-    if re.search(r'\bipc\b|indian penal code|criminal', text_lower):
+    if re.search(r'\bipc\b|indian penal code|criminal|murder|rape|theft|assault', text_lower):
         return "criminal"
 
     # Civil indicators
-    if re.search(r'\bcpc\b|civil procedure|injunction|property|contract', text_lower):
+    if re.search(r'\bcpc\b|civil procedure|injunction|property|contract|divorce|suit', text_lower):
         return "civil"
 
     # Default fallback
     return "civil"
+
+
+# ==============================
+# NEW PRIORITY FEATURES MAP
+# ==============================
+# A preliminary dictionary for Severity Score (1-10). 
+# We'll update this once the lawyer's PDF mapping is provided.
+TEMP_SEVERITY_MAP = {
+    # High Severity (Murder, Rape, Attempted Murder, etc.)
+    "302": 10, "376": 10, "304": 9, "307": 8, "395": 8, "120b": 8,
+    # Medium Severity (Grievous hurt, Robbery, Cheating)
+    "326": 6, "392": 6, "420": 5, "406": 5,
+    # Low Severity (Theft, Simple hurt, Mischief)
+    "379": 3, "323": 2, "427": 2
+}
+
+def calculate_severity(sections):
+    if not sections:
+        return 3 # Default moderate severity if no known sections found but case exists
+    
+    max_score = 1
+    for sec in sections:
+        # Strip letters for basic matching in preliminary map (e.g. 120B -> 120)
+        base_sec = re.sub(r'[a-z]', '', sec)
+        score = TEMP_SEVERITY_MAP.get(sec, TEMP_SEVERITY_MAP.get(base_sec, 4)) # Default to 4 if unmapped section
+        if score > max_score:
+            max_score = score
+            
+    return max_score
+
+def check_immediate_threat(text):
+    """
+    Flags cases that need immediate judicial attention based on keywords.
+    E.g., Bail hearings, Habeas Corpus, Domestic Violence, Injunctions.
+    Returns 1 if threat/urgency detected, else 0.
+    """
+    urgent_patterns = [
+        r'\bbail petition\b',
+        r'\bhabeas corpus\b',
+        r'\bdomestic violence\b',
+        r'\bcustody\b',
+        r'\binjunction\b',
+        r'\bthreat to life\b',
+        r'\bstay order\b',
+        r'\banticipatory bail\b'
+    ]
+    text_lower = text.lower()
+    for pattern in urgent_patterns:
+        if re.search(pattern, text_lower):
+            return 1
+    return 0
+    
+def calculate_societal_impact(text):
+    """
+    Score (1-5) based on how much the case affects the broader society.
+    PILs, Environmental issues, Constitutional issues score higher.
+    """
+    text_lower = text.lower()
+    score = 1
+    
+    if re.search(r'\bpublic interest litigation\b|\bpil\b', text_lower):
+        score += 3
+    if re.search(r'\benvironmental\b|\bpollution\b|\bconstitutional\b', text_lower):
+        score += 2
+    if re.search(r'\bcorruption\b|\bcbi\b|\bscam\b|\briot\b', text_lower):
+        score += 2
+        
+    return min(score, 5)  # Cap at 5
 
 
 # ==============================
@@ -94,7 +162,7 @@ def extract_date(text):
     patterns = [
         r'\d{1,2}/\d{1,2}/\d{4}',
         r'\d{1,2}-\d{1,2}-\d{4}',
-        r'\d{1,2}\s+[A-Za-z]+\s+\d{4}',   # 11 April 2005
+        r'(?i)\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}',   # 11 April 2005
     ]
 
     for pattern in patterns:
@@ -159,11 +227,18 @@ def extract_all_features():
 
         ipc_sections = []
         cpc_sections = []
+        severity_score = 1
 
         if case_type == "criminal":
             ipc_sections = extract_ipc_sections(full_text)
+            severity_score = calculate_severity(ipc_sections)
         else:
             cpc_sections = extract_cpc_sections(full_text)
+            severity_score = 3  # Distinct baseline for civil cases
+
+        # Priority Features
+        immediate_threat = check_immediate_threat(full_text)
+        societal_impact = calculate_societal_impact(full_text)
 
         # Date
         date_str = extract_date(full_text)
@@ -194,6 +269,11 @@ def extract_all_features():
 
             "case_date": date_str,
             "case_age_days": case_age,
+            
+            # New Advanced Prioritization Features
+            "max_severity_score": severity_score,         # 1-10
+            "immediate_threat_flag": immediate_threat,    # 0 or 1
+            "societal_impact_score": societal_impact,     # 1-5
         }
 
         all_features.append(features)

@@ -1,0 +1,173 @@
+import { useState } from 'react'
+import './index.css'
+
+interface CaseResult {
+  case_id: string;
+  score: number;
+  date: string;
+  severity: number;
+  summary: string;
+}
+
+function App() {
+  const [query, setQuery] = useState('')
+  const [yearFilter, setYearFilter] = useState('')
+  const [results, setResults] = useState<CaseResult[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [expandedCase, setExpandedCase] = useState<string | null>(null)
+  const [topK, setTopK] = useState<number>(6)
+
+  const toggleSummary = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedCase(expandedCase === id ? null : id);
+  }
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!query) return;
+
+    setLoading(true)
+    setError(null)
+    setResults([])
+
+    try {
+      const response = await fetch('http://localhost:8000/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: query,
+          yearFilter: yearFilter,
+          topK: topK
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch from backend")
+      }
+
+      const data = await response.json();
+      setResults(data.results);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="container">
+      <div className="background-shapes">
+        <div className="shape shape-1"></div>
+        <div className="shape shape-2"></div>
+        <div className="shape shape-3"></div>
+      </div>
+
+      <header className="header glass">
+        <h1 className="title animate-fade-in">⚖️ Judicial AI</h1>
+        <p className="subtitle">Semantic Precedent Search Engine</p>
+      </header>
+
+      <main className="main-content">
+        <div className="search-container glass">
+          <form className="search-form" onSubmit={handleSearch}>
+            <div className="input-group">
+              <label>Search Query</label>
+              <input 
+                type="text" 
+                className="input-field"
+                placeholder="contract breach, arbitration, murder..." 
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            
+            <div className="input-group shrink">
+              <label>Year (Opt)</label>
+              <input 
+                type="text" 
+                className="input-field secondary-input"
+                placeholder="e.g. 2012" 
+                value={yearFilter}
+                onChange={(e) => setYearFilter(e.target.value)}
+              />
+            </div>
+            
+            <div className="input-group shrink">
+              <label>Matches: {topK}</label>
+              <input 
+                type="range" 
+                min="1" max="15" 
+                value={topK}
+                onChange={(e) => setTopK(Number(e.target.value))}
+                style={{ marginTop: '10px' }}
+              />
+            </div>
+
+            <button type="submit" className="search-btn" disabled={loading}>
+              {loading ? (
+                <span className="spinner"></span>
+              ) : (
+                "Search"
+              )}
+            </button>
+          </form>
+        </div>
+
+        {error && (
+          <div className="error-card glass">
+            ⚠️ {error} - Ensure FastAPI is running on Port 8000.
+          </div>
+        )}
+
+        <div className="results-grid">
+          {results.map((r, index) => (
+            <div 
+              key={r.case_id} 
+              className="result-card glass" 
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="card-header">
+               <span className="similarity-badge">{(r.score * 100).toFixed(1)}% Match</span>
+               <span className={`severity-badge level-${r.severity > 7 ? 'high' : r.severity > 4 ? 'med' : 'low'}`}>
+                  Severity {r.severity}
+               </span>
+              </div>
+              <h3 className="case-title">{r.case_id.replace(/_/g, ' ')}</h3>
+              <div className="card-footer">
+                <p><strong>Date:</strong> {r.date}</p>
+                <button 
+                  className="summary-btn" 
+                  onClick={(e) => toggleSummary(r.case_id, e)}
+                >
+                  {expandedCase === r.case_id ? "Hide Summary ▲" : "⚖️ AI Summary ▼"}
+                </button>
+              </div>
+              
+              {expandedCase === r.case_id && (
+                <div className="summary-dropdown">
+                  <p><strong>AI Synopsis:</strong></p>
+                  <p className="summary-text">{r.summary}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        
+        {!loading && results.length === 0 && !error && query && (
+          <div className="empty-state glass">
+             No legal precedents found matching your query.
+          </div>
+        )}
+      </main>
+    </div>
+  )
+}
+
+export default App
