@@ -170,6 +170,49 @@ class SummarizationAgent:
         return final_summary
 
     # ==========================
+    # STREAM UPLOAD PROCESSING (IN-MEMORY BYPASS)
+    # ==========================
+    def summarize_upload_stream(self, text):
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+        import numpy as np
+        
+        print("\n🧠 Processing dynamically uploaded PDF...")
+        
+        # 1. Split Text In-Memory
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        raw_chunks = text_splitter.split_text(text)
+        
+        if not raw_chunks:
+            return {"facts": "N/A", "issues": "N/A", "reasoning": "N/A", "judgment": "N/A"}
+            
+        # 2. Vectorize Array
+        print("   🔍 Generating Semantic Matrix for Upload...")
+        chunk_embeddings = [self.get_embedding(c) for c in raw_chunks]
+        
+        sections = ["facts", "issues", "reasoning", "judgment"]
+        final_summary = {}
+        
+        for section in sections:
+            print(f"   🔍 Extracting Context: {section}")
+            query_emb = self.query_embeddings[section]
+            
+            # 3. Calculate Cosine Similarities Natively (Bypassing pgvector logic)
+            similarities = []
+            for emb in chunk_embeddings:
+                sim = np.dot(query_emb, emb) / (np.linalg.norm(query_emb) * np.linalg.norm(emb))
+                similarities.append(sim)
+                
+            # Get Top 5 Chunks
+            top_k_idx = np.argsort(similarities)[-5:][::-1]
+            top_chunks = [raw_chunks[i] for i in top_k_idx]
+            
+            # Filter and Summarize using existing optimized functions
+            filtered_chunks = self.filter_chunks(top_chunks, section)
+            final_summary[section] = self.summarize_chunks(filtered_chunks)
+            
+        return final_summary
+
+    # ==========================
     # RUN BATCH
     # ==========================
     def run_batch(self, limit=10):

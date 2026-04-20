@@ -18,6 +18,11 @@ function App() {
   const [expandedCase, setExpandedCase] = useState<string | null>(null)
   const [topK, setTopK] = useState<number>(6)
 
+  // Upload Feature State
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [uploadSummary, setUploadSummary] = useState<string | null>(null)
+  const [uploadLoading, setUploadLoading] = useState(false)
+
   const toggleSummary = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedCase(expandedCase === id ? null : id);
@@ -58,6 +63,40 @@ function App() {
       }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleUploadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile) return;
+
+    setUploadLoading(true);
+    setUploadSummary(null);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await fetch('http://localhost:8000/summarize_upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to process PDF upload. Ensure PyMuPDF is installed correctly.");
+      }
+
+      const data = await response.json();
+      setUploadSummary(data.summary);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An error occurred during upload.")
+      }
+    } finally {
+      setUploadLoading(false);
     }
   }
 
@@ -118,6 +157,28 @@ function App() {
               )}
             </button>
           </form>
+        </div>
+
+        <div className="upload-container glass" style={{ marginTop: '20px', marginBottom: '20px', padding: '20px' }}>
+          <h3 style={{ marginBottom: '10px', fontSize: '1.2rem', color: '#fff' }}>📄 Live Document Summarization</h3>
+          <form className="upload-form" onSubmit={handleUploadSubmit} style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <input 
+              type="file" 
+              accept="application/pdf"
+              onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+              className="input-field"
+              style={{ flex: 1 }}
+            />
+            <button type="submit" className="search-btn" disabled={!selectedFile || uploadLoading} style={{ background: '#10b981', minWidth: '150px' }}>
+              {uploadLoading ? <span className="spinner" style={{ width: '20px', height: '20px', borderWidth: '3px' }}></span> : "Analyze PDF"}
+            </button>
+          </form>
+          {uploadSummary && (
+            <div className="summary-dropdown" style={{ marginTop: '20px', whiteSpace: 'pre-wrap', background: 'rgba(0, 0, 0, 0.3)' }}>
+              <p><strong>AI Extracted Formatted Summary:</strong></p>
+              <p className="summary-text" style={{ marginTop: '10px' }}>{uploadSummary}</p>
+            </div>
+          )}
         </div>
 
         {error && (

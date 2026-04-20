@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import psycopg2
@@ -35,6 +35,45 @@ class SearchRequest(BaseModel):
     query: str
     yearFilter: str = ""
     topK: int = 10
+
+# Lazy-loaded Summarization Agent to save boot RAM
+UPLOAD_AGENT = None
+
+@app.post("/summarize_upload")
+async def process_pdf_upload(file: UploadFile = File(...)):
+    global UPLOAD_AGENT
+    try:
+        # Read PDF bytes natively
+        contents = await file.read()
+        
+        # Extract text using PyMuPDF
+        import fitz
+        doc = fitz.open(stream=contents, filetype="pdf")
+        text = ""
+        for page in doc:
+            text += page.get_text()
+            
+        if not text.strip():
+            raise HTTPException(status_code=400, detail="Could not extract text from PDF")
+            
+        # Lazy load the massive local summarization LLM exactly once
+        if not UPLOAD_AGENT:
+            print("🚀 Loading Heavy Local LLMs for Upload Summary... (Takes ~2 mins)")
+            import sys, os
+            sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+            from agents.summarization.summarizer import SummarizationAgent
+            UPLOAD_AGENT = SummarizationAgent()
+            
+        # Generate Structured Summary In-Memory
+        structured_summary = UPLOAD_AGENT.summarize_upload_stream(text)
+        
+        markdown_output = f"FACTS:\n{structured_summary['facts']}\n\nISSUES:\n{structured_summary['issues']}\n\nREASONING:\n{structured_summary['reasoning']}\n\nJUDGMENT:\n{structured_summary['judgment']}"
+
+        return {"summary": markdown_output}
+        
+    except Exception as e:
+        print(f"Extraction error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/search")
 async def search_cases(req: SearchRequest):
