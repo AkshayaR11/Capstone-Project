@@ -11,8 +11,14 @@ class SummarizationAgent:
     def __init__(self):
         print("🚀 Initializing agent...")
 
-        # Summarizer (keep small for speed)
-        self.summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+        # Gemini API Initialization (Replaces local offline LLMs)
+        import google.generativeai as genai
+        from dotenv import load_dotenv
+        
+        load_dotenv()
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        # We use Flash because it natively takes 1M Tokens and is blazing fast
+        self.gemini_model = genai.GenerativeModel('gemini-2.5-flash')
 
         # LegalBERT
         self.tokenizer = AutoTokenizer.from_pretrained("nlpaueb/legal-bert-base-uncased")
@@ -130,92 +136,70 @@ class SummarizationAgent:
     # ==========================
     # SUMMARIZE (FAST)
     # ==========================
-    def summarize_chunks(self, chunks):
+    def summarize_chunks(self, chunks, section_name="legal aspect"):
         if not chunks:
             return "Not available"
 
-        # Combine top chunks and strictly limit size to prevent PyTorch tensor crash
         combined = " ".join(chunks[:3])[:3000]
 
         try:
-            result = self.summarizer(
-                combined,
-                max_length=100,
-                min_length=30,
-                do_sample=False,
-                truncation=True
-            )
-            return result[0]["summary_text"]
-        except:
+            import time
+            time.sleep(4) # Respect Gemini Free Tier 15 RPM
+            
+            prompt = f"Analyze this exact judicial text focusing primarily on the '{section_name}'. Provide a highly concise, incredibly accurate paragraph summarizing ONLY the facts relating to the '{section_name}':\n\n{combined}"
+            response = self.gemini_model.generate_content(prompt)
+            
+            return response.text.replace("\n", " ").strip()
+        except Exception as e:
+            print(f"Gemini API Error: {e}")
             return "Summary failed"
 
     # ==========================
-    # MAIN STRUCTURED SUMMARY
+    # MAIN STRUCTURED SUMMARY (1-SHOT GEMINI GENERATOR)
     # ==========================
     def generate_structured_summary(self, case_id):
         print(f"\n🧠 Processing case: {case_id}")
 
-        sections = ["facts", "issues", "reasoning", "judgment"]
-        final_summary = {}
+        # Gemini digests massive contexts so we can just grab everything at once!
+        chunk_map = self.load_chunks(case_id)
+        if not chunk_map:
+            return "Summary failed"
 
-        for section in sections:
-            print(f"   🔍 {section}")
+        # Combine entirely natively
+        all_text = " ".join(chunk_map.values())[:15000]
 
-            chunks = self.get_top_chunks(case_id, section)
-            chunks = self.filter_chunks(chunks, section)
-
-            summary = self.summarize_chunks(chunks)
-            final_summary[section] = summary
-
-        return final_summary
+        try:
+            import time
+            print("   ⏳ Respecting Gemini Rate Limits (Waiting 15s)...")
+            time.sleep(15) # Safe for Gemini 2.5 Flash (Max 4 requests per minute to stay under 5 RPM)
+            
+            prompt = "Analyze this Legal Precedent. Output exactly 4 sections formatted nicely using Markdown headers: FACTS, ISSUES, REASONING, and JUDGMENT based precisely on the text. Keep it extremely accurate.\n\n" + all_text
+            
+            response = self.gemini_model.generate_content(prompt)
+            return response.text.strip()
+        except Exception as e:
+            print(f"Gemini API Error: {e}")
+            return "Summary failed"
 
     # ==========================
     # STREAM UPLOAD PROCESSING (IN-MEMORY BYPASS)
     # ==========================
     def summarize_upload_stream(self, text):
-        from langchain_text_splitters import RecursiveCharacterTextSplitter
-        import numpy as np
-        
-        print("\n🧠 Processing dynamically uploaded PDF...")
-        
-        # 1. Split Text In-Memory
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        raw_chunks = text_splitter.split_text(text)
-        
-        if not raw_chunks:
-            return {"facts": "N/A", "issues": "N/A", "reasoning": "N/A", "judgment": "N/A"}
+        print("\n🧠 Sending dynamically uploaded PDF directly to Gemini Cloud...")
+        try:
+            # We bypass the Semantic Chunking math entirely for Uploads because Gemini takes 1M Tokens natively!
+            prompt = "Analyze this Legal Precedent. Output exactly 4 sections formatted nicely using Markdown headers: FACTS, ISSUES, REASONING, and JUDGMENT based precisely on the text. Do not hallucinate.\n\n" + text[:15000]
             
-        # 2. Vectorize Array
-        print("   🔍 Generating Semantic Matrix for Upload...")
-        chunk_embeddings = [self.get_embedding(c) for c in raw_chunks]
-        
-        sections = ["facts", "issues", "reasoning", "judgment"]
-        final_summary = {}
-        
-        for section in sections:
-            print(f"   🔍 Extracting Context: {section}")
-            query_emb = self.query_embeddings[section]
-            
-            # 3. Calculate Cosine Similarities Natively (Bypassing pgvector logic)
-            similarities = []
-            for emb in chunk_embeddings:
-                sim = np.dot(query_emb, emb) / (np.linalg.norm(query_emb) * np.linalg.norm(emb))
-                similarities.append(sim)
-                
-            # Get Top 5 Chunks
-            top_k_idx = np.argsort(similarities)[-5:][::-1]
-            top_chunks = [raw_chunks[i] for i in top_k_idx]
-            
-            # Filter and Summarize using existing optimized functions
-            filtered_chunks = self.filter_chunks(top_chunks, section)
-            final_summary[section] = self.summarize_chunks(filtered_chunks)
-            
-        return final_summary
+            response = self.gemini_model.generate_content(prompt)
+            return response.text.strip()
+        except Exception as e:
+            print(f"Upload Summary Failed: {e}")
+            return "Failed to process PDF via Gemini."
 
     # ==========================
     # RUN BATCH
     # ==========================
-    def run_batch(self, limit=10):
+    def run_batch(self, limit=3):
         cur = self.conn.cursor()
 
         cur.execute("""
@@ -227,21 +211,11 @@ class SummarizationAgent:
         cases = cur.fetchall()
 
         for (case_id,) in cases:
-            structured = self.generate_structured_summary(case_id)
+            summary_text = self.generate_structured_summary(case_id)
 
-            summary_text = f"""
-FACTS:
-{structured['facts']}
-
-ISSUES:
-{structured['issues']}
-
-REASONING:
-{structured['reasoning']}
-
-JUDGMENT:
-{structured['judgment']}
-"""
+            if summary_text == "Summary failed":
+                print("   ❌ Skipping Case (Error/Timeout)\n")
+                continue
 
             update_cur = self.conn.cursor()
             update_cur.execute("""
@@ -265,4 +239,4 @@ JUDGMENT:
 # ==========================
 if __name__ == "__main__":
     agent = SummarizationAgent()
-    agent.run_batch(limit=10)
+    agent.run_batch(limit=3)

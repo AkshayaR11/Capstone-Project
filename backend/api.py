@@ -43,10 +43,24 @@ UPLOAD_AGENT = None
 async def process_pdf_upload(file: UploadFile = File(...)):
     global UPLOAD_AGENT
     try:
-        # Read PDF bytes natively
+        # Standardize file string as Case UID
+        case_id = file.filename.replace(".pdf", "").replace(" ", "_")
+        
+        # 1. SMART CACHE LOOKUP
+        conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
+        cur = conn.cursor()
+        cur.execute("SELECT case_summary FROM cases WHERE case_id = %s", (case_id,))
+        result = cur.fetchone()
+        
+        if result and result[0]:
+            print(f"🔥 Fast Cache Hit! Returned {case_id} instantly without hitting Gemini.")
+            cur.close()
+            conn.close()
+            return {"summary": result[0]}
+            
+        # No Cache Found -> Read PDF Stream
         contents = await file.read()
         
-        # Extract text using PyMuPDF
         import fitz
         doc = fitz.open(stream=contents, filetype="pdf")
         text = ""
@@ -56,20 +70,27 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         if not text.strip():
             raise HTTPException(status_code=400, detail="Could not extract text from PDF")
             
-        # Lazy load the massive local summarization LLM exactly once
+        # Instance Agent Once
         if not UPLOAD_AGENT:
-            print("🚀 Loading Heavy Local LLMs for Upload Summary... (Takes ~2 mins)")
+            print("🚀 Loading Gemini API Node...")
             import sys, os
             sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
             from agents.summarization.summarizer import SummarizationAgent
             UPLOAD_AGENT = SummarizationAgent()
             
-        # Generate Structured Summary In-Memory
-        structured_summary = UPLOAD_AGENT.summarize_upload_stream(text)
+        # Gemerates raw string via Gemini
+        raw_summary_string = UPLOAD_AGENT.summarize_upload_stream(text)
         
-        markdown_output = f"FACTS:\n{structured_summary['facts']}\n\nISSUES:\n{structured_summary['issues']}\n\nREASONING:\n{structured_summary['reasoning']}\n\nJUDGMENT:\n{structured_summary['judgment']}"
+        # 2. CACHE SAVER
+        if not result:
+            cur.execute("INSERT INTO cases (case_id, max_severity_score) VALUES (%s, 5) ON CONFLICT DO NOTHING", (case_id,))
+            
+        cur.execute("UPDATE cases SET case_summary = %s WHERE case_id = %s", (raw_summary_string, case_id))
+        conn.commit()
+        cur.close()
+        conn.close()
 
-        return {"summary": markdown_output}
+        return {"summary": raw_summary_string}
         
     except Exception as e:
         print(f"Extraction error: {e}")

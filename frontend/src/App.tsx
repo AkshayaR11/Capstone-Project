@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 import './index.css'
 
 interface CaseResult {
@@ -22,6 +23,7 @@ function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [uploadSummary, setUploadSummary] = useState<string | null>(null)
   const [uploadLoading, setUploadLoading] = useState(false)
+  const [showUploadSummary, setShowUploadSummary] = useState(false)
 
   const toggleSummary = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -89,6 +91,7 @@ function App() {
 
       const data = await response.json();
       setUploadSummary(data.summary);
+      setShowUploadSummary(true);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message)
@@ -174,9 +177,23 @@ function App() {
             </button>
           </form>
           {uploadSummary && (
-            <div className="summary-dropdown" style={{ marginTop: '20px', whiteSpace: 'pre-wrap', background: 'rgba(0, 0, 0, 0.3)' }}>
-              <p><strong>AI Extracted Formatted Summary:</strong></p>
-              <p className="summary-text" style={{ marginTop: '10px' }}>{uploadSummary}</p>
+            <div style={{ marginTop: '15px' }}>
+              <button 
+                className="summary-btn" 
+                onClick={(e) => { e.preventDefault(); setShowUploadSummary(!showUploadSummary); }}
+                style={{ marginBottom: '10px', background: 'rgba(16, 185, 129, 0.1)', borderColor: '#10b981', color: '#10b981' }}
+              >
+                {showUploadSummary ? "Hide AI Summary ▲" : "View Live Summary ▼"}
+              </button>
+              
+              {showUploadSummary && (
+                <div className="summary-dropdown" style={{ background: 'rgba(0, 0, 0, 0.4)' }}>
+                  <p style={{ marginBottom: '15px' }}><strong><span style={{ fontSize: '1.1rem', color: '#10b981'}}>✨ AI Extracted Document Framework</span></strong></p>
+                  <div className="markdown-body">
+                    <ReactMarkdown>{uploadSummary}</ReactMarkdown>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -213,8 +230,10 @@ function App() {
               
               {expandedCase === r.case_id && (
                 <div className="summary-dropdown">
-                  <p><strong>AI Synopsis:</strong></p>
-                  <p className="summary-text">{r.summary}</p>
+                  <p style={{ marginBottom: '15px' }}><strong><span style={{ fontSize: '1.1rem', color: '#3b82f6'}}>🏛️ AI Legal Synopsis</span></strong></p>
+                  <div className="markdown-body">
+                    <ReactMarkdown>{r.summary}</ReactMarkdown>
+                  </div>
                 </div>
               )}
             </div>
