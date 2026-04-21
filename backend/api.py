@@ -43,8 +43,11 @@ UPLOAD_AGENT = None
 async def process_pdf_upload(file: UploadFile = File(...)):
     global UPLOAD_AGENT
     try:
-        # Standardize file string as Case UID
-        case_id = file.filename.replace(".pdf", "").replace(" ", "_")
+        # Standardize file string as Case UID without case-sensitive extensions
+        case_id = file.filename
+        if case_id.lower().endswith(".pdf"):
+            case_id = case_id[:-4]
+        case_id = case_id.replace(" ", "_")
         
         # 1. SMART CACHE LOOKUP
         conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
@@ -81,11 +84,49 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         # Gemerates raw string via Gemini
         raw_summary_string = UPLOAD_AGENT.summarize_upload_stream(text)
         
+        # EXTRACT FEATURES NATIVELY
+        import sys, os
+        sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+        from scripts.extract_features import (
+            extract_case_type, detect_legal_regime, extract_ipc_sections, extract_bns_sections,
+            load_mappings, calculate_severity, build_bns_severity, translate_ipc_to_bns, IPC_SEVERITY
+        )
+        
+        ipc_to_bns, _ = load_mappings("data/mappings.json")
+        bns_severity_map = build_bns_severity(ipc_to_bns)
+        
+        case_type = extract_case_type(text)
+        regime = detect_legal_regime(None, text)
+        ipc_sections_list = []
+        bns_sections_list = []
+        severity = 3
+        
+        if case_type == "criminal":
+            if regime == "IPC":
+                ipc_sections_list = extract_ipc_sections(text)
+                bns_equivalent = translate_ipc_to_bns(ipc_sections_list, ipc_to_bns)
+                bns_sections_list = [b for b in bns_equivalent if not b.endswith("?")]
+                severity = calculate_severity(ipc_sections_list, IPC_SEVERITY)
+            else:
+                bns_sections_list = extract_bns_sections(text)
+                severity = calculate_severity(bns_sections_list, bns_severity_map)
+                
+        bns_str = ",".join(bns_sections_list)
+        ipc_str = ",".join(ipc_sections_list)
+        
         # 2. CACHE SAVER
         if not result:
-            cur.execute("INSERT INTO cases (case_id, max_severity_score) VALUES (%s, 5) ON CONFLICT DO NOTHING", (case_id,))
+            cur.execute("""
+                INSERT INTO cases (case_id, max_severity_score, legal_regime, ipc_sections, bns_sections) 
+                VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING
+            """, (case_id, severity, regime, ipc_str, bns_str))
             
-        cur.execute("UPDATE cases SET case_summary = %s WHERE case_id = %s", (raw_summary_string, case_id))
+        cur.execute("""
+            UPDATE cases 
+            SET case_summary = %s, max_severity_score = %s, legal_regime = %s, ipc_sections = %s, bns_sections = %s
+            WHERE case_id = %s
+        """, (raw_summary_string, severity, regime, ipc_str, bns_str, case_id))
+        
         conn.commit()
         cur.close()
         conn.close()
@@ -122,7 +163,9 @@ async def search_cases(req: SearchRequest):
                         CASE WHEN REPLACE(c.case_id, '_', ' ') ILIKE %s THEN 0.0 ELSE cc.embedding <=> %s::vector END AS distance, 
                         c.case_date, 
                         c.max_severity_score,
-                        c.case_summary
+                        c.case_summary,
+                        c.bns_sections,
+                        c.ipc_sections
                     FROM case_chunks cc
                     JOIN cases c ON cc.case_id = c.case_id
                     WHERE c.case_id LIKE %s
@@ -141,7 +184,9 @@ async def search_cases(req: SearchRequest):
                         CASE WHEN REPLACE(c.case_id, '_', ' ') ILIKE %s THEN 0.0 ELSE cc.embedding <=> %s::vector END AS distance, 
                         c.case_date, 
                         c.max_severity_score,
-                        c.case_summary
+                        c.case_summary,
+                        c.bns_sections,
+                        c.ipc_sections
                     FROM case_chunks cc
                     JOIN cases c ON cc.case_id = c.case_id
                     ORDER BY c.case_id, distance ASC
@@ -164,7 +209,9 @@ async def search_cases(req: SearchRequest):
                 "score": round(sim_score, 4),
                 "date": r[2] if r[2] else "Unknown",
                 "severity": r[3],
-                "summary": r[4] if r[4] else "AI Synopsis Pending Processing."
+                "summary": r[4] if r[4] else "AI Synopsis Pending Processing.",
+                "bns_sections": r[5] if r[5] else "",
+                "ipc_sections": r[6] if r[6] else ""
             })
             
         return {"results": results}

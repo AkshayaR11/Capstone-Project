@@ -8,6 +8,8 @@ interface CaseResult {
   date: string;
   severity: number;
   summary: string;
+  bns_sections?: string;
+  ipc_sections?: string;
 }
 
 function App() {
@@ -211,11 +213,22 @@ function App() {
               className="result-card glass" 
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="card-header">
+              <div className="card-header" style={{ flexWrap: 'wrap', gap: '8px' }}>
                <span className="similarity-badge">{(r.score * 100).toFixed(1)}% Match</span>
                <span className={`severity-badge level-${r.severity > 7 ? 'high' : r.severity > 4 ? 'med' : 'low'}`}>
                   Severity {r.severity}
                </span>
+               
+               {r.bns_sections && (
+                 <span className="severity-badge" style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#818cf8', borderColor: 'rgba(99, 102, 241, 0.2)' }}>
+                    ⚖️ BNS {r.bns_sections.split(',')[0]}
+                 </span>
+               )}
+               {r.ipc_sections && !r.bns_sections && (
+                 <span className="severity-badge" style={{ background: 'rgba(156, 163, 175, 0.1)', color: '#9ca3af', borderColor: 'rgba(156, 163, 175, 0.2)' }}>
+                    ⚖️ IPC {r.ipc_sections.split(',')[0]}
+                 </span>
+               )}
               </div>
               <h3 className="case-title">{r.case_id.replace(/_/g, ' ')}</h3>
               <div className="card-footer">

@@ -38,8 +38,11 @@ def setup_database():
         CREATE TABLE cases (
             case_id VARCHAR PRIMARY KEY,
             case_type VARCHAR,
+            legal_regime VARCHAR,
             ipc_sections TEXT,
             num_ipc_sections INTEGER,
+            bns_sections TEXT,
+            num_bns_sections INTEGER,
             cpc_sections TEXT,
             num_cpc_sections INTEGER,
             num_precedents INTEGER,
@@ -48,7 +51,9 @@ def setup_database():
             case_age_days FLOAT,
             max_severity_score FLOAT,
             immediate_threat_flag INTEGER,
-            societal_impact_score INTEGER
+            societal_impact_score INTEGER,
+            priority_score FLOAT,
+            case_summary TEXT
         );
         
         CREATE TABLE case_chunks (
@@ -74,18 +79,19 @@ def migrate_cases(conn, cur):
     
     insert_query = """
         INSERT INTO cases (
-            case_id, case_type, ipc_sections, num_ipc_sections, cpc_sections, 
-            num_cpc_sections, num_precedents, total_words, case_date, case_age_days,
-            max_severity_score, immediate_threat_flag, societal_impact_score
+            case_id, case_type, legal_regime, ipc_sections, num_ipc_sections, 
+            bns_sections, num_bns_sections, cpc_sections, num_cpc_sections, 
+            num_precedents, total_words, case_date, case_age_days,
+            max_severity_score, immediate_threat_flag, societal_impact_score, priority_score
         ) VALUES %s
         ON CONFLICT (case_id) DO NOTHING;
     """
     
     data = [(
-        r["case_id"], r["case_type"], r.get("ipc_sections"), r["num_ipc_sections"],
-        r.get("cpc_sections"), r["num_cpc_sections"], r["num_precedents"], r["total_words"],
-        r.get("case_date"), r.get("case_age_days"), r.get("max_severity_score"),
-        r.get("immediate_threat_flag"), r.get("societal_impact_score")
+        r["case_id"], r["case_type"], r.get("legal_regime"), r.get("ipc_sections"), r["num_ipc_sections"],
+        r.get("bns_sections"), r.get("num_bns_sections"), r.get("cpc_sections"), r["num_cpc_sections"], 
+        r["num_precedents"], r["total_words"], r.get("case_date"), r.get("case_age_days"), 
+        r.get("max_severity_score"), r.get("immediate_threat_flag"), r.get("societal_impact_score"), r.get("priority_score")
     ) for r in records]
     
     print(f"📥 Inserting {len(data)} cases into Postgres...")
