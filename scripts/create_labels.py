@@ -2,8 +2,15 @@
 Priority assignment using CLEAN features (aligned with your pipeline)
 """
 
+import sys
+import os
 import pandas as pd
+import math
 from pathlib import Path
+
+# Ensure parent directory is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from scripts.extract_features import compute_priority_score
 
 INPUT_FILE = "data/prioritization/case_features.csv"
 OUTPUT_FILE = "data/prioritization/labeled_cases.csv"
@@ -15,64 +22,28 @@ Path("data/prioritization").mkdir(exist_ok=True)
 # PRIORITY SCORING
 # ==============================
 def assign_priority_score(row):
-    score = 0.0
+    severity = row.get('max_severity_score', 3)
+    societal_impact = row.get('societal_impact_score', 1)
+    immediate_threat = row.get('immediate_threat_flag', 0)
+    case_age_days = row.get('case_age_days')
+    case_type = row.get('case_type', 'civil')
 
-    # ======================================
-    # 1. CASE TYPE (BASE PRIORITY)
-    # ======================================
-    if row['case_type'] == 'criminal':
-        score += 6.0
+    # Handle NaNs or None
+    if pd.isna(severity): severity = 3
+    if pd.isna(societal_impact): societal_impact = 1
+    if pd.isna(immediate_threat): immediate_threat = 0
+    if pd.isna(case_age_days) or math.isnan(case_age_days):
+        case_age_days = None
     else:
-        score += 4.0  # civil
+        case_age_days = float(case_age_days)
 
-    # ======================================
-    # 2. SEVERITY (IPC / CPC)
-    # ======================================
-    if row['case_type'] == 'criminal':
-        # more IPC sections → more serious
-        if row['num_ipc_sections'] >= 3:
-            score += 2.0
-        elif row['num_ipc_sections'] >= 1:
-            score += 1.0
-
-    else:  # civil
-        if row['num_cpc_sections'] >= 3:
-            score += 1.5
-        elif row['num_cpc_sections'] >= 1:
-            score += 1.0
-
-    # ======================================
-    # 3. CASE AGE (VERY IMPORTANT)
-    # ======================================
-    if pd.notna(row['case_age_days']):
-        age = row['case_age_days']
-
-        if age > 7000:        # ~20 years
-            score += 3.0
-        elif age > 3650:      # 10 years
-            score += 2.5
-        elif age > 1825:      # 5 years
-            score += 2.0
-        elif age > 730:       # 2 years
-            score += 1.5
-        elif age > 365:
-            score += 1.0
-        else:
-            score += 0.5
-
-    # ======================================
-    # 4. LEGAL COMPLEXITY
-    # ======================================
-    if row['num_precedents'] > 10:
-        score += 1.0
-    elif row['num_precedents'] > 5:
-        score += 0.5
-
-    # ======================================
-    # NORMALIZE
-    # ======================================
-    score = min(score, 10.0)
-    return round(score, 2)
+    return compute_priority_score(
+        severity=int(severity),
+        societal_impact=int(societal_impact),
+        immediate_threat=int(immediate_threat),
+        case_age_days=case_age_days,
+        case_type=case_type
+    )
 
 
 # ==============================
@@ -127,25 +98,25 @@ def generate_explanation(row):
 # MAIN
 # ==============================
 def create_priority_labels():
-    print("📊 Loading features...")
+    print("Loading features...")
     df = pd.read_csv(INPUT_FILE)
 
-    print(f"✅ Loaded {len(df)} cases")
+    print(f"Loaded {len(df)} cases")
 
-    print("\n🎯 Assigning scores...")
+    print("\nAssigning scores...")
     df['priority_score'] = df.apply(assign_priority_score, axis=1)
 
-    print("\n📊 Assigning categories...")
+    print("\nAssigning categories...")
     df['priority_category'] = df['priority_score'].apply(assign_category)
 
-    print("\n🧠 Generating explanations...")
+    print("\nGenerating explanations...")
     df['priority_explanation'] = df.apply(generate_explanation, axis=1)
 
     df.to_csv(OUTPUT_FILE, index=False)
 
-    print(f"\n✅ Saved → {OUTPUT_FILE}")
+    print(f"\nSaved -> {OUTPUT_FILE}")
 
-    print("\n📊 Distribution:")
+    print("\nDistribution:")
     print(df['priority_category'].value_counts())
 
     return df

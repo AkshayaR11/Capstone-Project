@@ -6,6 +6,11 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
 import os
+import sys
+import re
+
+# Ensure parent directory is in sys.path for agent and script imports
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 app = FastAPI(title="Judicial AI Search Engine")
 
@@ -36,12 +41,15 @@ class SearchRequest(BaseModel):
     yearFilter: str = ""
     topK: int = 10
 
-# Lazy-loaded Summarization Agent to save boot RAM
+# Lazy-loaded Agents to save boot RAM
 UPLOAD_AGENT = None
+PRIORITIZATION_AGENT = None
 
 @app.post("/summarize_upload")
 async def process_pdf_upload(file: UploadFile = File(...)):
-    global UPLOAD_AGENT
+    global UPLOAD_AGENT, PRIORITIZATION_AGENT
+    conn = None
+    cur = None
     try:
         # Standardize file string as Case UID without case-sensitive extensions
         case_id = file.filename
@@ -52,15 +60,91 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         # 1. SMART CACHE LOOKUP
         conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
         cur = conn.cursor()
-        cur.execute("SELECT case_summary FROM cases WHERE case_id = %s", (case_id,))
+        cur.execute("""
+            SELECT case_summary, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type 
+            FROM cases WHERE case_id = %s
+        """, (case_id,))
         result = cur.fetchone()
         
+        # Initialize Prioritization Agent
+        if not PRIORITIZATION_AGENT:
+            print("🚀 Loading Prioritization Agent...")
+            from agents.prioritization.prioritizer import PrioritizationAgent
+            PRIORITIZATION_AGENT = PrioritizationAgent()
+            
         if result and result[0]:
             print(f"🔥 Fast Cache Hit! Returned {case_id} instantly without hitting Gemini.")
-            cur.close()
-            conn.close()
-            return {"summary": result[0]}
             
+            # Generate explanation for cache hit
+            ipc_sections_len = len(result[3].split(",")) if result[3] else 0
+            bns_sections_len = len(result[4].split(",")) if result[4] else 0
+            explanation = PRIORITIZATION_AGENT.generate_explanation(
+                case_type=result[6] if result[6] else "Unknown",
+                num_ipc_sections=max(ipc_sections_len, bns_sections_len),
+                num_cpc_sections=0,
+                case_age_days=0.0,
+                num_precedents=5
+            )
+            
+            # Retrieve similar cases using database case_chunks embedding
+            similar_cases = []
+            try:
+                cur.execute("SELECT embedding FROM case_chunks WHERE case_id = %s LIMIT 1", (case_id,))
+                emb_res = cur.fetchone()
+                if emb_res:
+                    cur.execute("""
+                        SELECT * FROM (
+                            SELECT DISTINCT ON (c.case_id) 
+                                c.case_id, 
+                                cc.embedding <=> %s::vector AS distance, 
+                                c.case_date, 
+                                c.max_severity_score,
+                                c.case_summary,
+                                c.priority_score,
+                                c.case_type
+                            FROM case_chunks cc
+                            JOIN cases c ON cc.case_id = c.case_id
+                            WHERE c.case_id != %s
+                            ORDER BY c.case_id, distance ASC
+                        ) AS distinct_matches
+                        ORDER BY distance ASC
+                        LIMIT 3;
+                    """, (emb_res[0], case_id))
+                    sim_records = cur.fetchall()
+                    for r in sim_records:
+                        sim_score = 1 - float(r[1])
+                        similar_cases.append({
+                            "case_id": r[0],
+                            "score": round(sim_score, 4),
+                            "date": r[2] if r[2] else "Unknown",
+                            "severity": r[3],
+                            "summary": r[4] if r[4] else "AI Synopsis Pending Processing.",
+                            "priority_score": r[5] if r[5] is not None else 0.0,
+                            "case_type": r[6] if r[6] else "Unknown"
+                        })
+            except Exception as sim_err:
+                print(f"⚠️ Warning: Cache hit semantic similarity lookup failed: {sim_err}")
+            
+            return {
+                "summary": result[0],
+                "severity": result[1],
+                "regime": result[2],
+                "ipc_sections": result[3],
+                "bns_sections": result[4],
+                "priority_score": result[5],
+                "case_type": result[6],
+                "priority_explanation": explanation,
+                "similar_cases": similar_cases
+            }
+            
+        # Cache Miss -> Close DB connections immediately so they aren't held open during Gemini execution
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+        conn = None
+        cur = None
+
         # No Cache Found -> Read PDF Stream
         contents = await file.read()
         
@@ -73,32 +157,29 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         if not text.strip():
             raise HTTPException(status_code=400, detail="Could not extract text from PDF")
             
-        # Instance Agent Once
+        # Instance Summarization Agent Once
         if not UPLOAD_AGENT:
             print("🚀 Loading Gemini API Node...")
-            import sys, os
-            sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
             from agents.summarization.summarizer import SummarizationAgent
             UPLOAD_AGENT = SummarizationAgent()
             
-        # Gemerates raw string via Gemini
+        # Generates raw string via Gemini
         raw_summary_string = UPLOAD_AGENT.summarize_upload_stream(text)
         
         # EXTRACT FEATURES NATIVELY
-        import sys, os
-        sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
         from scripts.extract_features import (
             extract_case_type, detect_legal_regime, extract_ipc_sections, extract_bns_sections,
             load_mappings, calculate_severity, build_bns_severity, translate_ipc_to_bns, IPC_SEVERITY
         )
         
-        ipc_to_bns, _ = load_mappings("data/mappings.json")
+        ipc_to_bns, cpc_valid_sections = load_mappings("data/mappings.json")
         bns_severity_map = build_bns_severity(ipc_to_bns)
         
         case_type = extract_case_type(text)
         regime = detect_legal_regime(None, text)
         ipc_sections_list = []
         bns_sections_list = []
+        cpc_sections_list = []
         severity = 3
         
         if case_type == "criminal":
@@ -110,35 +191,138 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             else:
                 bns_sections_list = extract_bns_sections(text)
                 severity = calculate_severity(bns_sections_list, bns_severity_map)
+        else:
+            from scripts.extract_features import extract_cpc_sections
+            cpc_sections_list = extract_cpc_sections(text, cpc_valid_sections)
+            severity = min(2 + len(cpc_sections_list), 6)
                 
         bns_str = ",".join(bns_sections_list)
         ipc_str = ",".join(ipc_sections_list)
         
-        # 2. CACHE SAVER
-        if not result:
-            cur.execute("""
-                INSERT INTO cases (case_id, max_severity_score, legal_regime, ipc_sections, bns_sections) 
-                VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING
-            """, (case_id, severity, regime, ipc_str, bns_str))
+        # Calculate dynamic priority score using Prioritization Agent
+        num_precedents = len(re.findall(r'\b(?:v\.|versus|scc|scr|air|cit)\b', text.lower()))
+        immediate_threat = PRIORITIZATION_AGENT.check_immediate_threat(text)
+        societal_impact = PRIORITIZATION_AGENT.calculate_societal_impact(text)
+        
+        if PRIORITIZATION_AGENT.model is not None:
+            total_words = len(text.split())
+            priority_score = PRIORITIZATION_AGENT.predict_ml_priority(
+                case_type=case_type,
+                num_ipc_sections=len(ipc_sections_list),
+                num_cpc_sections=len(cpc_sections_list),
+                num_precedents=num_precedents,
+                total_words=total_words,
+                case_age_days=0.0,
+                max_severity_score=float(severity),
+                immediate_threat_flag=immediate_threat,
+                societal_impact_score=societal_impact
+            )
+        else:
+            priority_score = PRIORITIZATION_AGENT.compute_priority_score(
+                severity=int(severity),
+                societal_impact=societal_impact,
+                immediate_threat=immediate_threat,
+                case_age_days=0.0,
+                case_type=case_type
+            )
             
+        explanation = PRIORITIZATION_AGENT.generate_explanation(
+            case_type=case_type,
+            num_ipc_sections=len(ipc_sections_list),
+            num_cpc_sections=len(cpc_sections_list),
+            case_age_days=0.0,
+            num_precedents=num_precedents
+        )
+        
+        # Now re-open DB connection to persist upload results
+        conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
+        cur = conn.cursor()
+        
+        # 2. CACHE SAVER
+        cur.execute("SELECT 1 FROM cases WHERE case_id = %s", (case_id,))
+        exists = cur.fetchone()
+        
+        if not exists:
+            cur.execute("""
+                INSERT INTO cases (case_id, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (case_id, severity, regime, ipc_str, bns_str, priority_score, case_type))
+        
         cur.execute("""
             UPDATE cases 
-            SET case_summary = %s, max_severity_score = %s, legal_regime = %s, ipc_sections = %s, bns_sections = %s
+            SET case_summary = %s, max_severity_score = %s, legal_regime = %s, ipc_sections = %s, bns_sections = %s, priority_score = %s, case_type = %s
             WHERE case_id = %s
-        """, (raw_summary_string, severity, regime, ipc_str, bns_str, case_id))
+        """, (raw_summary_string, severity, regime, ipc_str, bns_str, priority_score, case_type, case_id))
         
+        # Retrieve similar cases using text embedding of uploaded PDF
+        similar_cases = []
+        try:
+            text_preview = text[:2000]
+            encoded_upload = tokenizer([text_preview.lower()], padding=True, truncation=True, max_length=512, return_tensors='pt')
+            with torch.no_grad():
+                upload_output = model(**encoded_upload)
+            upload_emb = mean_pooling(upload_output, encoded_upload['attention_mask'])
+            upload_emb = F.normalize(upload_emb, p=2, dim=1).numpy()[0]
+            
+            cur.execute("""
+                SELECT * FROM (
+                    SELECT DISTINCT ON (c.case_id) 
+                        c.case_id, 
+                        cc.embedding <=> %s::vector AS distance, 
+                        c.case_date, 
+                        c.max_severity_score,
+                        c.case_summary,
+                        c.priority_score,
+                        c.case_type
+                    FROM case_chunks cc
+                    JOIN cases c ON cc.case_id = c.case_id
+                    WHERE c.case_id != %s
+                    ORDER BY c.case_id, distance ASC
+                ) AS distinct_matches
+                ORDER BY distance ASC
+                LIMIT 3;
+            """, (upload_emb.tolist(), case_id))
+            sim_records = cur.fetchall()
+            for r in sim_records:
+                sim_score = 1 - float(r[1])
+                similar_cases.append({
+                    "case_id": r[0],
+                    "score": round(sim_score, 4),
+                    "date": r[2] if r[2] else "Unknown",
+                    "severity": r[3],
+                    "summary": r[4] if r[4] else "AI Synopsis Pending Processing.",
+                    "priority_score": r[5] if r[5] is not None else 0.0,
+                    "case_type": r[6] if r[6] else "Unknown"
+                })
+        except Exception as sim_err:
+            print(f"⚠️ Warning: Semantic search during upload failed: {sim_err}")
+            
         conn.commit()
-        cur.close()
-        conn.close()
-
-        return {"summary": raw_summary_string}
+        
+        return {
+            "summary": raw_summary_string,
+            "severity": severity,
+            "regime": regime,
+            "ipc_sections": ipc_str,
+            "bns_sections": bns_str,
+            "priority_score": priority_score,
+            "case_type": case_type,
+            "priority_explanation": explanation,
+            "similar_cases": similar_cases
+        }
         
     except Exception as e:
         print(f"Extraction error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 @app.post("/search")
 async def search_cases(req: SearchRequest):
+    global PRIORITIZATION_AGENT
     if not req.query:
         raise HTTPException(status_code=400, detail="Query cannot be empty")
         
@@ -149,6 +333,13 @@ async def search_cases(req: SearchRequest):
     query_emb = mean_pooling(model_output, encoded_input['attention_mask'])
     query_emb = F.normalize(query_emb, p=2, dim=1).numpy()[0]
     
+    # Initialize Prioritization Agent
+    if not PRIORITIZATION_AGENT:
+        from agents.prioritization.prioritizer import PrioritizationAgent
+        PRIORITIZATION_AGENT = PrioritizationAgent()
+        
+    conn = None
+    cur = None
     try:
         conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
         cur = conn.cursor()
@@ -165,17 +356,23 @@ async def search_cases(req: SearchRequest):
                         c.max_severity_score,
                         c.case_summary,
                         c.bns_sections,
-                        c.ipc_sections
+                        c.ipc_sections,
+                        c.priority_score,
+                        c.case_type,
+                        c.num_ipc_sections,
+                        c.num_cpc_sections,
+                        c.num_precedents,
+                        c.case_age_days
                     FROM case_chunks cc
                     JOIN cases c ON cc.case_id = c.case_id
-                    WHERE c.case_id LIKE %s
+                    WHERE c.case_date LIKE %s
                     ORDER BY c.case_id, distance ASC
                 ) AS distinct_matches
                 ORDER BY distance ASC
                 LIMIT %s;
             """
             search_param = f"%{req.query}%"
-            cur.execute(sql, (search_param, query_emb.tolist(), f"%_{req.yearFilter}_%", req.topK))
+            cur.execute(sql, (search_param, query_emb.tolist(), f"%{req.yearFilter}%", req.topK))
         else:
             sql = """
                 SELECT * FROM (
@@ -186,7 +383,13 @@ async def search_cases(req: SearchRequest):
                         c.max_severity_score,
                         c.case_summary,
                         c.bns_sections,
-                        c.ipc_sections
+                        c.ipc_sections,
+                        c.priority_score,
+                        c.case_type,
+                        c.num_ipc_sections,
+                        c.num_cpc_sections,
+                        c.num_precedents,
+                        c.case_age_days
                     FROM case_chunks cc
                     JOIN cases c ON cc.case_id = c.case_id
                     ORDER BY c.case_id, distance ASC
@@ -198,12 +401,20 @@ async def search_cases(req: SearchRequest):
             cur.execute(sql, (search_param, query_emb.tolist(), req.topK))
             
         records = cur.fetchall()
-        cur.close()
-        conn.close()
         
         results = []
         for r in records:
             sim_score = 1 - float(r[1])
+            
+            # Generate dynamic explanation trace
+            exp = PRIORITIZATION_AGENT.generate_explanation(
+                case_type=r[8] if r[8] else "Unknown",
+                num_ipc_sections=r[9] if r[9] is not None else 0,
+                num_cpc_sections=r[10] if r[10] is not None else 0,
+                case_age_days=r[12] if r[12] is not None else None,
+                num_precedents=r[11] if r[11] is not None else 0
+            )
+            
             results.append({
                 "case_id": r[0],
                 "score": round(sim_score, 4),
@@ -211,13 +422,21 @@ async def search_cases(req: SearchRequest):
                 "severity": r[3],
                 "summary": r[4] if r[4] else "AI Synopsis Pending Processing.",
                 "bns_sections": r[5] if r[5] else "",
-                "ipc_sections": r[6] if r[6] else ""
+                "ipc_sections": r[6] if r[6] else "",
+                "priority_score": r[7] if r[7] is not None else 0.0,
+                "case_type": r[8] if r[8] else "Unknown",
+                "priority_explanation": exp
             })
             
         return {"results": results}
     except Exception as e:
         print(f"Database error: {e}")
         raise HTTPException(status_code=500, detail="Database error occurred")
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 if __name__ == "__main__":
     import uvicorn

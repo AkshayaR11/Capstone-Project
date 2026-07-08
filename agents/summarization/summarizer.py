@@ -1,6 +1,6 @@
 import psycopg2
 from pgvector.psycopg2 import register_vector
-from transformers import pipeline, AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -166,7 +166,7 @@ class SummarizationAgent:
             return "Summary failed"
 
         # Combine entirely natively
-        all_text = " ".join(chunk_map.values())[:15000]
+        all_text = " ".join(chunk_map.values())[:80000]
 
         try:
             import time
@@ -188,7 +188,7 @@ class SummarizationAgent:
         print("\n🧠 Sending dynamically uploaded PDF directly to Gemini Cloud...")
         try:
             # We bypass the Semantic Chunking math entirely for Uploads because Gemini takes 1M Tokens natively!
-            prompt = "Analyze this Legal Precedent. Output exactly 4 sections formatted nicely using Markdown headers: FACTS, ISSUES, REASONING, and JUDGMENT based precisely on the text. Do not hallucinate.\n\n" + text[:15000]
+            prompt = "Analyze this Legal Precedent. Output exactly 4 sections formatted nicely using Markdown headers: FACTS, ISSUES, REASONING, and JUDGMENT based precisely on the text. Do not hallucinate.\n\n" + text[:80000]
             
             response = self.gemini_model.generate_content(prompt)
             return response.text.strip()

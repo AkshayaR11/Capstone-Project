@@ -40,20 +40,26 @@ def prepare_features(df):
         "num_cpc_sections",
         "num_precedents",
         "total_words",
-        "case_age_days"
+        "case_age_days",
+        "max_severity_score",
+        "immediate_threat_flag",
+        "societal_impact_score"
     ]
 
     X = df[feature_cols].copy()
 
     # Handle missing
     X["case_age_days"] = X["case_age_days"].fillna(X["case_age_days"].median())
+    X["max_severity_score"] = X["max_severity_score"].fillna(3)
+    X["immediate_threat_flag"] = X["immediate_threat_flag"].fillna(0)
+    X["societal_impact_score"] = X["societal_impact_score"].fillna(1)
 
     # Encode case_type
     le = LabelEncoder()
     X["case_type"] = le.fit_transform(X["case_type"])
 
     joblib.dump(le, ENCODER_FILE)
-    print(f"✅ Encoder saved → {ENCODER_FILE}")
+    print(f"Encoder saved -> {ENCODER_FILE}")
 
     return X
 
@@ -62,7 +68,7 @@ def prepare_features(df):
 # TRAIN MODEL
 # ==============================
 def train_model(X, y):
-    print("\n🎯 Training model...")
+    print("\nTraining model...")
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
@@ -77,7 +83,7 @@ def train_model(X, y):
     )
 
     # Cross-validation
-    print("\n📊 Cross-validation...")
+    print("\nCross-validation...")
     cv_scores = cross_val_score(
         model, X_train, y_train,
         cv=5,
@@ -92,13 +98,13 @@ def train_model(X, y):
     # Predict
     y_pred = model.predict(X_test)
 
-    print("\n📈 Evaluation:")
+    print("\nEvaluation:")
     print(f"MAE: {mean_absolute_error(y_test, y_pred):.3f}")
     print(f"RMSE: {np.sqrt(mean_squared_error(y_test, y_pred)):.3f}")
     print(f"R²: {r2_score(y_test, y_pred):.3f}")
 
     # Feature importance
-    print("\n🔍 Feature Importance:")
+    print("\nFeature Importance:")
     importance = pd.DataFrame({
         "feature": X.columns,
         "importance": model.feature_importances_
@@ -108,7 +114,7 @@ def train_model(X, y):
 
     # Save model
     joblib.dump(model, MODEL_FILE)
-    print(f"\n✅ Model saved → {MODEL_FILE}")
+    print(f"\nModel saved -> {MODEL_FILE}")
 
     # Plot
     plt.figure(figsize=(8, 6))
@@ -127,19 +133,19 @@ def train_model(X, y):
 # MAIN
 # ==============================
 def main():
-    print("\n📂 Loading data...")
+    print("\nLoading data...")
     df = pd.read_csv(INPUT_FILE)
 
     print(f"Loaded {len(df)} cases")
 
-    print("\n🔧 Preparing features...")
+    print("\nPreparing features...")
     X = prepare_features(df)
     y = df["priority_score"]
 
-    print("\n🚀 Training...")
+    print("\nTraining...")
     model = train_model(X, y)
 
-    print("\n✅ DONE")
+    print("\nDONE")
 
 
 if __name__ == "__main__":

@@ -1,472 +1,461 @@
-case_id,case_type,ipc_sections,num_ipc_sections,cpc_sections,num_cpc_sections,num_precedents,total_words,case_date,case_age_days,priority_score,priority_category,priority_explanation
-Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1,civil,,0,,0,0,14379,,,4.0,Medium,Civil case
-Abdul_Rehman_Anr_vs_Mohd_Ruldu_Ors_on_27_September_2012_1,civil,,0,,0,1,3139,43 OF 2012,,4.0,Medium,Civil case
-Abuzar_Hossain_Gulam_Hossain_vs_State_Of_West_Bengal_on_10_October_2012_1,criminal,,0,,0,1,13709,24-6-1960,24021.0,9.0,Critical,Criminal case; Pending for 65 years
-Accountant_General_M_P_vs_S_K_Dubey_Anr_on_29_February_2012_1,civil,,0,,0,7,13588,22 OF 2005,,4.5,Medium,Civil case; High legal complexity
-Acg_Associated_Capsules_P_Ltd_vs_C_I_T_Central_Iv_Mumbai_on_8_February_2012_1,civil,,0,,0,0,4326,14 OF 2012,,4.0,Medium,Civil case
-Adarsh_Shiksha_Mahavidyalaya_Ors_vs_Subhash_Rahangdale_Ors_on_6_January_2012_1,civil,,0,,0,1,29537,11-01-2008,6654.0,6.5,High,Civil case; Pending for 18 years
-Ahmedsaheb_D_By_Lrs_Ors_vs_Sayed_Ismail_on_19_July_2012_1,civil,,0,,0,1,4233,18 OF 2012,,4.0,Medium,Civil case
-Ajay_Kumar_Parmar_vs_State_Of_Rajasthan_on_27_September_2012_1,criminal,,0,,0,29,5474,12 AIR 2013,,7.0,High,Criminal case; High legal complexity
-Ajay_Maken_vs_Adesh_Kumar_Gupta_Anr_on_11_December_2012_1,civil,,0,,0,2,11821,30-05-2011,5419.0,6.5,High,Civil case; Pending for 14 years
-Ajay_Pandit_Jagdish_Dayabhai_vs_State_Of_Maharashtra_on_17_July_2012_1,criminal,,0,,0,4,7715,3 ALLCRIR 2799,,6.0,High,Criminal case
-Akhilesh_Yadav_vs_Vishwanath_Chaturvedi_Ors_on_13_December_2012_1,criminal,,0,,0,1,6432,72 OF 2007,,6.0,High,Criminal case
-Akil_Javed_vs_State_Of_Nct_Of_Delhi_on_6_December_2012_1,criminal,"354,392,34",3,,0,5,12451,06/12/2012,4863.0,10.0,Critical,Criminal case; 3 IPC sections involved; Pending for 13 years
-Alagupandi_Alagupandian_vs_State_Of_Tamil_Nadu_on_8_May_2012_1,criminal,302,1,,0,1,6147,2 ALLCRIR 1751,,7.0,High,Criminal case; 1 IPC sections involved
-Alister_Anthony_Pareira_vs_State_Of_Maharashtra_on_12_January_2012_1,criminal,"338,304a,302,320,307,376,336,337,304,299",10,,0,5,15200,20 OF 2007,,8.0,Critical,Criminal case; 10 IPC sections involved
-Alok_Kumar_Pandit_vs_State_Of_Assam_Ors_on_26_November_2012_1,civil,,0,,0,0,4982,99 OF 2012,,4.0,Medium,Civil case
-Amar_Pal_Singh_vs_State_Of_U_P_Anr_on_17_May_2012_1,criminal,,0,,0,10,5061,3 ALLCRIR 2549,,6.5,High,Criminal case; High legal complexity
-Amar_Singh_Jatav_Anr_vs_State_Of_M_P_on_26_September_2012_1,criminal,,0,,0,0,690,07 OF 2008,,6.0,High,Criminal case
-Amit_Kapoor_vs_Ramesh_Chander_Anr_on_13_September_2012_1,criminal,"448,107,306,109",4,,0,17,12504,07 OF 2012,,9.0,Critical,Criminal case; 4 IPC sections involved; High legal complexity
-Amit_vs_State_Of_U_P_on_23_February_2012_1,criminal,302,1,,0,2,3541,2 ALLCRIR 1372,,7.0,High,Criminal case; 1 IPC sections involved
-Amrit_Bhanu_Shali_Ors_vs_National_Insurance_Co_Ltd_Ors_on_4_April_2012_1,civil,,0,,0,1,3396,3 ACJ 2002,,4.0,Medium,Civil case
-Anand_Mohan_vs_State_Of_Bihar_on_10_July_2012_1,criminal,"147,109",2,,0,5,11764,3 ALLCRIR 2809,,7.0,High,Criminal case; 2 IPC sections involved
-Aneeta_Hada_vs_M_S_Godfather_Travels_Tours_Pvt_Ltd_on_27_April_2012_1,criminal,,0,,0,14,13116,38 OF 2008,,7.0,High,Criminal case; High legal complexity
-Anju_Chaudhary_vs_State_Of_U_P_Anr_on_13_December_2012_1,criminal,"302,410,156",3,,0,3,15237,20-5-1995,11273.0,10.0,Critical,Criminal case; 3 IPC sections involved; Pending for 30 years
-Archaeological_Survey_Of_India_vs_Narender_Anand_And_Ors_on_16_January_2012_1,civil,,0,,0,0,9841,24/22/2006,,4.0,Medium,Civil case
-Arjuna_Lal_Misra_vs_The_State_on_30_November_1950_1,criminal,,0,,0,0,2507,17-11-1946,28989.0,9.0,Critical,Criminal case; Pending for 79 years
-Arumugam_vs_State_Rep_By_Insp_Of_Police_on_24_July_2012_1,criminal,,0,,0,0,3615,79 OF 2010,,6.0,High,Criminal case
-Arup_Das_Ors_vs_State_Of_Assam_Ors_on_27_January_2012_1,civil,,0,,0,0,3606,2-11-1991,12568.0,7.0,High,Civil case; Pending for 34 years
-Asha_vs_B_D_Sharma_University_Of_Health_on_10_July_2012_1,criminal,,0,,0,3,8346,55 OF 2012,,6.0,High,Criminal case
-Ashok_Kumar_Ratilal_Patel_vs_Uoi_And_Anr_on_16_July_2012_1,civil,,0,,0,1,2902,12 AIR 2012,,4.0,Medium,Civil case
-Ashok_Kumar_vs_State_Of_Uttarakhand_Ors_on_13_December_2012_1,criminal,,0,,0,0,2396,38 OF 2012,,6.0,High,Criminal case
-Ashok_Sadarangani_Anr_vs_Union_Of_India_Ors_on_14_March_2012_1,criminal,,0,,0,0,4418,26 OF 2011,,6.0,High,Criminal case
-Ashrafkhan_Babu_Munnekhan_Pathan_Anr_vs_State_Of_Gujarat_on_26_September_2012_1,criminal,,0,,0,1,10958,19-3-1995,11335.0,9.0,Critical,Criminal case; Pending for 31 years
-Ashutosh_Lahiry_vs_The_State_Of_Delhi_And_Anr_on_19_May_1950_1,criminal,,0,,0,0,2878,5-3-1950,27785.0,9.0,Critical,Criminal case; Pending for 76 years
-Ashwani_Kumar_Saxena_vs_State_Of_M_P_on_13_September_2012_1,criminal,302,1,,0,1,8894,12 AIR 2013,,7.0,High,Criminal case; 1 IPC sections involved
-Ash_Mohammad_vs_Shiv_Raj_Singh_Lalla_Babu_Anr_on_20_September_2012_1,criminal,,0,,0,4,5938,56 OF 2012,,6.0,High,Criminal case
-Assam_Urban_Water_Supply_Sew_Board_vs_M_S_Subash_Projects_Marketing_Ltd_on_19_January_2012_1,civil,,0,,0,1,2125,14 OF 2006,,4.0,Medium,Civil case
-Atmaram_Ors_vs_State_Of_M_P_on_10_May_2012_1,criminal,"302,300,326,149",4,,0,2,6964,16-5-1988,13833.0,10.0,Critical,Criminal case; 4 IPC sections involved; Pending for 37 years
-Attar_Singh_vs_State_Of_Maharashtra_on_14_December_2012_1,criminal,302,1,,0,4,5218,"79 SC
-1848",,7.0,High,Criminal case; 1 IPC sections involved
-Avinash_Sadashiv_Bhosale_D_Thr_Lrs_vs_U_O_I_Ors_on_25_September_2012_1,criminal,,0,,0,3,11616,"2
-CLR 1050",,6.0,High,Criminal case
-Avishek_Goenka_vs_Union_Of_India_Anr_on_27_April_2012_1,criminal,,0,,0,1,4812,65 OF 2011,,6.0,High,Criminal case
-Ayaaubkhan_Noorkhan_Pathan_vs_State_Of_Maharashtra_Ors_on_8_November_2012_1,civil,,0,,0,46,9558,28 OF 2012,,5.0,Medium,Civil case; High legal complexity
-Azija_Begum_vs_State_Of_Maharashtra_Anr_on_12_January_2012_1,criminal,,0,,0,0,1327,26 OF 2012,,6.0,High,Criminal case
-Azim_Ahmad_Kazmi_And_Ors_vs_State_Of_U_P_And_Anr_on_16_July_2012_1,civil,,0,,0,3,4825,06 OF 2003,,4.0,Medium,Civil case
-A_K_Gopalan_vs_The_State_Of_Madras_Union_Of_India__on_19_May_1950_1,criminal,,0,,0,0,106162,1 of 1950,,6.0,High,Criminal case
-A_M_Mair_Co_vs_Gordhandass_Sagarmull_on_30_November_1950_1,civil,,0,,0,0,2354,,,4.0,Medium,Civil case
-A_Nawab_John_Ors_vs_V_N_Subramaniyam_on_3_July_2012_1,criminal,,0,,0,6,9374,22-03-1995,11332.0,9.5,Critical,Criminal case; Pending for 31 years; High legal complexity
-A_Shanmugam_vs_Ariya_K_R_K_M_N_P_Sangam_Tr_Pres_Etc_on_27_April_2012_1,criminal,,0,,0,1,12230,13 OF 2012,,6.0,High,Criminal case
-A_V_M_Sales_Corporation_vs_M_S_Anuradha_Chemicals_Pvt_Ltd_on_17_January_2012_1,civil,,0,,0,3,3135,84 of 2008,,4.0,Medium,Civil case
-A_V_Padma_Ors_vs_R_Venugopal_Ors_on_27_January_2012_1,civil,,0,,0,1,2143,95 OF 2012,,4.0,Medium,Civil case
-Badami_D_Tr_Her_Lr_vs_Bhali_on_22_May_2012_1,civil,,0,,0,18,6363,26-4-2003,8375.0,8.0,Critical,Civil case; Pending for 22 years; High legal complexity
-Baliya_Bal_Kishan_vs_State_Of_M_P_on_5_October_2012_1,criminal,"302,120b",2,,0,0,3994,01 OF 2008,,7.0,High,Criminal case; 2 IPC sections involved
-Bar_Council_Of_India_vs_Union_Of_India_on_3_August_2012_1,civil,,0,,0,2,8867,66 OF 2002,,4.0,Medium,Civil case
-Bavo_Manubhai_Ambalal_Thakore_vs_State_Of_Gujarat_on_3_February_2012_1,criminal,,0,,0,1,1767,09 OF 2012,,6.0,High,Criminal case
-Benarsi_Krishna_Commit_Ors_vs_Karmyogi_Shelters_P_Ltd_on_21_September_2012_1,civil,,0,,0,2,3197,60 of 2010,,4.0,Medium,Civil case
-Bhajju_Karan_Singh_vs_State_Of_M_P_on_15_March_2012_1,criminal,"302,307",2,,0,1,6565,01 OF 2008,,7.0,High,Criminal case; 2 IPC sections involved
-Bharat_Aluminium_Co_vs_Kaiser_Aluminium_Technical_on_6_September_2012_1,criminal,,0,,0,3,46832,27-6-2006,7217.0,9.0,Critical,Criminal case; Pending for 19 years
-Bharat_Heavy_Electricals_Ltd_vs_R_S_Avtar_Singh_Co_on_5_October_2012_1,civil,,0,34.0,1,0,9003,6-1-1981,16520.0,8.0,Critical,Civil case; 1 CPC sections involved; Pending for 45 years
-Bhartiya_Seva_Samaj_Trust_Tr_Pres_Anr_vs_Yogeshbhai_Ambalal_Patel_Anr_on_14_September_2012_1,civil,,0,,0,18,3904,63 OF 2012,,5.0,Medium,Civil case; High legal complexity
-Bhaskar_Laxman_Jadhav_Ors_vs_Karamveer_Kakasaheb_Wagh_Edu_Sty_Ors_on_11_December_2012_1,civil,,0,,0,2,6517,69 OF 2009,,4.0,Medium,Civil case
-Bhau_Ram_vs_Janak_Singh_Ors_on_20_July_2012_1,civil,,0,,0,1,2261,43 OF 2012,,4.0,Medium,Civil case
-Bhawanipore_Banking_Corpora_Tion_Ltd_vs_Gouri_Shankar_Sharma_on_14_March_1950_1,civil,,0,,0,0,1353,,,4.0,Medium,Civil case
-Bhimanna_vs_State_Of_Karnataka_on_4_September_2012_1,criminal,"302,34,149",3,,0,21,6139,3 ALLCRIR 3315,,9.0,Critical,Criminal case; 3 IPC sections involved; High legal complexity
-Bhopal_Gas_Peedith_Mahila_vs_U_O_I_Ors_on_9_August_2012_1,civil,,0,,0,1,9572,50 OF 1998,,4.0,Medium,Civil case
-Bhubaneswar_Development_Authority_vs_Adikanda_Biswal_Ors_on_1_February_2012_1,civil,,0,,0,0,3654,01/02/2012,5172.0,6.5,High,Civil case; Pending for 14 years
-Bhupendra_Nath_Hazarika_Anr_vs_State_Of_Assam_Ors_on_30_November_2012_1,civil,,0,,0,3,12738,15 OF 2012,,4.0,Medium,Civil case
-Bhushan_Kumar_Anr_vs_State_Nct_Of_Delhi_Anr_on_4_April_2012_1,criminal,"174,420",2,,0,1,2955,2 ALLCRIR 1514,,7.0,High,Criminal case; 2 IPC sections involved
-Bihar_Public_Service_Commn_vs_Saiyed_Hussain_Abbas_Rizwi_Anr_on_13_December_2012_1,civil,,0,,0,1,7361,52 OF 2012,,4.0,Medium,Civil case
-Bimal_Kumar_Anr_vs_Shakuntala_Debi_Ors_on_27_February_2012_1,civil,,0,,0,8,6497,24 OF 2012,,4.5,Medium,Civil case; High legal complexity
-Bipromasz_Bipron_Trading_Sa_vs_Bharat_Electronics_Limited_Bel_on_8_May_2012_1,civil,,0,,0,2,8496,7-1-2002,8849.0,7.0,High,Civil case; Pending for 24 years
-Brajendrasingh_vs_State_Of_M_P_on_28_February_2012_1,criminal,"309,302",2,,0,1,8031,14 OF 2010,,7.0,High,Criminal case; 2 IPC sections involved
-Brijesh_Mavi_vs_State_Of_Nct_Of_Delhi_on_3_July_2012_1,criminal,"460,34",2,,0,1,5635,3 UC 1648,,7.0,High,Criminal case; 2 IPC sections involved
-Brij_Bhushan_And_Another_vs_The_State_Of_Delhi_on_26_May_1950_1,criminal,,0,,0,0,5702,,,6.0,High,Criminal case
-Brij_Bhushan_And_Anr_vs_The_State_Of_Delhi_on_2_March_1950_1,criminal,,0,,0,0,5507,,,6.0,High,Criminal case
-Burdwan_Central_Co_Op_Bank_Ltd_Anr_vs_Asim_Chatterjee_Ors_on_18_January_2012_1,civil,,0,,0,0,3478,57 OF 2012,,4.0,Medium,Civil case
-Catholic_Syrian_Bank_Ltd_vs_Commissioner_Of_Income_Tax_Thrissur_on_17_February_2012_1,civil,,0,,0,0,11187,43 OF 2011,,4.0,Medium,Civil case
-Cbi_Hyderabad_vs_K_Narayana_Rao_on_21_September_2012_1,criminal,"420,109",2,,0,0,8881,60 OF 2012,,7.0,High,Criminal case; 2 IPC sections involved
-Central_Bureau_Of_Investigation_vs_Amitbhai_Anil_Chandra_Shah_And_Anr_on_27_September_2012_1,criminal,,0,,0,0,7116,03 OF 2012,,6.0,High,Criminal case
-Chairman_Lic_Of_India_Ors_vs_A_Masilamani_on_23_November_2012_1,civil,,0,,0,9,3022,63 OF 2012,,4.5,Medium,Civil case; High legal complexity
-Chandi_Prasad_Uniyal_And_Ors_vs_State_Of_Uttarakhand_And_Ors_on_17_August_2012_1,civil,,0,,0,1,3194,99 OF 2012,,4.0,Medium,Civil case
-Chandrakala_Trivedi_vs_State_Of_Rajasthan_Ors_on_12_January_2012_1,civil,,0,,0,0,856,00 OF 2012,,4.0,Medium,Civil case
-Chandralekha_vs_State_Of_Rajasthan_Anr_on_14_December_2012_1,criminal,,0,,0,1,1657,14/9/2011,5312.0,8.5,Critical,Criminal case; Pending for 14 years
-Chandra_Kumar_Chopra_vs_Union_Of_India_Ors_on_11_May_2012_1,criminal,,0,,0,4,6900,65 OF 2002,,6.0,High,Criminal case
-Chief_Controlling_Revenue_vs_Maharashtra_Sugar_Mills_Ltd_on_27_May_1950_1,civil,,0,,0,0,4891,60 of 1946,,4.0,Medium,Civil case
-Chintaman_Rao_vs_The_State_Of_Madhya_Pradeshram_on_8_November_1950_1,civil,,0,,0,0,2319,79 of 1950,,4.0,Medium,Civil case
-Chiranjit_Lal_Chowdhuri_vs_The_Union_Of_India_And_Others_on_4_December_1950_1,civil,,0,,0,0,28123,72 of 1950,,4.0,Medium,Civil case
-Chittaranjan_Mukherji_vs_Barhoo_Mahto_on_5_May_1950_1,civil,,0,,0,0,2134,14-12-1944,29692.0,7.0,High,Civil case; Pending for 81 years
-Chloro_Controls_I_P_Ltd_vs_Severn_Trent_Water_Purification_Inc_on_28_September_2012_1,civil,,0,,0,3,34472,34 OF 2012,,4.0,Medium,Civil case
-Church_Of_Christ_Charitable_Trust_Edu_vs_M_S_Ponniamman_Educationa_Trust_Rep_on_3_July_2012_1,civil,,0,,0,0,5938,41 OF 2012,,4.0,Medium,Civil case
-Cicily_Kallarackal_vs_Vehicle_Factory_on_6_August_2012_1,civil,,0,,0,1,1285,29 of 2012,,4.0,Medium,Civil case
-Columbia_Sportswear_Company_vs_Director_Of_I_T_Bangalore_on_30_July_2012_1,civil,,0,,0,5,5391,43 of 2011,,4.0,Medium,Civil case
-Commissioner_Of_Income_Tax_Bombay_vs_Ahmedbhai_Umarbhai_Co_Bombay_on_4_May_1950_1,civil,,0,,0,0,24501,,,4.0,Medium,Civil case
-Commissioner_Of_Income_Tax_U_P_vs_Gappumal_Kanhaiya_Lal_on_26_May_1950_1,civil,,0,,0,0,707,66 of 1940,,4.0,Medium,Civil case
-Commissioner_Of_Income_Tax_West_vs_Calcutta_Agency_Ltd_on_21_December_1950_1,civil,,0,,0,0,3636,59 of 1950,,4.0,Medium,Civil case
-Commissioner_Of_vs_Sri_Keshab_Chandra_Mandal_on_9_May_1950_1,criminal,,0,,0,0,7352,,,6.0,High,Criminal case
-Commnr_Of_Central_Excise_Mumbai_vs_M_S_Fiat_India_P_Ltd_Anr_on_29_August_2012_1,civil,,0,,0,0,18243,49 OF 2004,,4.0,Medium,Civil case
-Commnr_Of_Central_Excise_New_Delhi_vs_M_S_Connaught_Plaza_Rest_P_Ltd_N_D_on_27_November_2012_1,criminal,,0,,0,0,10608,27/11/2012,4872.0,8.5,Critical,Criminal case; Pending for 13 years
-Commnr_Of_Central_Excise_Surat_I_vs_M_S_Favourite_Industries_on_29_February_2012_1,civil,,0,,0,0,7241,1-3-1997,10622.0,7.0,High,Civil case; Pending for 29 years
-Commnr_Of_Central_Excise_vs_M_S_Wockhardt_Life_Science_Ltd_on_22_February_2012_1,civil,,0,,0,0,8008,03 OF 2004,,4.0,Medium,Civil case
-Court_On_Its_Own_Motion_vs_Union_Of_India_Ors_on_13_December_2012_1,criminal,,0,,0,0,16777,84 OF 2012,,6.0,High,Criminal case
-Co_Operative_Society_Of_Debts_vs_Nandlal_on_12_October_1950_1,civil,,0,,0,0,2214,,,4.0,Medium,Civil case
-C_I_T_Ii_vs_M_S_Krishi_Utpadan_Mandi_Samiti_on_27_September_2012_1,civil,,0,,0,0,3037,40 OF 2012,,4.0,Medium,Civil case
-C_K_Jaffer_Sharief_vs_State_Thr_C_B_I_on_9_November_2012_1,criminal,,0,,0,1,3208,04 of 2012,,6.0,High,Criminal case
-C_N_Ramappa_Gowda_vs_C_C_Chaqndergowda_D_By_Lrs_Anr_on_23_April_2012_1,civil,,0,,0,1,4455,10 OF 2012,,4.0,Medium,Civil case
-Dahari_Ors_vs_State_Of_U_P_on_11_October_2012_1,criminal,"34,149,141,148",4,,0,15,3524,"53
-OCR 1211",,9.0,Critical,Criminal case; 4 IPC sections involved; High legal complexity
-Darbara_Singh_vs_State_Of_Punjab_on_12_September_2012_1,criminal,"302,34",2,,0,11,4122,3 UC 1875,,8.0,Critical,Criminal case; 2 IPC sections involved; High legal complexity
-Darshan_Lal_Nagpal_Ors_vs_Govt_Of_Nct_Of_Delhi_Ors_on_3_January_2012_1,civil,,0,,0,2,13494,24-3-2008,6581.0,6.5,High,Civil case; Pending for 18 years
-Dayal_Singh_Ors_vs_State_Of_Uttaranchal_on_3_August_2012_1,criminal,"304,302,34",3,,0,5,12069,3 ALLCRIR 2377,,8.0,Critical,Criminal case; 3 IPC sections involved
-Deepak_Kumar_Etc_vs_State_Of_Haryana_Ors_Etc_on_27_February_2012_1,civil,,0,,0,1,6514,96/7/2000,,4.0,Medium,Civil case
-Delhi_Race_Club_Ltd_vs_Union_Of_India_Ors_on_13_July_2012_1,civil,,0,,0,7,9434,61 OF 2003,,4.5,Medium,Civil case; High legal complexity
-Deoki_Panjhiyara_vs_Shahshi_Bhushan_Narayan_Azad_Anr_on_12_December_2012_1,criminal,494,1,,0,3,3976,1 ALLCRIR 1089,,7.0,High,Criminal case; 1 IPC sections involved
-Desiya_Murpokku_Dravida_Kazhagam_Anr_vs_Election_Commission_Of_India_on_18_April_2012_1,civil,,0,,0,4,20835,24-01-2006,7371.0,7.0,High,Civil case; Pending for 20 years
-Devinder_Singh_Narula_vs_Meenakshi_Nangia_on_22_August_2012_1,civil,,0,,0,1,2255,46 OF 2012,,4.0,Medium,Civil case
-Dhiyan_Singh_And_Another_vs_Jugal_Kishore_And_Another_on_22_February_1950_1,civil,,0,,0,0,4843,21-5-1940,31360.0,7.0,High,Civil case; Pending for 85 years
-Dimpey_Gujral_Ors_vs_U_T_Chandigarh_Ors_on_6_December_2012_1,criminal,,0,,0,1,1552,26/10/2006,7096.0,9.0,Critical,Criminal case; Pending for 19 years
-Dipak_Kumar_Mukherjee_vs_Kolkata_Mun_Corp_Ors_on_8_October_2012_1,criminal,,0,,0,1,9669,56 of 2012,,6.0,High,Criminal case
-Dipak_Subhashchandra_Mehta_vs_C_B_I_Anr_on_10_February_2012_1,criminal,,0,,0,0,4545,48 OF 2012,,6.0,High,Criminal case
-Dirctor_General_Of_Posts_Ors_vs_K_Chandrashekar_Rao_on_13_December_2012_1,civil,,0,,0,0,6374,49 OF 2012,,4.0,Medium,Civil case
-Dropti_Devi_Anr_vs_Union_Of_India_Ors_on_2_July_2012_1,criminal,,0,,0,0,15695,73/02/2009,,6.0,High,Criminal case
-Dr_Babu_Ram_Saksena_vs_The_State_on_5_May_1950_1,criminal,,0,,0,0,8319,60 of 1949,,6.0,High,Criminal case
-Dr_Mehmood_Nayyar_Azam_vs_State_Of_Chattisgarh_And_Ors_on_3_August_2012_1,criminal,,0,,0,10,8852,02 of 2010,,6.5,High,Criminal case; High legal complexity
-Dr_Mrs_Nupur_Talwar_vs_Cbi_Delhi_And_Anr_on_6_January_2012_1,criminal,,0,,0,2,3653,06-01-2012,5198.0,8.5,Critical,Criminal case; Pending for 14 years
-Dr_N_B_Khare_vs_The_State_Of_Delhi_on_26_May_1950_1,criminal,,0,,0,0,6176,29 of 1950,,6.0,High,Criminal case
-Dr_Subramanian_Swamy_vs_Dr_Manmohan_Singh_And_Anr_on_31_January_2012_1,criminal,21,1,,0,4,17163,93 OF 2012,,7.0,High,Criminal case; 1 IPC sections involved
-Dy_Inspector_Gen_Of_Police_Anr_vs_S_Samuthiram_on_30_November_2012_1,criminal,509,1,,0,1,6215,13 OF 2012,,7.0,High,Criminal case; 1 IPC sections involved
-Executors_Of_The_Estate_Of_J_K_Dubash_vs_Commissioner_Of_Income_Tax_Bombaycity_on_21_December_1950_1,civil,,0,,0,0,4015,26 of 1947,,4.0,Medium,Civil case
-Faiza_Choudhary_vs_State_Of_J_K_Anr_on_6_September_2012_1,civil,,0,,0,1,2751,46 OF 2012,,4.0,Medium,Civil case
-Gajoo_vs_State_Of_Uttarakhand_on_13_September_2012_1,criminal,302,1,,0,2,5863,56 OF 2009,,7.0,High,Criminal case; 1 IPC sections involved
-Gaytri_Bajaj_vs_Jiten_Bhalla_on_5_October_2012_1,civil,,0,,0,1,3067,33 of 2012,,4.0,Medium,Civil case
-Geeta_Mehrotra_Anr_vs_State_Of_U_P_Anr_on_17_October_2012_1,criminal,,0,,0,3,6143,53 OCR 1257,,6.0,High,Criminal case
-General_Officer_Commanding_vs_Cbi_Anr_on_1_May_2012_1,criminal,"167,166",2,,0,58,15553,3 ALLCRIR 3201,,8.0,Critical,Criminal case; 2 IPC sections involved; High legal complexity
-Ghanshyam_Das_Gupta_vs_Makhan_Lal_on_21_August_2012_1,civil,,0,,0,0,1411,50 OF 2012,,4.0,Medium,Civil case
-Gian_Singh_vs_State_Of_Punjab_Anr_on_24_September_2012_1,criminal,"120b,326,506,34,302,307,420",7,,0,4,19206,11-1-2004,8115.0,10.0,Critical,Criminal case; 7 IPC sections involved; Pending for 22 years
-Girish_Ramchandra_Deshpande_vs_Cen_Information_Commr_Ors_on_3_October_2012_1,criminal,,0,,0,0,2633,2 CLR 1212,,6.0,High,Criminal case
-Gnanambal_Ammal_vs_T_Raju_Ayyar_And_Ors_on_21_December_1950_1,civil,,0,,0,0,4345,34 of 1943,,4.0,Medium,Civil case
-Gnanambal_Ammal_vs_T_Raju_Ayyar_And_Others_on_21_October_1950_1,civil,,0,,0,0,4520,18 of 1941,,4.0,Medium,Civil case
-Gorakhram_Sadhuram_vs_Laxmibai_Wife_Of_Inderlal_Nandlal_on_14_March_1950_1,civil,,0,,0,0,4422,26-5-1943,30260.0,7.0,High,Civil case; Pending for 82 years
-Govindaraju_Govinda_vs_State_By_Sriramapuram_P_S_Anr_on_15_March_2012_1,criminal,"302,34",2,,0,3,13381,16-5-2011,5433.0,9.5,Critical,Criminal case; 2 IPC sections involved; Pending for 14 years
-Gurcharan_Singh_vs_Surjit_Singh_Anr_on_2_November_2012_1,civil,,0,,0,11,1802,35 of 2010,,5.0,Medium,Civil case; High legal complexity
-Gurgaon_Gramin_Bank_vs_Khazani_Anr_on_4_September_2012_1,civil,,0,,0,0,2144,61 OF 2012,,4.0,Medium,Civil case
-Gurpal_Singh_vs_High_Court_Of_Judicature_For_Rajasthan_on_27_November_2012_1,criminal,,0,,0,1,10043,00 OF 2006,,6.0,High,Criminal case
-Guru_Basavaraj_Benne_Settappa_vs_State_Of_Karnataka_on_29_August_2012_1,criminal,304a,1,,0,3,5459,3 UC 1849,,7.0,High,Criminal case; 1 IPC sections involved
-Haradhan_Das_vs_State_Of_West_Bengal_on_13_December_2012_1,criminal,"302,460,149",3,,0,1,7063,48 OF 2007,,8.0,Critical,Criminal case; 3 IPC sections involved
-Haryana_State_Indusl_Devt_Corp_Ltd_vs_Mawasi_Ors_Etc_Etc_on_2_July_2012_1,civil,,0,,0,10,11987,15 of 2009,,4.5,Medium,Civil case; High legal complexity
-Head_Master_Lawrence_School_Lovedale_vs_Jayanthi_Raghu_Anr_on_16_March_2012_1,criminal,,0,,0,11,5873,68 of 2012,,7.0,High,Criminal case; High legal complexity
-Hem_Raj_Ors_vs_Kartar_Singh_D_By_Lrs_Ors_on_29_November_2012_1,civil,,0,,0,0,3386,11-12-1974,18738.0,7.0,High,Civil case; Pending for 51 years
-Horil_vs_Keshav_Anr_on_20_January_2012_1,criminal,,0,,0,1,2532,76 OF 2012,,6.0,High,Criminal case
-Huidrom_Konungjao_Singh_vs_State_Of_Manipur_Ors_on_17_May_2012_1,criminal,302,1,,0,16,2872,3 ALLCRIR 2557,,8.0,Critical,Criminal case; 1 IPC sections involved; High legal complexity
-H_P_Housing_Urban_Devt_Auth_Anr_vs_Ranjit_Singh_Rana_on_12_March_2012_1,civil,,0,,0,1,1634,51 OF 2012,,4.0,Medium,Civil case
-H_P_Singh_vs_Thakur_Prasad_Tewari_And_Anr_on_21_December_1950_1,criminal,,0,,0,0,1560,19-2-1948,28530.0,9.0,Critical,Criminal case; Pending for 78 years
-Imtiyaz_Ahmad_vs_State_Of_U_P_Ors_on_1_February_2012_1,criminal,,0,,0,0,8447,"2
-ALLCRIR 1972",,6.0,High,Criminal case
-Indra_Kumar_Patodia_Anr_vs_Reliance_Inds_Ltd_Ors_on_22_November_2012_1,criminal,,0,,0,2,5440,32/9/1999,,6.0,High,Criminal case
-In_The_Supreme_Court_Of_India_vs_Kadar_Unnisa_Begum_And_Others_on_12_October_1950_1,civil,,0,,0,0,2864,89 of 1950,,4.0,Medium,Civil case
-In_The_Supreme_Court_Of_India_vs_Nandlal_on_12_October_1950_1,civil,,0,,0,0,2262,4 of 1356,,4.0,Medium,Civil case
-In_The_Supreme_Court_Of_India_vs_Shankar_And_Others_on_13_October_1950_1,civil,,0,,0,0,1514,23 of 1950,,4.0,Medium,Civil case
-I_T_C_Ltd_vs_Adarsh_Coop_Housing_Soc_Ltd_on_27_August_2012_1,civil,,0,145.0,1,0,3468,71 of 2012,,5.0,Medium,Civil case; 1 CPC sections involved
-Jagroop_Singh_vs_State_Of_Punjab_on_20_July_2012_1,criminal,,0,,0,15,6683,67 OF 2008,,7.0,High,Criminal case; High legal complexity
-Jainendra_Singh_vs_State_Of_U_P_Tr_Prinl_Sec_Home_Ors_on_30_July_2012_1,criminal,,0,,0,0,6863,20-11-1995,11089.0,9.0,Critical,Criminal case; Pending for 30 years
-Jai_Prakash_Singh_vs_State_Of_Bihar_Anr_Etc_on_14_March_2012_1,criminal,,0,,0,8,3705,2 ALLCRIR 1204,,6.5,High,Criminal case; High legal complexity
-Janardan_Reddy_And_Others_vs_The_State_on_14_December_1950_1,criminal,,0,,0,0,3317,73 of 1950,,6.0,High,Criminal case
-Jasarvinder_Singh_Ors_vs_President_Land_Acquisition_Ors_on_9_November_2012_1,civil,,0,,0,0,989,02 OF 2012,,4.0,Medium,Civil case
-Jayrajsingh_Digvijaysingh_Rana_vs_State_Of_Gujarat_Anr_on_20_July_2012_1,criminal,,0,,0,1,2734,2 UC 1596,,6.0,High,Criminal case
-Jeetu_Jitendera_Ors_vs_State_Of_Chhattisgarh_on_4_December_2012_1,criminal,,0,,0,5,3436,34 of 2012,,6.0,High,Criminal case
-Jeevantha_And_Ors_vs_Hanumantha_And_Ors_on_20_November_1950_1,civil,,0,,0,0,1233,30-1-1913,41333.0,7.0,High,Civil case; Pending for 113 years
-Jeevan_Chandrabhan_Idnani_Anr_vs_Divisional_Commr_Konkan_Bhavan_Ors_on_31_January_2012_1,civil,,0,,0,1,4509,92 OF 2012,,4.0,Medium,Civil case
-Jegannathan_vs_Raju_Sigamani_Anr_on_2_April_2012_1,civil,,0,,0,1,1820,48 OF 2012,,4.0,Medium,Civil case
-Jik_Industries_Ltd_Ors_vs_Amarlal_V_Jumani_Anr_on_1_February_2012_1,criminal,,0,,0,5,9713,2 ALLCRIR 1328,,6.0,High,Criminal case
-Jitender_Kumar_vs_State_Of_Haryana_on_8_May_2012_1,criminal,"302,120b,149,34",4,,0,2,11099,"2
-ALLCRIR 2308",,8.0,Critical,Criminal case; 4 IPC sections involved
-Jitendra_Nath_Singh_vs_Official_Liquidator_Ors_on_21_September_2012_1,civil,,0,,0,0,18715,12-10-1993,11858.0,7.0,High,Civil case; Pending for 32 years
-Jitu_Patnaik_vs_Sanatan_Mohakud_Ors_on_2_March_2012_1,civil,,0,,0,2,8433,89 OF 2012,,4.0,Medium,Civil case
-Jugendra_Singh_vs_State_Of_U_P_on_29_May_2012_1,criminal,302,1,,0,14,6434,12 AIR 2012,,8.0,Critical,Criminal case; 1 IPC sections involved; High legal complexity
-J_Samuel_Ors_vs_Gattu_Mhesh_Ors_on_16_January_2012_1,civil,,0,,0,1,3659,3 UC 1991,,4.0,Medium,Civil case
-Kalu_Amit_vs_State_Of_Haryana_on_17_August_2012_1,criminal,,0,,0,1,4476,11/7/2006,7203.0,9.0,Critical,Criminal case; Pending for 19 years
-Kanwar_Singh_Meena_vs_State_Of_Rajasthan_Anr_on_16_October_2012_1,criminal,,0,,0,1,4927,20/5/2009,6159.0,8.5,Critical,Criminal case; Pending for 16 years
-Kapildeo_Singh_vs_The_King_on_24_January_1950_1,criminal,,0,,0,0,2876,,,6.0,High,Criminal case
-Kashmir_Kaur_Anr_vs_State_Of_Punjab_on_12_December_2012_1,criminal,"304b,498a",2,,0,1,5492,16 OF 2008,,7.0,High,Criminal case; 2 IPC sections involved
-Kathi_Bharat_Vajsur_Anr_vs_State_Of_Gujarat_on_8_May_2012_1,criminal,,0,,0,1,6298,12 AIR 2012,,6.0,High,Criminal case
-Kavita_Solunke_vs_State_Of_Maharashtra_Ors_on_9_August_2012_1,civil,,0,,0,1,5309,20-7-1962,23265.0,7.0,High,Civil case; Pending for 63 years
-Kavita_vs_Deepak_And_Ors_on_22_August_2012_1,criminal,,0,,0,1,5672,26/06/2004,7948.0,9.0,Critical,Criminal case; Pending for 21 years
-Khoday_Distilleries_Ltd_Ors_vs_Mahadeshwara_S_S_K_Ltd_on_19_October_2012_1,civil,,0,,0,0,2341,90 of 2012,,4.0,Medium,Civil case
-Kishan_Chand_vs_State_Of_Haryana_on_13_December_2012_1,criminal,,0,,0,1,6629,1 ALLCRIR 1105,,6.0,High,Criminal case
-Kishore_Samrite_vs_State_Of_U_P_Ors_on_18_October_2012_1,criminal,,0,,0,5,17145,18/10/2012,4912.0,8.5,Critical,Criminal case; Pending for 13 years
-Kotak_Mahindra_Bank_Ltd_vs_Hindustan_National_Glass_Ind_Ltd_on_11_December_2012_1,criminal,,0,,0,0,14387,16 OF 2012,,6.0,High,Criminal case
-Krishan_Lal_vs_Food_Corpn_Of_India_And_Ors_on_24_February_2012_1,civil,,0,,0,1,3297,70 of 2003,,4.0,Medium,Civil case
-Krishnappa_Ors_vs_State_Of_Karnataka_By_Babaleshwara_P_S_on_31_July_2012_1,criminal,149,1,,0,3,3318,3 CURLR 1075,,7.0,High,Criminal case; 1 IPC sections involved
-Krushnakant_B_Parmar_vs_Union_Of_India_Anr_on_15_February_2012_1,criminal,,0,,0,0,2795,32 FACLR 1023,,6.0,High,Criminal case
-Kuria_Anr_vs_State_Of_Rajasthan_on_13_September_2012_1,criminal,34,1,,0,1,8970,12 AIR 2013,,7.0,High,Criminal case; 1 IPC sections involved
-K_B_Nagur_M_D_Ayu_vs_Union_Of_India_on_24_February_2012_1,civil,,0,,0,1,5927,33 OF 2009,,4.0,Medium,Civil case
-K_Suresh_vs_New_India_Assurance_Co_Ltd_Anr_on_19_October_2012_1,civil,,0,,0,2,6010,87 of 2011,,4.0,Medium,Civil case
-K_Venkateshwarlu_vs_State_Of_A_P_on_17_August_2012_1,criminal,,0,,0,3,3083,20/10/2009,6006.0,8.5,Critical,Criminal case; Pending for 16 years
-Lahu_Kamlakar_Patil_Anr_vs_State_Of_Maharashtra_on_14_December_2012_1,criminal,,0,,0,0,4960,14 of 2008,,6.0,High,Criminal case
-Lakhi_Narayan_Das_And_Ors_vs_The_Province_Of_Bihar_on_30_March_1950_1,criminal,,0,,0,0,7792,,,6.0,High,Criminal case
-Lalita_Kumari_vs_Govt_Of_U_P_Ors_on_27_February_2012_1,criminal,,0,,0,8,17358,12 AIR 2012,,6.5,High,Criminal case; High legal complexity
-Lavesh_vs_State_Nct_Of_Delhi_on_31_August_2012_1,criminal,,0,,0,0,2116,3 UC 1808,,6.0,High,Criminal case
-Lee_Kun_Hee_Ors_vs_State_Of_U_P_Ors_on_1_February_2012_1,criminal,,0,,0,0,16620,04 OF 2012,,6.0,High,Criminal case
-Lokesh_Shivakumar_vs_State_Of_Karnataka_on_10_February_2012_1,criminal,,0,,0,1,3333,26 OF 2005,,6.0,High,Criminal case
-Maa_Vaishno_Devi_Mahila_Mahavidyalaya_vs_State_Of_U_P_Ors_on_13_December_2012_1,civil,,0,,0,3,21631,29-9-1993,11871.0,7.0,High,Civil case; Pending for 32 years
-Madhu_vs_State_Of_Kerala_on_13_January_2012_1,criminal,304b,1,,0,1,14935,2 ALLCRIR 1940,,7.0,High,Criminal case; 1 IPC sections involved
-Mahasay_Ganesh_Prasad_Ray_And_Anr_vs_Narendra_Nath_Sen_And_Ors_on_1_December_1950_1,civil,,0,,0,0,2160,30-7-1896,47360.0,7.0,High,Civil case; Pending for 129 years
-Mahesh_Chandra_Verma_Ors_vs_State_Of_Jharkhand_Ors_on_19_September_2012_1,criminal,,0,,0,2,14933,07/03/2011,5503.0,8.5,Critical,Criminal case; Pending for 15 years
-Mahesh_Kumar_D_By_Lrs_vs_Vinod_Kumar_Ors_on_13_March_2012_1,civil,,0,,0,2,9295,88 OF 2004,,4.0,Medium,Civil case
-Mangal_Amusement_Park_P_Ltd_Anr_vs_State_Of_M_P_Ors_on_28_August_2012_1,civil,,0,,0,5,6599,3-47-0000,,4.0,Medium,Civil case
-Mangani_Lal_Mandal_vs_Bishnu_Deo_Bhandari_on_1_February_2012_1,civil,,0,,0,1,1742,28 OF 2011,,4.0,Medium,Civil case
-Mangan_Lal_Deoshi_vs_Mohammad_Moinul_Haoque_Others_on_1_December_1950_1,civil,,0,,0,0,2871,94 of 1949,,4.0,Medium,Civil case
-Manharibhai_Muljibhai_Kakadia_Anr_vs_Shaileshbhai_Mohanbhai_Patel_Ors_on_1_October_2012_1,criminal,420,1,,0,2,13168,"53
-OCR 1073",,7.0,High,Criminal case; 1 IPC sections involved
-Manohar_vs_State_Of_Maharashtra_Anr_on_13_December_2012_1,civil,,0,,0,2,8268,95 OF 2012,,4.0,Medium,Civil case
-Mano_Dutt_Anr_vs_State_Of_U_P_on_29_February_2012_1,criminal,"38,149,34",3,,0,2,8555,51 OCR 1035,,8.0,Critical,Criminal case; 3 IPC sections involved
-Manubhai_Ratilal_Patel_Tr_Ushaben_vs_State_Of_Gujarat_Ors_on_28_September_2012_1,criminal,,0,,0,22,5525,16/07/2012,5006.0,9.5,Critical,Criminal case; Pending for 13 years; High legal complexity
-Maria_Margadia_Sequeria_Fernandes_Ors_vs_Erasmo_Jack_De_Sequeria_D_Tr_Lrs_Ors_on_21_March_2012_1,criminal,,0,,0,1,11164,68 OF 2012,,6.0,High,Criminal case
-Markio_Tado_vs_Takam_Sorang_Ors_on_2_February_2012_1,criminal,,0,,0,4,6379,39 OF 2012,,6.0,High,Criminal case
-Maruti_Nivrutti_Navale_vs_State_Of_Maharashtra_Anr_on_7_September_2012_1,criminal,,0,,0,0,2418,76 OF 2012,,6.0,High,Criminal case
-Maulana_Mohd_Amir_Rashadi_vs_State_Of_U_P_Anr_on_16_January_2012_1,criminal,,0,,0,1,1456,1 ALLCRIR 1182,,6.0,High,Criminal case
-Mayawati_vs_Union_Of_India_Ors_on_6_July_2012_1,criminal,,0,,0,1,8173,12 AIR 2012,,6.0,High,Criminal case
-Md_Ajmal_Md_Amir_Kasab_Abu_Majahid_vs_State_Of_Maharashtra_on_29_August_2012_1,criminal,"302,120b,121",3,,0,2,107124,84-00-0541,,8.0,Critical,Criminal case; 3 IPC sections involved
-Medha_Kotwal_Lele_Ors_vs_U_O_I_Ors_on_19_October_2012_1,criminal,,0,,0,0,5193,77 OF 1999,,6.0,High,Criminal case
-Mehrawal_Khewaji_Trust_Regd_vs_State_Of_Punjab_Ors_on_27_April_2012_1,civil,,0,,0,3,2754,1 CLR 1005,,4.0,Medium,Civil case
-Messrs_Khimji_Poonja_And_Company_vs_Shri_Baldev_Das_C_Parikh_on_14_March_1950_1,civil,,0,,0,0,4347,42 of 1946,,4.0,Medium,Civil case
-Mohammad_Khalil_Chisti_vs_State_Of_Rajasthan_Ors_on_12_December_2012_1,criminal,"149,34",2,,0,1,10751,34 OF 2012,,7.0,High,Criminal case; 2 IPC sections involved
-Mohan_Soni_vs_Ram_Avtar_Tomar_Ors_on_10_January_2012_1,civil,,0,,0,1,2854,37 OF 2012,,4.0,Medium,Civil case
-Mohd_Ayub_Anr_vs_Mukesh_Chand_on_5_January_2012_1,civil,,0,,0,1,3174,95 OF 2006,,4.0,Medium,Civil case
-Mohd_Hussain_Julfikar_Ali_vs_The_State_Govt_Of_Nct_Delhi_on_11_January_2012_1,criminal,"302,307",2,,0,4,17326,27/7/2000,9378.0,10.0,Critical,Criminal case; 2 IPC sections involved; Pending for 25 years
-Mohd_Sahabuddin_Anr_vs_State_Of_Assam_on_5_October_2012_1,criminal,,0,,0,0,2355,02 OF 2012,,6.0,High,Criminal case
-Mohinder_Singh_vs_The_State_on_17_October_1950_1,criminal,,0,,0,0,4864,10 of 1950,,6.0,High,Criminal case
-Monnet_Ispat_And_Energy_Ltd_vs_Union_Of_India_And_Ors_on_26_July_2012_1,civil,,0,,0,16,74756,5/40/2004,,5.0,Medium,Civil case; High legal complexity
-Mp_Rural_Road_Dev_Authority_And_Anr_vs_M_S_L_G_Chaudhary_Engineers_And_Cont_on_24_January_2012_1,civil,,0,,0,2,7979,24-01-2012,5180.0,6.5,High,Civil case; Pending for 14 years
-Msr_Leathers_vs_S_Palaniappan_And_Anr_on_26_September_2012_1,criminal,,0,,0,7,8318,64 OF 2002,,6.5,High,Criminal case; High legal complexity
-Mst_Param_Pal_Singh_Tr_Father_vs_M_S_National_Insurance_Co_Anr_on_14_December_2012_1,civil,,0,,0,3,6899,15/2/1999,9906.0,7.0,High,Civil case; Pending for 27 years
-Mukut_Bihari_Anr_vs_State_Of_Rajasthan_on_25_May_2012_1,criminal,120b,1,,0,12,2838,12 AIR 2012,,8.0,Critical,Criminal case; 1 IPC sections involved; High legal complexity
-Munagala_Yadamma_vs_State_Of_A_P_Ors_on_5_January_2012_1,criminal,,0,,0,1,1379,67 OF 2012,,6.0,High,Criminal case
-Munish_Mubar_vs_State_Of_Haryana_on_4_October_2012_1,criminal,"201,404",2,,0,4,5454,53 OCR 1100,,7.0,High,Criminal case; 2 IPC sections involved
-Munna_Kumar_Upadhyaya_M_Upadhyaya_vs_State_Of_A_P_Tr_Pub_Prosecutor_on_8_May_2012_1,criminal,,0,,0,1,13521,18-03-2003,8414.0,9.0,Critical,Criminal case; Pending for 23 years
-Murugesan_16_Ors_vs_State_Tr_Insp_Of_Police_on_12_October_2012_1,criminal,"302,120b,149",3,,0,5,8653,04-09-2008,6417.0,10.0,Critical,Criminal case; 3 IPC sections involved; Pending for 17 years
-Mustafa_Shahadal_Shaikh_vs_State_Of_Maharashtra_on_14_September_2012_1,criminal,304b,1,,0,2,3724,"3 ALLCRIR
-3149",,7.0,High,Criminal case; 1 IPC sections involved
-Myla_Venkateswarlu_vs_State_Of_A_P_on_4_April_2012_1,criminal,,0,,0,1,3430,5/1/2001,9216.0,9.0,Critical,Criminal case; Pending for 25 years
-M_R_Prabhakar_Ors_vs_Canara_Bank_Ors_on_3_October_2012_1,civil,,0,,0,1,4677,27-05-1970,20397.0,7.0,High,Civil case; Pending for 55 years
-M_S_Best_Sellers_Retail_I_P_Ltd_vs_M_S_Aditya_Birla_Nuvo_Ltd_Ors_on_8_May_2012_1,civil,,0,,0,1,4097,1 CLR 1213,,4.0,Medium,Civil case
-M_S_Dsr_Steel_P_Ltd_vs_State_Of_Rajasthan_Ors_on_1_May_2012_1,civil,,0,,0,8,4406,14 OF 2007,,4.5,Medium,Civil case; High legal complexity
-M_S_Heinz_India_Pvt_Ltd_Anr_vs_State_Of_U_P_Ors_on_23_March_2012_1,criminal,499,1,,0,12,15128,76 OF 2006,,8.0,Critical,Criminal case; 1 IPC sections involved; High legal complexity
-M_S_Ifb_Industries_Ltd_vs_State_Of_Kerala_on_27_February_2012_1,civil,,0,,0,0,5582,17 OF 2012,,4.0,Medium,Civil case
-M_S_Laxmi_Dyechem_vs_State_Of_Gujarat_Ors_on_27_November_2012_1,criminal,,0,,0,2,9716,09 OF 2012,,6.0,High,Criminal case
-M_S_Michigan_Rubber_I_Ltd_vs_State_Of_Karnataka_Ors_on_17_August_2012_1,civil,,0,,0,1,7141,12 CLC 1167,,4.0,Medium,Civil case
-M_S_Narne_Construction_P_Ltd_Etc_Etc_vs_Union_Of_India_Ors_Etc_on_10_May_2012_1,civil,,0,,0,2,211,"1
-CLR 1199",,4.0,Medium,Civil case
-M_S_National_Seeds_Corpn_Ltd_vs_M_Madhusudhan_Reddy_Anr_on_16_January_2012_1,civil,,0,,0,1,17768,4-1-1996,11044.0,7.0,High,Civil case; Pending for 30 years
-M_S_Patel_Enginnering_Ltd_vs_Union_Of_India_Anr_on_11_May_2012_1,civil,,0,,0,1,5508,17-01-2011,5552.0,6.5,High,Civil case; Pending for 15 years
-M_S_Purbanchal_Cables_Conductors_vs_Assam_State_Electricity_Board_Anr_on_10_July_2012_1,civil,,0,,0,1,18108,23-9-1992,12242.0,7.0,High,Civil case; Pending for 33 years
-M_S_Real_Estate_Agencies_vs_Govt_Of_Goa_Ors_on_10_September_2012_1,civil,,0,,0,1,4672,83 of 2012,,4.0,Medium,Civil case
-M_S_Sundaram_Fin_Ltd_vs_Asst_Commissioner_Of_Income_on_11_September_2012_1,civil,,0,,0,0,1462,11/09/2012,4949.0,6.5,High,Civil case; Pending for 13 years
-M_S_Topman_Exports_vs_Commr_Of_Income_Tax_Mumbai_on_8_February_2012_1,civil,,0,,0,0,11219,99 OF 2012,,4.0,Medium,Civil case
-M_S_Virgo_Industries_Eng_P_Ltd_vs_M_S_Venturetech_Solutions_P_Ltd_on_7_September_2012_1,civil,,0,,0,3,4204,72 of 2012,,4.0,Medium,Civil case
-M_S_Zunaid_Enterprises_Ors_vs_State_Of_M_P_Ors_on_22_February_2012_1,civil,,0,,0,0,1239,22 OF 2012,,4.0,Medium,Civil case
-M_T_Enrica_Lexie_Anr_vs_Doramma_Ors_on_2_May_2012_1,criminal,,0,,0,2,4673,67 OF 2012,,6.0,High,Criminal case
-Nagesh_vs_State_Of_Karnataka_on_8_May_2012_1,criminal,"302,34",2,,0,11,6204,2 ALLCRIR 1776,,8.0,Critical,Criminal case; 2 IPC sections involved; High legal complexity
-Naguba_Appa_vs_Namdev_on_20_November_1950_1,civil,,0,,0,0,533,,,4.0,Medium,Civil case
-Namit_Sharma_vs_Union_Of_India_on_13_September_2012_1,civil,,0,,0,16,25445,10 of 2012,,5.0,Medium,Civil case; High legal complexity
-Nanalal_Zaver_And_Another_vs_Bombay_Life_Assurance_Co_Ltd_And_on_4_May_1950_1,civil,,0,,0,0,18637,85 of 1947,,4.0,Medium,Civil case
-Nand_Kumar_Verma_vs_State_Of_Jharkhand_Ors_on_1_February_2012_1,criminal,,0,,0,1,6453,29-11-1996,10714.0,9.0,Critical,Criminal case; Pending for 29 years
-Narender_Kumar_vs_State_N_C_T_Of_Delhi_on_25_May_2012_1,criminal,376,1,,0,9,4317,3 ALLCRIR 3007,,7.5,High,Criminal case; 1 IPC sections involved; High legal complexity
-Narendra_Champaklal_Trivedi_vs_State_Of_Gujarat_on_29_May_2012_1,criminal,,0,,0,5,4886,3 ALLCRIR 3029,,6.0,High,Criminal case
-Narinderjit_Singh_vs_North_Star_Estate_Promoters_Ltd_on_8_May_2012_1,criminal,,0,,0,1,5788,1 CLR 1180,,6.0,High,Criminal case
-National_Bank_Of_Oman_vs_Barakara_Abdul_Aziz_Anr_on_3_December_2012_1,criminal,,0,,0,0,2062,03/10/2012,4927.0,8.5,Critical,Criminal case; Pending for 13 years
-National_Council_For_Teacher_Edn_Anr_vs_Venus_Public_Education_Society_Ors_on_1_November_2012_1,civil,,0,,0,2,8685,49 OF 2012,,4.0,Medium,Civil case
-National_Ins_Co_Ltd_vs_Balakrishnan_Anr_on_20_November_2012_1,civil,,0,,0,2,6898,73/11/2009,,4.0,Medium,Civil case
-Neel_Kumar_Anil_Kumar_vs_State_Of_Haryana_on_7_May_2012_1,criminal,"201,302",2,,0,13,4431,23 OF 2010,,8.0,Critical,Criminal case; 2 IPC sections involved; High legal complexity
-New_India_Assurance_Co_Ltd_vs_Gopali_Ors_on_5_July_2012_1,civil,,0,,0,1,5078,12 AAC 2549,,4.0,Medium,Civil case
-New_India_Assurance_Co_Ltd_vs_Yogesh_Devi_Ors_on_10_February_2012_1,civil,,0,,0,1,2973,10-12-2002,8512.0,7.0,High,Civil case; Pending for 23 years
-Nupur_Talwar_vs_Cbi_Anr_on_7_June_2012_1,criminal,174,1,,0,9,22197,16/05/2008,6528.0,10.0,Critical,Criminal case; 1 IPC sections involved; Pending for 17 years; High legal complexity
-N_K_Bajpai_vs_Union_Of_India_Anr_on_15_March_2012_1,civil,,0,,0,4,12951,50 OF 2012,,4.0,Medium,Civil case
-N_V_Subba_Rao_vs_State_Insp_Of_Police_C_B_I__S_P_E_on_3_December_2012_1,criminal,"468,420",2,,0,0,7632,88 OF 2008,,7.0,High,Criminal case; 2 IPC sections involved
-Office_Of_The_Chief_Post_Master_Ors_vs_Living_Media_India_Ltd_Anr_on_24_February_2012_1,criminal,,0,,0,1,5565,12 AIR 2012,,6.0,High,Criminal case
-Oma_Omprakash_Anr_vs_State_Of_Tamilnadu_on_11_December_2012_1,criminal,"396,397",2,,0,1,10453,43 OF 2007,,7.0,High,Criminal case; 2 IPC sections involved
-Om_Kr_Dhankar_vs_State_Of_Haryana_Anr_on_28_February_2012_1,criminal,,0,,0,0,1890,64 OF 2012,,6.0,High,Criminal case
-Om_Prakash_Ors_vs_State_Of_Jharkhand_Anr_on_26_September_2012_1,criminal,,0,,0,2,11313,1/5/2006,7274.0,9.0,Critical,Criminal case; Pending for 19 years
-Om_Prakash_vs_State_Of_Rajasthan_Anr_on_13_April_2012_1,criminal,376,1,,0,1,6656,2 UC 1093,,7.0,High,Criminal case; 1 IPC sections involved
-Oriental_Insurance_Co_Ltd_vs_Siby_George_Ors_on_31_July_2012_1,civil,,0,,0,4,3041,15-9-1995,11155.0,7.0,High,Civil case; Pending for 30 years
-Oriental_Insurance_Co_Ltd_vs_Surendra_Nath_Loomba_And_Ors_on_20_November_2012_1,civil,,0,,0,1,3233,3 UC 2355,,4.0,Medium,Civil case
-O_M_Baby_Dead_By_Legal_vs_State_Of_Kerala_on_3_July_2012_1,criminal,"342,376",2,,0,1,3679,2 UC 1467,,7.0,High,Criminal case; 2 IPC sections involved
-Padmakar_Tukaram_Bhavnagare_Anr_vs_State_Of_Maharashtra_Anr_on_26_November_2012_1,criminal,,0,,0,0,2209,27/03/2012,5117.0,8.5,Critical,Criminal case; Pending for 14 years
-Pannalal_Jankidas_vs_Mohanlal_And_Another_on_21_December_1950_1,civil,,0,,0,0,11618,71 of 1949,,4.0,Medium,Civil case
-Paramjeet_Batra_vs_State_Of_Uttarakhand_Ors_on_14_December_2012_1,criminal,,0,,0,0,1761,22/3/2005,7679.0,9.0,Critical,Criminal case; Pending for 21 years
-Paras_Nath_Rai_Ors_vs_State_Of_Bihar_Ors_on_5_October_2012_1,civil,,0,,0,8,7334,63 of 2011,,4.5,Medium,Civil case; High legal complexity
-Parshavanath_Charitable_Trust_Ors_vs_All_India_Council_For_Tech_Edu_Ors_on_13_December_2012_1,civil,,0,,0,0,10959,48 OF 2012,,4.0,Medium,Civil case
-Patasi_Devi_vs_State_Of_Haryana_Ors_on_29_August_2012_1,civil,,0,,0,1,4433,83 OF 2012,,4.0,Medium,Civil case
-Pathan_Hussain_Basha_vs_State_Of_A_P_on_16_August_2012_1,criminal,498a,1,,0,1,5388,19-11-1986,14377.0,10.0,Critical,Criminal case; 1 IPC sections involved; Pending for 39 years
-Payal_Vision_Ltd_vs_Radhika_Choudhary_on_20_September_2012_1,civil,,0,,0,1,4083,34 OF 2012,,4.0,Medium,Civil case
-Ponnala_Lakshmaiah_vs_Kommuri_Pratap_Reddy_Ors_on_6_July_2012_1,criminal,,0,,0,3,7039,93 OF 2012,,6.0,High,Criminal case
-Pradeep_Kumar_Sharma_vs_U_P_F_C_Rajpur_Road_Dehradun_Ors_on_19_October_2012_1,civil,,0,,0,0,2499,97 of 2012,,4.0,Medium,Civil case
-Prakash_Chandra_vs_Narayan_on_23_April_2012_1,civil,,0,,0,1,2304,02 OF 2011,,4.0,Medium,Civil case
-Prandas_vs_The_State_on_14_March_1950_1,criminal,,0,,0,0,3214,15-8-1948,28352.0,9.0,Critical,Criminal case; Pending for 77 years
-Pratapbhai_Hamirbhai_Solanki_vs_State_Of_Gujarat_Anr_on_12_October_2012_1,criminal,,0,,0,0,5791,3 UC 2261,,6.0,High,Criminal case
-Praveen_Pradhan_vs_State_Of_Uttranchal_Anr_on_4_October_2012_1,criminal,"107,306",2,,0,8,3562,"2
-ALLCRIR 1712",,7.5,High,Criminal case; 2 IPC sections involved; High legal complexity
-Premji_Nathu_vs_State_Of_Gujarat_Anr_on_9_April_2012_1,civil,,0,,0,4,4356,30 OF 2012,,4.0,Medium,Civil case
-Pritam_Singh_vs_The_State_on_5_May_1950_1,criminal,,0,,0,0,2500,67 of 1949,,6.0,High,Criminal case
-Priya_Gupta_vs_State_Of_Chhattisgarh_Ors_on_8_May_2012_1,civil,,0,,0,1,14258,11/1/2006,7384.0,7.0,High,Civil case; Pending for 20 years
-Province_Of_Bombay_vs_Kusaldas_S_Advani_And_Others_on_15_September_1950_1,criminal,,0,,0,0,49617,3 of 1876,,6.0,High,Criminal case
-Pudhu_Raja_Anr_vs_State_Tr_Insp_Of_Police_on_19_September_2012_1,criminal,302,1,,0,2,4188,17 OF 2008,,7.0,High,Criminal case; 1 IPC sections involved
-Pushpanjali_Sahu_vs_State_Of_Orissa_Anr_on_18_September_2012_1,criminal,,0,,0,1,4235,3 UC 2170,,6.0,High,Criminal case
-P_A_Mohammed_Riyas_vs_M_K_Raghavan_Ors_on_27_April_2012_1,criminal,,0,,0,3,5579,14-4-2009,6195.0,8.5,Critical,Criminal case; Pending for 16 years
-P_Sanjeeva_Rao_vs_State_Of_A_P_on_2_July_2012_1,criminal,,0,,0,0,3942,2 UC 1473,,6.0,High,Criminal case
-Rachpal_Mahraj_vs_Bhagwandas_Darukaand_Others_on_5_May_1950_1,civil,,0,,0,0,1746,18 of 1944,,4.0,Medium,Civil case
-Radhakrishna_Nagesh_vs_State_Of_A_P_on_13_December_2012_1,criminal,"375,376",2,,0,2,10849,07 OF 2009,,7.0,High,Criminal case; 2 IPC sections involved
-Raheja_Universal_Limited_vs_Nrc_Limited_And_Ors_on_7_February_2012_1,civil,,0,,0,8,21094,12/12/2007,6684.0,7.0,High,Civil case; Pending for 18 years; High legal complexity
-Rai_Sandeep_Deepu_vs_State_Of_Nct_Of_Delhi_on_7_August_2012_1,criminal,,0,,0,2,7287,"3
-ALLCRIR 2406",,6.0,High,Criminal case
-Rajan_Purohit_Ors_vs_Raj_Univ_Of_Health_Science_Ors_on_30_August_2012_1,civil,,0,,0,0,17866,42 OF 2011,,4.0,Medium,Civil case
-Raja_Kamala_Ranjan_Roy_vs_Baijnath_Bajoria_on_1_December_1950_1,civil,,0,,0,0,4238,4 of 1950,,4.0,Medium,Civil case
-Rajendra_Pralhadrao_Wasnik_vs_The_State_Of_Mahrashtra_on_29_February_2012_1,criminal,302,1,,0,4,6961,2 ALLCRIR 1632,,7.0,High,Criminal case; 1 IPC sections involved
-Rajesh_Awasthi_vs_Nand_Lal_Jaiswal_Ors_on_19_October_2012_1,civil,,0,,0,9,9349,00 OF 2012,,4.5,Medium,Civil case; High legal complexity
-Rajesh_Talwar_vs_C_B_I_Ors_on_2_March_2012_1,criminal,"201,193,307",3,,0,1,14522,24-11-2004,7797.0,10.0,Critical,Criminal case; 3 IPC sections involved; Pending for 21 years
-Rajoo_Ramakant_vs_State_Of_M_P_on_9_August_2012_1,criminal,,0,,0,1,2597,12 AIR 2012,,6.0,High,Criminal case
-Raju_Balachandran_Ors_vs_State_Of_Tamil_Nadu_on_27_November_2012_1,criminal,,0,,0,2,4638,14 OF 2009,,6.0,High,Criminal case
-Rakesh_Kapoor_vs_State_Of_H_P_on_22_November_2012_1,criminal,"302,272,161,109,149",5,,0,0,3770,39 OF 2012,,8.0,Critical,Criminal case; 5 IPC sections involved
-Rameshbhai_Dabhai_Naika_vs_State_Of_Gujarat_Ors_on_18_January_2012_1,criminal,,0,,0,8,12133,23/6/1961,23657.0,9.5,Critical,Criminal case; Pending for 64 years; High legal complexity
-Rameshkumar_Agarwal_vs_Rajmala_Exports_P_Ltd_Ors_on_30_March_2012_1,civil,,0,,0,0,2674,95 OF 2012,,4.0,Medium,Civil case
-Ramesh_Ahluwalia_vs_State_Of_Punjab_Ors_on_13_September_2012_1,civil,,0,,0,0,3590,34 OF 2012,,4.0,Medium,Civil case
-Ramesh_Harijan_vs_State_Of_U_P_on_21_May_2012_1,criminal,,0,,0,22,5233,12 AIR 2012,,7.0,High,Criminal case; High legal complexity
-Ramnaresh_Ors_vs_State_Of_Chhattisgarh_on_28_February_2012_1,criminal,34,1,,0,1,14221,31-7-2007,6818.0,9.5,Critical,Criminal case; 1 IPC sections involved; Pending for 18 years
-Rampal_Singh_vs_State_Of_U_P_on_24_July_2012_1,criminal,304,1,,0,4,7130,14 of 2009,,7.0,High,Criminal case; 1 IPC sections involved
-Ram_Dhari_Jindal_Memorial_Trust_vs_Union_Of_India_Ors_on_21_March_2012_1,civil,,0,,0,5,5929,13 of 2007,,4.0,Medium,Civil case
-Ram_Gopal_vs_Nand_Lal_And_Others_on_14_November_1950_1,civil,,0,,0,0,5817,28 of 1936,,4.0,Medium,Civil case
-Ram_Karan_Gupta_vs_J_S_Exim_Ltd_Ors_on_3_December_2012_1,civil,,0,,0,4,5097,3 UC 2302,,4.0,Medium,Civil case
-Ram_Krishna_Ramnath_Agarwalof_Kamptee_vs_Secretary_Municipal_on_14_March_1950_1,civil,,0,,0,0,4002,"58 of
-1946",,4.0,Medium,Civil case
-Ranjan_Dwivedi_vs_C_B_I_Tr_Director_General_on_17_August_2012_1,criminal,,0,,0,1,8730,00 OF 2011,,6.0,High,Criminal case
-Rashid_Ahmed_vs_The_Municipal_Board_Kairana_The_Union_on_19_May_1950_1,civil,,0,,0,0,2237,,,4.0,Medium,Civil case
-Rashid_Kapadia_vs_Medha_Gadgil_Ors_on_25_July_2012_1,criminal,,0,,0,0,1441,20-07-2011,5368.0,8.5,Critical,Criminal case; Pending for 14 years
-Rashmi_Rekha_Thatoi_Anr_vs_State_Of_Orissa_Ors_on_4_May_2012_1,criminal,,0,,0,4,6317,2 ALLCRIR 1766,,6.0,High,Criminal case
-Rashtriya_Ispat_Nigam_Ltd_vs_M_S_Dewan_Chand_Ram_Saran_on_25_April_2012_1,civil,,0,,0,1,6572,05 OF 2012,,4.0,Medium,Civil case
-Ratnagiri_Gas_Power_Pvt_Ltd_vs_Rds_Projects_Ltd_Ors_on_18_October_2012_1,civil,,0,,0,5,12985,17/10/2011,5279.0,6.5,High,Civil case; Pending for 14 years
-Rattiram_Ors_vs_State_Of_M_P_Tr_Insp_Of_Police_on_17_February_2012_1,criminal,149,1,,0,20,12041,23 OF 2008,,8.0,Critical,Criminal case; 1 IPC sections involved; High legal complexity
-Ravi_Kapur_vs_State_Of_Rajasthan_on_16_August_2012_1,criminal,"279,302,304",3,,0,2,12424,12 AIR 2012,,8.0,Critical,Criminal case; 3 IPC sections involved
-Ravi_Yashwant_Bhoir_vs_The_Collector_District_Raigad_Ors_on_2_March_2012_1,civil,,0,,0,46,11991,85 of 2012,,5.0,Medium,Civil case; High legal complexity
-Registrar_General_Patna_High_Court_vs_Pandey_Gajendra_Prasad_Ors_on_11_May_2012_1,criminal,,0,,0,0,5487,1 CLR 1203,,6.0,High,Criminal case
-Rev_Mother_Marykutty_vs_Reni_C_Kottaram_Anr_on_12_October_2012_1,criminal,,0,,0,0,3777,94 OF 2012,,6.0,High,Criminal case
-Re_Ramlila_Maidan_Incident_Dt_vs_Home_Secretary_And_Ors_on_23_February_2012_1,criminal,"188,149",2,,0,31,57162,36/1/2010,,8.0,Critical,Criminal case; 2 IPC sections involved; High legal complexity
-Ritesh_Sinha_vs_State_Of_U_P_Anr_on_7_December_2012_1,criminal,,0,,0,6,20434,7/12/2009,5958.0,9.0,Critical,Criminal case; Pending for 16 years; High legal complexity
-Rohitash_Kumar_Ors_vs_Om_Prakash_Sharma_Ors_on_6_November_2012_1,civil,,0,,0,34,4717,34 OF 2004,,5.0,Medium,Civil case; High legal complexity
-Rohtash_vs_State_Of_Haryana_on_22_May_2012_1,criminal,,0,,0,2,3156,3 ALLCRIR 3002,,6.0,High,Criminal case
-Romesh_Thappar_vs_The_State_Of_Madras_on_26_May_1950_1,criminal,,0,,0,0,4440,,,6.0,High,Criminal case
-Roy_Fernandes_vs_State_Of_Goa_Ors_on_1_February_2012_1,criminal,"34,149",2,,0,8,7148,08 OF 2002,,7.5,High,Criminal case; 2 IPC sections involved; High legal complexity
-Rushikesh_Tanaji_Bhoite_vs_State_Of_Maharashtra_Ors_on_4_January_2012_1,criminal,,0,,0,2,2067,13/05/2011,5436.0,8.5,Critical,Criminal case; Pending for 14 years
-R_C_Chandel_vs_High_Court_Of_M_P_Anr_on_8_August_2012_1,civil,,0,,0,1,7087,90 OF 2012,,4.0,Medium,Civil case
-R_Mohan_vs_A_K_Vijaya_Kumar_on_3_July_2012_1,criminal,,0,,0,1,4319,15/12/2011,5220.0,8.5,Critical,Criminal case; Pending for 14 years
-Sadhupati_Nageswara_Rao_vs_State_Of_A_P_on_3_August_2012_1,criminal,"405,420,409",3,,0,1,2877,3 ALLCRIR 2394,,8.0,Critical,Criminal case; 3 IPC sections involved
-Saeed_Zakir_Hussain_Malik_vs_State_Of_Maharashtra_Ors_on_9_August_2012_1,criminal,,0,,0,2,4661,3-8-1990,13024.0,9.0,Critical,Criminal case; Pending for 35 years
-Sahabuddin_Anr_vs_State_Of_Assam_on_13_December_2012_1,criminal,34,1,,0,3,7587,10/9/2001,8968.0,10.0,Critical,Criminal case; 1 IPC sections involved; Pending for 24 years
-Sahadevan_Anr_vs_State_Of_T_Nadu_on_8_May_2012_1,criminal,"304,302,120b",3,,0,0,8266,05 OF 2008,,8.0,Critical,Criminal case; 3 IPC sections involved
-Sahara_India_Real_Estate_Corp_Ltd_Ors_vs_Securities_Exch_Board_Of_India_Anr_on_11_September_2012_1,criminal,,0,,0,11,12537,12 CLC 1244,,7.0,High,Criminal case; High legal complexity
-Sahara_India_Real_Estate_Corp_Ltd_Ors_vs_Securities_Exch_Board_Of_India_Anr_on_31_August_2012_1,criminal,196,1,,0,2,86069,13 OF 2011,,7.0,High,Criminal case; 1 IPC sections involved
-Sajeesh_Babu_K_vs_N_K_Santhosh_Ors_on_19_October_2012_1,civil,,0,,0,2,3969,12 AIR 2013,,4.0,Medium,Civil case
-Salauddin_Ahmed_Anr_vs_Samta_Andolan_on_29_August_2012_1,criminal,,0,,0,3,7655,05 OF 2012,,6.0,High,Criminal case
-Samaj_Parivartana_Samudaya_Ors_vs_State_Of_Karnataka_Ors_on_11_May_2012_1,criminal,,0,,0,3,11361,28/61/2009,,6.0,High,Criminal case
-Sampath_Kumar_vs_Inspector_Of_Police_Krishnagiri_on_2_March_2012_1,criminal,34,1,,0,9,4081,2 ALLCRIR 1197,,7.5,High,Criminal case; 1 IPC sections involved; High legal complexity
-Sandeep_vs_State_Of_U_P_on_11_May_2012_1,criminal,34,1,,0,8,12409,51 OF 2009,,7.5,High,Criminal case; 1 IPC sections involved; High legal complexity
-Sandesh_Sainath_Kailash_Abhang_vs_State_Of_Maharashtra_on_13_December_2012_1,criminal,,0,,0,1,4841,73 OF 2011,,6.0,High,Criminal case
-Sangeetaben_Mahendrabhai_Patel_vs_State_Of_Gujarat_Anr_on_23_April_2012_1,criminal,"409,201,420,71,114",5,,0,29,6252,21-9-1969,20645.0,10.0,Critical,Criminal case; 5 IPC sections involved; Pending for 56 years; High legal complexity
-Sangeet_Anr_vs_State_Of_Haryana_on_20_November_2012_1,criminal,,0,,0,3,12534,91 OF 2011,,6.0,High,Criminal case
-Sanjeev_Kr_Samrat_vs_National_Insurance_Co_Ltd_And_Ors_on_11_December_2012_1,civil,,0,,0,1,5073,25 OF 2012,,4.0,Medium,Civil case
-Santosh_Devi_vs_National_Insurance_Co_Ltd_Ors_on_23_April_2012_1,civil,,0,,0,1,3623,12 AAC 1713,,4.0,Medium,Civil case
-Sarju_Pershad_vs_Raja_Jwaleshwari_Pratap_Narain_Singh_on_14_November_1950_1,civil,,0,,0,0,4597,,,4.0,Medium,Civil case
-Sathya_Narayanan_vs_State_Tr_Insp_Of_Police_on_2_November_2012_1,criminal,,0,,0,2,7240,39 OF 2008,,6.0,High,Criminal case
-Satish_Batra_vs_Sudhir_Rawal_on_18_October_2012_1,civil,,0,,0,3,3995,2 CLR 1147,,4.0,Medium,Civil case
-Satish_Mehra_vs_State_Of_N_C_T_Of_Delhi_And_Anr_on_22_November_2012_1,criminal,120b,1,,0,0,5632,34 of 2012,,7.0,High,Criminal case; 1 IPC sections involved
-Satyabrata_Sahoo_Ors_vs_State_Of_Orissa_Ors_on_3_August_2012_1,civil,,0,,0,0,6071,06 OF 2012,,4.0,Medium,Civil case
-Satyajit_Ballubhai_Desai_Ors_vs_State_Of_Gujarat_on_20_July_2012_1,criminal,,0,,0,1,4736,86 AIR 2130,,6.0,High,Criminal case
-Satya_Jain_D_Ors_vs_Anis_Ahmed_Rushdie_D_Tr_Lrs_Ors_on_3_December_2012_1,civil,,0,,0,6,8248,91 of 2012,,4.5,Medium,Civil case; High legal complexity
-Sayed_Mohd_Ahmed_Kazmi_vs_State_Gnctd_Ors_on_19_October_2012_1,criminal,,0,,0,1,4380,97 OF 2012,,6.0,High,Criminal case
-Seth_Premchand_Satramdas_vs_The_State_Of_Bihar_on_30_November_1950_1,criminal,,0,,0,0,2756,61 of 1950,,6.0,High,Criminal case
-Shahejadkhan_Mahebubkhan_Pathan_vs_State_Of_Gujarat_on_5_October_2012_1,criminal,,0,,0,3,4353,3 UC 2383,,6.0,High,Criminal case
-Shailendra_Bhardwaj_Ors_vs_Chandra_Pal_Anr_on_21_November_2012_1,civil,,0,,0,1,2718,96 OF 2012,,4.0,Medium,Civil case
-Shanti_Devi_W_O_Shanker_Lal_vs_State_Of_Rajasthan_on_5_October_2012_1,criminal,,0,,0,2,4694,2 ALLCRIR 1646,,6.0,High,Criminal case
-Sheodhari_Rai_And_Ors_vs_Suraj_Prasad_Singh_And_Ors_on_1_December_1950_1,civil,,0,,0,0,1713,23-2-1948,28526.0,7.0,High,Civil case; Pending for 78 years
-Sheoraj_Singh_Ahlawat_Ors_vs_State_Of_U_P_Anr_on_9_November_2012_1,criminal,,0,,0,0,4432,03 OF 2012,,6.0,High,Criminal case
-Sheth_Maneklal_Mansukhbhai_vs_Messrs_Hormusji_Jamshedji_on_21_March_1950_1,civil,,0,,0,0,5141,17 of 1940,,4.0,Medium,Civil case
-Shreejith_L_vs_Deputy_Director_Education_Kerala_on_3_July_2012_1,civil,,0,,0,0,6571,48 OF 2012,,4.0,Medium,Civil case
-Shudhakar_vs_State_Of_M_P_on_24_July_2012_1,criminal,302,1,,0,1,8725,18-7-1994,11579.0,10.0,Critical,Criminal case; 1 IPC sections involved; Pending for 31 years
-Shyamal_Ghosh_vs_State_Of_West_Bengal_on_11_July_2012_1,criminal,"34,201,302,379,149",5,,0,0,18258,07 OF 2007,,8.0,Critical,Criminal case; 5 IPC sections involved
-Shyam_Babu_vs_State_Of_U_P_on_7_September_2012_1,criminal,149,1,,0,1,3773,3 UC 1864,,7.0,High,Criminal case; 1 IPC sections involved
-Society_For_Un_Aided_P_School_Of_Raj_vs_U_O_I_Anr_on_12_April_2012_1,civil,,0,,0,1,41771,15-7-2004,7929.0,7.0,High,Civil case; Pending for 21 years
-Soman_vs_State_Of_Kerala_on_14_December_2012_1,criminal,,0,,0,0,5382,34 OF 2005,,6.0,High,Criminal case
-Speaker_Haryana_Vidhan_Sabha_vs_Kuldeep_Bishnoi_Ors_on_28_September_2012_1,civil,,0,,0,2,9086,2 CLR 1070,,4.0,Medium,Civil case
-Sri_Bhagwan_vs_State_Of_U_P_on_6_December_2012_1,criminal,326,1,,0,0,6751,06/12/2012,4863.0,9.5,Critical,Criminal case; 1 IPC sections involved; Pending for 13 years
-Sri_Marcel_Martins_vs_M_Printer_Ors_on_27_April_2012_1,criminal,,0,,0,1,6251,1 CLR 1010,,6.0,High,Criminal case
-Sri_Ranga_Nilayam_Rama_Krishna_Rao_vs_Kandokori_Chellayamma_Alias_Mangamma_on_17_October_1950_1,civil,,0,,0,0,5949,1-10-1937,32323.0,7.0,High,Civil case; Pending for 88 years
-State_Of_A_P_Ors_vs_D_Raghukul_Pershad_D_By_Lrs_Ors_on_8_August_2012_1,civil,,0,,0,1,1630,22 OF 2012,,4.0,Medium,Civil case
-State_Of_Bihar_Anr_vs_Arvind_Kumar_Anr_on_23_July_2012_1,criminal,,0,,0,2,2472,65 ALLCRIR 3548,,6.0,High,Criminal case
-State_Of_Bombay_vs_Narothamdas_Jethabai_And_Anr_on_20_December_1950_1,criminal,,0,,0,0,30758,40 of 1950,,6.0,High,Criminal case
-State_Of_Gujarat_Anr_vs_Manoharsinhji_Pradyumansinhji_Jadeja_on_4_December_2012_1,civil,,0,,0,5,25741,12 OF 2002,,4.0,Medium,Civil case
-State_Of_Gujarat_Ors_vs_Arvindkumar_T_Tiwari_Anr_on_14_September_2012_1,civil,,0,,0,9,2510,68 OF 2012,,4.5,Medium,Civil case; High legal complexity
-State_Of_Gujarat_Ors_vs_Essar_Oil_Ltd_Anr_on_17_January_2012_1,criminal,,0,,0,4,9720,76 and 5928,,6.0,High,Criminal case
-State_Of_Haryana_Ors_vs_Vijay_Singh_Ors_on_22_August_2012_1,civil,,0,,0,1,8873,1/95/3515,,4.0,Medium,Civil case
-State_Of_Kerala_Ors_vs_M_S_Mar_Appraem_Kuri_Co_Ltd_Anr_on_8_May_2012_1,civil,,0,,0,6,20362,9-9-1976,18100.0,7.5,High,Civil case; Pending for 49 years; High legal complexity
-State_Of_Maharashtra_Tr_C_B_I_vs_Balakrishna_Dattatrya_Kumbhar_on_15_October_2012_1,criminal,,0,,0,6,2564,48 of 2012,,6.5,High,Criminal case; High legal complexity
-State_Of_Maharashtra_vs_Vishwanath_Maranna_Shetty_on_19_October_2012_1,criminal,,0,,0,0,6736,89 OF 2012,,6.0,High,Criminal case
-State_Of_M_P_Anr_vs_Ram_Prakash_Singh_Anr_on_10_January_2012_1,criminal,,0,,0,0,2334,04 OF 2012,,6.0,High,Criminal case
-State_Of_M_P_Ors_vs_Sandhya_Tomar_Anr_on_13_December_2012_1,civil,,0,,0,10,1900,28 of 2012,,4.5,Medium,Civil case; High legal complexity
-State_Of_M_P_vs_Rakesh_Kohli_Anr_on_11_May_2012_1,civil,,0,,0,11,7032,1 CLR 1220,,5.0,Medium,Civil case; High legal complexity
-State_Of_M_P_vs_Surendra_Kori_on_26_September_2012_1,criminal,,0,,0,1,5478,25/3/2006,7311.0,9.0,Critical,Criminal case; Pending for 20 years
-State_Of_N_C_T_Of_Delhi_vs_Ajay_Kumar_Tyagi_on_31_August_2012_1,criminal,,0,,0,0,4624,27-3-1996,10961.0,9.0,Critical,Criminal case; Pending for 30 years
-State_Of_Orissa_Ors_vs_Ujjal_Kumar_Burdhan_on_19_March_2012_1,criminal,,0,,0,1,2922,3-10-1997,10406.0,9.0,Critical,Criminal case; Pending for 28 years
-State_Of_Punjab_vs_Balwinder_Singh_Etc_on_6_January_2012_1,criminal,304a,1,,0,1,2357,48 OF 2012,,7.0,High,Criminal case; 1 IPC sections involved
-State_Of_Punjab_vs_Dalbir_Singh_on_1_February_2012_1,criminal,,0,,0,1,15262,2 ALLCRIR 1377,,6.0,High,Criminal case
-State_Of_Rajasthan_vs_Darshan_Singh_Darshan_Lal_on_21_May_2012_1,criminal,,0,,0,3,4193,2 UC 1351,,6.0,High,Criminal case
-State_Of_Rajasthan_vs_Rajkumar_Agarwal_Anr_on_17_August_2012_1,criminal,,0,,0,1,2949,10/9/2009,6046.0,8.5,Critical,Criminal case; Pending for 16 years
-State_Of_Rajasthan_vs_Vinod_Kumar_on_18_May_2012_1,criminal,"120b,376",2,,0,26,4610,3 ALLCRIR 2562,,8.0,Critical,Criminal case; 2 IPC sections involved; High legal complexity
-State_Of_Uttarakhand_Prev_U_P_vs_Mohan_Singh_Ors_on_12_September_2012_1,civil,,0,100.0,1,2,6724,23 of 2009,,5.0,Medium,Civil case; 1 CPC sections involved
-State_Of_U_P_Ors_vs_Ambrish_Tandon_Anr_on_20_January_2012_1,civil,,0,,0,1,1930,35 OF 2012,,4.0,Medium,Civil case
-State_Of_U_P_Ors_vs_Ashok_Kumar_Nigam_on_13_December_2012_1,criminal,,0,,0,0,5844,29 OF 2012,,6.0,High,Criminal case
-State_Of_U_P_vs_Sanjay_Kumar_on_21_August_2012_1,criminal,,0,,0,18,4156,3 UC 1827,,7.0,High,Criminal case; High legal complexity
-State_Tr_P_S_Lodhi_Colony_New_Delhi_vs_Sanjeev_Nanda_on_3_August_2012_1,criminal,"304a,201,302,299,300",5,,0,12,20428,68 OF 2012,,9.0,Critical,Criminal case; 5 IPC sections involved; High legal complexity
-Subramanian_Swamy_vs_A_Raja_on_24_August_2012_1,criminal,,0,,0,1,14311,12 AIR 2012,,6.0,High,Criminal case
-Sudevanand_vs_State_Through_Cbi_on_19_January_2012_1,criminal,307,1,,0,0,6479,6-2-1991,12837.0,10.0,Critical,Criminal case; 1 IPC sections involved; Pending for 35 years
-Sukhdev_Singh_vs_State_Of_Haryana_on_13_December_2012_1,criminal,,0,,0,1,5795,1 ALLCRIR 1095,,6.0,High,Criminal case
-Sumit_Tomar_vs_State_Of_Punjab_on_19_October_2012_1,criminal,,0,,0,0,2071,91 OF 2012,,6.0,High,Criminal case
-Sunil_Clifford_Daniel_vs_State_Of_Punjab_on_14_September_2012_1,criminal,201,1,,0,19,8989,3 ALLCRIR 3155,,8.0,Critical,Criminal case; 1 IPC sections involved; High legal complexity
-Sunil_Kumar_vs_State_Of_Haryana_on_27_March_2012_1,criminal,,0,,0,10,2141,2 ALLCRIR 1875,,6.5,High,Criminal case; High legal complexity
-Super_Cassetts_Industries_Ltd_vs_Music_Broadcast_Pvt_Ltd_on_3_May_2012_1,criminal,,0,,0,2,10878,97 OF 2012,,6.0,High,Criminal case
-Surat_Singh_vs_State_Of_Uttaranchal_Anr_on_10_December_2012_1,criminal,,0,,0,0,1091,1 RECCRIR 1011,,6.0,High,Criminal case
-Suresh_Ors_vs_State_Of_Madhya_Pradesh_on_22_November_2012_1,criminal,,0,,0,0,5483,2 ALLCRIR 1303,,6.0,High,Criminal case
-Suresh_Sakharam_Nangre_vs_State_Of_Maharashtra_on_21_September_2012_1,criminal,34,1,,0,0,3751,06 OF 2008,,7.0,High,Criminal case; 1 IPC sections involved
-Surinder_Kumar_vs_State_Of_Punjab_on_21_November_2012_1,criminal,,0,,0,0,2938,79 OF 2009,,6.0,High,Criminal case
-Surjit_Sarkar_vs_State_Of_West_Bengal_on_4_December_2012_1,criminal,,0,,0,3,7573,2 ALLCRIR 1593,,6.0,High,Criminal case
-Tejas_Construction_Infras_Pvt_Ltd_vs_Municipal_Council_Sendhwa_Anr_on_4_May_2012_1,civil,,0,,0,0,5498,95 of 2012,,4.0,Medium,Civil case
-The_Bharat_Bank_Ltd_Delhi_vs_Employees_Of_The_Bharat_Bank_on_26_May_1950_1,criminal,,0,,0,0,26117,20 Act 1904,,6.0,High,Criminal case
-The_Bharat_Bank_Ltd_Delhi_vs_The_Employees_Of_The_Bharat_Bank_Ltd_on_1_March_1950_1,criminal,,0,,0,0,25300,,,6.0,High,Criminal case
-The_New_Piecegoods_Bazar_Co_vs_The_Commissioner_Of_Income_Tax_Bombay_on_26_May_1950_1,civil,,0,,0,0,3989,,,4.0,Medium,Civil case
-The_Registrar_Rajiv_Gandhi_University_vs_G_Hemlatha_And_Ors_on_23_August_2012_1,civil,,0,,0,2,1849,92 OF 2012,,4.0,Medium,Civil case
-The_State_Of_Maharashtra_And_Etc_Etc_vs_Saeed_Sohail_Sheikh_Etc_Etc_on_2_November_2012_1,criminal,,0,,0,5,9777,39 OF 2012,,6.0,High,Criminal case
-The_State_Of_Tripura_vs_The_Province_Of_East_Bengalunion_Of_on_20_December_1950_1,criminal,,0,,0,0,31355,10 of 1950,,6.0,High,Criminal case
-The_State_Of_Tripura_vs_The_Province_Of_East_Bengalunion_Of_on_4_December_1950_1,criminal,,0,,0,0,20790,12 of 1948,,6.0,High,Criminal case
-Thoti_Manohar_vs_State_Of_A_P_on_15_May_2012_1,criminal,,0,,0,16,7055,2 UC 1380,,7.0,High,Criminal case; High legal complexity
-Tukaram_Kana_Joshi_Ors_Thr_Poa_Holder_vs_M_I_D_C_Ors_on_2_November_2012_1,civil,,0,,0,14,3755,80 OF 2012,,5.0,Medium,Civil case; High legal complexity
-Tulshiram_Sahadu_Suryawanshi_Anr_vs_State_Of_Maharashtra_on_14_September_2012_1,criminal,,0,,0,0,4288,07 OF 2008,,6.0,High,Criminal case
-T_N_Godavarman_Thirumulpad_vs_Union_Of_India_Ors_on_13_February_2012_1,civil,,0,,0,1,11758,33 and 1477,,4.0,Medium,Civil case
-Union_Of_India_Anr_vs_Shashank_Goswami_Anr_on_23_May_2012_1,civil,,0,,0,0,1733,24 OF 2008,,4.0,Medium,Civil case
-Union_Of_India_Anr_vs_Talwinder_Singh_on_20_April_2012_1,civil,,0,,0,6,1778,86 OF 2012,,4.5,Medium,Civil case; High legal complexity
-Union_Of_India_Ors_vs_Brigadier_P_S_Gill_on_23_March_2012_1,criminal,,0,,0,0,4251,2 ALLCRIR 1869,,6.0,High,Criminal case
-Union_Of_India_Ors_vs_Madhu_E_V_Anr_on_26_April_2012_1,civil,,0,,0,0,2899,27-12-1995,11052.0,7.0,High,Civil case; Pending for 30 years
-Union_Of_India_Ors_vs_N_R_Parmar_Ors_on_27_November_2012_1,civil,,0,,0,0,17191,11/7/1986,14508.0,7.0,High,Civil case; Pending for 39 years
-Union_Of_India_Ors_vs_S_Srinivasan_on_21_May_2012_1,civil,,0,,0,11,7568,85 OF 2005,,5.0,Medium,Civil case; High legal complexity
-Union_Of_India_vs_Ibrahim_Uddin_Anr_on_17_July_2012_1,civil,,0,100.0,1,71,13983,74 of 2008,,6.0,High,Civil case; 1 CPC sections involved; High legal complexity
-U_P_Power_Corp_Ltd_vs_Rajesh_Kumar_Ors_on_27_April_2012_1,civil,,0,,0,6,18210,10-2-1995,11372.0,7.5,High,Civil case; Pending for 31 years; High legal complexity
-U_Sree_vs_U_Srinivas_on_11_December_2012_1,criminal,,0,,0,2,7798,28 OF 2012,,6.0,High,Criminal case
-Vasanti_Dubey_vs_State_Of_M_P_on_17_January_2012_1,criminal,,0,,0,3,5333,66 OF 2012,,6.0,High,Criminal case
-Vidur_Impex_Traders_Pvt_Ltd_Ors_vs_Tosh_Apartments_Pvt_Ltd_Ors_on_21_August_2012_1,civil,,0,151.0,1,2,15511,2-12-1991,12538.0,8.0,Critical,Civil case; 1 CPC sections involved; Pending for 34 years
-Vijay_Kumar_Kaul_Ors_vs_U_O_I_Ors_on_25_May_2012_1,civil,,0,,0,13,5361,89 OF 2007,,5.0,Medium,Civil case; High legal complexity
-Vijay_Singh_vs_State_Of_Delhi_on_29_August_2012_1,criminal,,0,,0,1,5974,1-4-2001,9130.0,9.0,Critical,Criminal case; Pending for 25 years
-Vijay_Singh_vs_State_Of_U_P_Ors_on_13_April_2012_1,criminal,,0,,0,11,2863,50 OF 2012,,7.0,High,Criminal case; High legal complexity
-Vilas_Pandurang_Pawar_Anr_vs_State_Of_Maharashtra_Ors_on_10_September_2012_1,criminal,,0,,0,2,2268,3 UC 2099,,6.0,High,Criminal case
-Village_Panchayat_Calangute_vs_Additional_Director_Of_Panchayat_Ii_on_2_July_2012_1,civil,,0,,0,3,8431,32 OF 2012,,4.0,Medium,Civil case
-Vinayak_Kashinath_Shilkar_vs_Dy_Collector_Competent_Auth_Ors_on_29_February_2012_1,civil,,0,,0,0,1614,15 OF 2012,,4.0,Medium,Civil case
-Vinay_Tyagi_vs_Irshad_Ali_Deepak_Ors_on_13_December_2012_1,criminal,,0,,0,1,15708,4 KCCR 2642,,6.0,High,Criminal case
-Vinod_Kapoor_vs_State_Of_Goa_Ors_on_3_October_2012_1,civil,,0,,0,0,2318,13-3-1997,10610.0,7.0,High,Civil case; Pending for 29 years
-Vipul_Shital_Prasad_Agarwal_vs_State_Of_Gujarat_Anr_on_6_November_2012_1,criminal,,0,,0,1,3418,72 of 2012,,6.0,High,Criminal case
-Vodafone_International_Holdings_B_V_vs_Union_Of_India_Anr_on_20_January_2012_1,criminal,,0,,0,9,60965,33 OF 2012,,6.5,High,Criminal case; High legal complexity
-V_Chandrasekaran_Anr_vs_Administrative_Officer_Ors_on_18_September_2012_1,civil,,0,,0,27,8776,43 OF 2012,,5.0,Medium,Civil case; High legal complexity
-V_D_Bhanot_vs_Savita_Bhanot_on_7_February_2012_1,criminal,,0,,0,0,2250,16 OF 2010,,6.0,High,Criminal case
-V_K_Sasikala_vs_State_Rep_By_Superintendent_Of_Police_on_27_September_2012_1,criminal,,0,,0,1,9051,97 of 2012,,6.0,High,Criminal case
-V_V_R_N_M_Subbayya_Chettiar_vs_Commissioner_Of_Income_Tax_Madras_on_21_December_1950_1,civil,,0,,0,0,2786,25 of 1946,,4.0,Medium,Civil case
-West_U_P_Sugar_Mills_Association_Ors_vs_State_Of_Uttar_Pradesh_Ors_on_17_January_2012_1,civil,,0,,0,2,3331,08 OF 2005,,4.0,Medium,Civil case
-Yanab_Sheikh_Gagu_vs_State_Of_West_Bengal_on_13_December_2012_1,criminal,410,1,,0,1,12274,20-5-1995,11273.0,10.0,Critical,Criminal case; 1 IPC sections involved; Pending for 30 years
-Yeswant_Deorao_Deshmukh_vs_Walchand_Ramchand_Kothari_on_1_December_1950_1,civil,,0,,0,0,6523,37 of 1950,,4.0,Medium,Civil case
-Yumman_Ongbi_Lembi_Leima_vs_State_Of_Manipur_Ors_on_4_January_2012_1,criminal,302,1,,0,0,3417,26 OF 2012,,7.0,High,Criminal case; 1 IPC sections involved
-Y_K_Singla_vs_Punjab_National_Bank_Ors_on_14_December_2012_1,criminal,,0,,0,0,7308,87 OF 2012,,6.0,High,Criminal case
+case_id,case_type,legal_regime,ipc_sections,num_ipc_sections,bns_sections,num_bns_sections,cpc_sections,num_cpc_sections,max_severity_score,immediate_threat_flag,societal_impact_score,priority_score,case_date,case_age_days,num_precedents,total_words,priority_category,priority_explanation
+Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,14379,Low,Civil case
+Abdul_Rehman_Anr_vs_Mohd_Ruldu_Ors_on_27_September_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,1,3139,Medium,Civil case
+Abuzar_Hossain_Gulam_Hossain_vs_State_Of_West_Bengal_on_10_October_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,0,3,5.0,24-6-1960,24120.0,1,13709,Medium,Criminal case; 2 IPC sections involved; Pending for 66 years
+Accountant_General_M_P_vs_S_K_Dubey_Anr_on_29_February_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,7,13588,Medium,Criminal case; High legal complexity
+Acg_Associated_Capsules_P_Ltd_vs_C_I_T_Central_Iv_Mumbai_on_8_February_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,4326,Low,Criminal case
+Adarsh_Shiksha_Mahavidyalaya_Ors_vs_Subhash_Rahangdale_Ors_on_6_January_2012_1,criminal,IPC,,0,,0,,0,3,0,5,3.55,11-01-2008,6753.0,1,29537,Low,Criminal case; Pending for 18 years
+Ahmedsaheb_D_By_Lrs_Ors_vs_Sayed_Ismail_on_19_July_2012_1,civil,IPC,,0,,0,,0,3,1,1,4.55,5 October 1971,20000.0,1,4233,Medium,Civil case; Pending for 54 years
+Ajay_Kumar_Parmar_vs_State_Of_Rajasthan_on_27_September_2012_1,criminal,IPC,"342,376",2,"127,65",2,,0,10,0,3,5.5,,,29,5474,Medium,Criminal case; 2 IPC sections involved; High legal complexity
+Ajay_Maken_vs_Adesh_Kumar_Gupta_Anr_on_11_December_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,30-05-2011,5518.0,2,11821,Low,Civil case; Pending for 15 years
+Ajay_Pandit_Jagdish_Dayabhai_vs_State_Of_Maharashtra_on_17_July_2012_1,criminal,IPC,420,1,318,1,,0,5,1,1,5.75,,,4,7715,Medium,Criminal case; 1 IPC sections involved
+Akhilesh_Yadav_vs_Vishwanath_Chaturvedi_Ors_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,1,6432,Medium,Criminal case
+Akil_Javed_vs_State_Of_Nct_Of_Delhi_on_6_December_2012_1,criminal,IPC,"302,34,354,392,411",5,"103,3,74,309,317",5,,0,10,1,3,8.0,06/12/2012,4962.0,5,12451,Critical,Criminal case; 5 IPC sections involved; Pending for 13 years
+Alagupandi_Alagupandian_vs_State_Of_Tamil_Nadu_on_8_May_2012_1,criminal,IPC,"302,448",2,"103,329",2,,0,10,1,1,7.5,,,1,6147,High,Criminal case; 2 IPC sections involved
+Alister_Anthony_Pareira_vs_State_Of_Maharashtra_on_12_January_2012_1,criminal,IPC,"279,299,300,302,304,304a,307,320,336,337,338,376,427",13,"281,100,101,103,105,106,109,116,125,125,125,65,324",13,,0,10,1,1,7.5,,,5,15200,High,Criminal case; 13 IPC sections involved
+Alok_Kumar_Pandit_vs_State_Of_Assam_Ors_on_26_November_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,4982,Low,Criminal case
+Amar_Pal_Singh_vs_State_Of_U_P_Anr_on_17_May_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,10,5061,Low,Criminal case; High legal complexity
+Amar_Singh_Jatav_Anr_vs_State_Of_M_P_on_26_September_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,0,690,Medium,Criminal case
+Amit_Kapoor_vs_Ramesh_Chander_Anr_on_13_September_2012_1,criminal,IPC,"107,109,306,448",4,"45,49,108,329",4,,0,4,0,3,3.4,,,17,12504,Low,Criminal case; 4 IPC sections involved; High legal complexity
+Amit_vs_State_Of_U_P_on_23_February_2012_1,criminal,IPC,"201,302,364,376,377",5,"238,103,140,65",4,,0,10,0,3,5.5,,,2,3541,Medium,Criminal case; 5 IPC sections involved
+Amrit_Bhanu_Shali_Ors_vs_National_Insurance_Co_Ltd_Ors_on_4_April_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,1,3396,Low,Criminal case
+Anand_Mohan_vs_State_Of_Bihar_on_10_July_2012_1,criminal,IPC,"109,114,147,149,302,307,427",7,"49,54,191,190,103,109,324",7,,0,10,1,3,8.5,,,5,11764,Critical,Criminal case; 7 IPC sections involved
+Aneeta_Hada_vs_M_S_Godfather_Travels_Tours_Pvt_Ltd_on_27_April_2012_1,criminal,IPC,67,1,8,1,,0,4,0,5,4.4,,,14,13116,Medium,Criminal case; 1 IPC sections involved; High legal complexity
+Anju_Chaudhary_vs_State_Of_U_P_Anr_on_13_December_2012_1,criminal,IPC,"147,156,302,410,427,436,506",7,"191,193,103,317,324,326,351",7,,0,10,1,3,8.0,20-5-1995,11372.0,3,15237,Critical,Criminal case; 7 IPC sections involved; Pending for 31 years
+Archaeological_Survey_Of_India_vs_Narender_Anand_And_Ors_on_16_January_2012_1,civil,IPC,,0,,0,,0,3,1,5,7.05,24/22/2006,,0,9841,High,Civil case
+Arjuna_Lal_Misra_vs_The_State_on_30_November_1950_1,criminal,IPC,,0,,0,,0,3,1,3,5.55,17-11-1946,29088.0,0,2507,Medium,Criminal case; Pending for 79 years
+Arumugam_vs_State_Rep_By_Insp_Of_Police_on_24_July_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,3615,Low,Criminal case
+Arup_Das_Ors_vs_State_Of_Assam_Ors_on_27_January_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,2-11-1991,12667.0,0,3606,Low,Criminal case; Pending for 34 years
+Asha_vs_B_D_Sharma_University_Of_Health_on_10_July_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,3,8346,Low,Criminal case
+Ashok_Kumar_Ratilal_Patel_vs_Uoi_And_Anr_on_16_July_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,1,2902,Low,Criminal case
+Ashok_Kumar_vs_State_Of_Uttarakhand_Ors_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,0,2396,Medium,Civil case
+Ashok_Sadarangani_Anr_vs_Union_Of_India_Ors_on_14_March_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,0,4418,Medium,Criminal case
+Ashrafkhan_Babu_Munnekhan_Pathan_Anr_vs_State_Of_Gujarat_on_26_September_2012_1,criminal,IPC,3,1,,0,,0,4,0,2,2.4,19-3-1995,11434.0,1,10958,Low,Criminal case; 1 IPC sections involved; Pending for 31 years
+Ashutosh_Lahiry_vs_The_State_Of_Delhi_And_Anr_on_19_May_1950_1,criminal,IPC,,0,,0,,0,3,1,5,6.55,5-3-1950,27884.0,0,2878,High,Criminal case; Pending for 76 years
+Ashwani_Kumar_Saxena_vs_State_Of_M_P_on_13_September_2012_1,criminal,IPC,"302,307,324,326,34",5,"103,109,118,118,3",5,,0,10,1,1,7.5,,,1,8894,High,Criminal case; 5 IPC sections involved
+Ash_Mohammad_vs_Shiv_Raj_Singh_Lalla_Babu_Anr_on_20_September_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,4,5938,High,Criminal case
+Assam_Urban_Water_Supply_Sew_Board_vs_M_S_Subash_Projects_Marketing_Ltd_on_19_January_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,1,2125,Low,Civil case
+Atmaram_Ors_vs_State_Of_M_P_on_10_May_2012_1,criminal,IPC,"149,300,302,326",4,"190,101,103,118",4,,0,10,1,1,7.0,16-5-1988,13932.0,2,6964,High,Criminal case; 4 IPC sections involved; Pending for 38 years
+Attar_Singh_vs_State_Of_Maharashtra_on_14_December_2012_1,criminal,IPC,302,1,103,1,,0,10,0,1,4.5,,,4,5218,Medium,Criminal case; 1 IPC sections involved
+Avinash_Sadashiv_Bhosale_D_Thr_Lrs_vs_U_O_I_Ors_on_25_September_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,3,11616,High,Criminal case
+Avishek_Goenka_vs_Union_Of_India_Anr_on_27_April_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,1,4812,Medium,Criminal case
+Ayaaubkhan_Noorkhan_Pathan_vs_State_Of_Maharashtra_Ors_on_8_November_2012_1,civil,IPC,,0,,0,,0,3,1,5,7.05,,,46,9558,High,Civil case; High legal complexity
+Azija_Begum_vs_State_Of_Maharashtra_Anr_on_12_January_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,1327,Low,Criminal case
+Azim_Ahmad_Kazmi_And_Ors_vs_State_Of_U_P_And_Anr_on_16_July_2012_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,3,4825,High,Civil case
+A_K_Gopalan_vs_The_State_Of_Madras_Union_Of_India__on_19_May_1950_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,0,106162,High,Criminal case
+A_M_Mair_Co_vs_Gordhandass_Sagarmull_on_30_November_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,2354,Low,Civil case
+A_Nawab_John_Ors_vs_V_N_Subramaniyam_on_3_July_2012_1,civil,IPC,,0,,0,149,1,3,1,1,4.55,22-03-1995,11431.0,6,9374,Medium,Civil case; 1 CPC sections involved; Pending for 31 years; High legal complexity
+A_Shanmugam_vs_Ariya_K_R_K_M_N_P_Sangam_Tr_Pres_Etc_on_27_April_2012_1,civil,IPC,,0,,0,30,1,3,1,3,6.05,,,1,12230,High,Civil case; 1 CPC sections involved
+A_V_M_Sales_Corporation_vs_M_S_Anuradha_Chemicals_Pvt_Ltd_on_17_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,3,3135,Low,Civil case
+A_V_Padma_Ors_vs_R_Venugopal_Ors_on_27_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,2143,Low,Civil case
+Badami_D_Tr_Her_Lr_vs_Bhali_on_22_May_2012_1,civil,IPC,,0,,0,"10,15",2,3,1,3,5.55,26-4-2003,8474.0,18,6363,Medium,Civil case; 2 CPC sections involved; Pending for 23 years; High legal complexity
+Baliya_Bal_Kishan_vs_State_Of_M_P_on_5_October_2012_1,criminal,IPC,"120b,302",2,"61,103",2,,0,10,1,1,7.5,,,0,3994,High,Criminal case; 2 IPC sections involved
+Bar_Council_Of_India_vs_Union_Of_India_on_3_August_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,2,8867,Medium,Civil case
+Bavo_Manubhai_Ambalal_Thakore_vs_State_Of_Gujarat_on_3_February_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,1,1767,Low,Criminal case
+Benarsi_Krishna_Commit_Ors_vs_Karmyogi_Shelters_P_Ltd_on_21_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,2,3197,Low,Civil case
+Bhajju_Karan_Singh_vs_State_Of_M_P_on_15_March_2012_1,criminal,IPC,"302,307",2,"103,109",2,,0,10,0,1,4.5,,,1,6565,Medium,Criminal case; 2 IPC sections involved
+Bharat_Aluminium_Co_vs_Kaiser_Aluminium_Technical_on_6_September_2012_1,civil,IPC,,0,,0,151,1,3,1,5,6.55,27-6-2006,7316.0,3,46832,High,Civil case; 1 CPC sections involved; Pending for 20 years
+Bharat_Heavy_Electricals_Ltd_vs_R_S_Avtar_Singh_Co_on_5_October_2012_1,civil,IPC,,0,,0,34,1,3,0,1,1.55,6-1-1981,16619.0,0,9003,Very Low,Civil case; 1 CPC sections involved; Pending for 45 years
+Bhartiya_Seva_Samaj_Trust_Tr_Pres_Anr_vs_Yogeshbhai_Ambalal_Patel_Anr_on_14_September_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,18,3904,Low,Criminal case; High legal complexity
+Bhaskar_Laxman_Jadhav_Ors_vs_Karamveer_Kakasaheb_Wagh_Edu_Sty_Ors_on_11_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,2,6517,Low,Civil case
+Bhau_Ram_vs_Janak_Singh_Ors_on_20_July_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,1,2261,Low,Civil case
+Bhawanipore_Banking_Corpora_Tion_Ltd_vs_Gouri_Shankar_Sharma_on_14_March_1950_1,civil,IPC,,0,,0,110,1,3,1,3,6.05,,,0,1353,High,Civil case; 1 CPC sections involved
+Bhimanna_vs_State_Of_Karnataka_on_4_September_2012_1,criminal,IPC,"149,302,323,324,325,326,327,34,447,504",10,"190,103,115,118,117,118,119,3,329,352",10,,0,10,1,1,7.5,,,21,6139,High,Criminal case; 10 IPC sections involved; High legal complexity
+Bhopal_Gas_Peedith_Mahila_vs_U_O_I_Ors_on_9_August_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,1,9572,Medium,Civil case
+Bhubaneswar_Development_Authority_vs_Adikanda_Biswal_Ors_on_1_February_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,01/02/2012,5271.0,0,3654,Low,Criminal case; Pending for 14 years
+Bhupendra_Nath_Hazarika_Anr_vs_State_Of_Assam_Ors_on_30_November_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,3,12738,Low,Criminal case
+Bhushan_Kumar_Anr_vs_State_Nct_Of_Delhi_Anr_on_4_April_2012_1,criminal,IPC,"174,420",2,"208,318",2,,0,5,1,3,6.75,,,1,2955,High,Criminal case; 2 IPC sections involved
+Bihar_Public_Service_Commn_vs_Saiyed_Hussain_Abbas_Rizwi_Anr_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,1,7361,High,Criminal case
+Bimal_Kumar_Anr_vs_Shakuntala_Debi_Ors_on_27_February_2012_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,8,6497,High,Civil case; High legal complexity
+Bipromasz_Bipron_Trading_Sa_vs_Bharat_Electronics_Limited_Bel_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,7-1-2002,8948.0,2,8496,Low,Civil case; Pending for 24 years
+Brajendrasingh_vs_State_Of_M_P_on_28_February_2012_1,criminal,IPC,"302,309",2,103,1,,0,10,1,3,8.5,,,1,8031,Critical,Criminal case; 2 IPC sections involved
+Brijesh_Mavi_vs_State_Of_Nct_Of_Delhi_on_3_July_2012_1,criminal,IPC,"34,460",2,"3,331",2,,0,4,1,1,5.4,,,1,5635,Medium,Criminal case; 2 IPC sections involved
+Brij_Bhushan_And_Another_vs_The_State_Of_Delhi_on_26_May_1950_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,0,5702,Medium,Criminal case
+Brij_Bhushan_And_Anr_vs_The_State_Of_Delhi_on_2_March_1950_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,0,5507,Medium,Criminal case
+Burdwan_Central_Co_Op_Bank_Ltd_Anr_vs_Asim_Chatterjee_Ors_on_18_January_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,3478,Low,Civil case
+Catholic_Syrian_Bank_Ltd_vs_Commissioner_Of_Income_Tax_Thrissur_on_17_February_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,11187,Low,Criminal case
+Cbi_Hyderabad_vs_K_Narayana_Rao_on_21_September_2012_1,criminal,IPC,"109,420",2,"49,318",2,,0,5,0,3,3.75,,,0,8881,Low,Criminal case; 2 IPC sections involved
+Central_Bureau_Of_Investigation_vs_Amitbhai_Anil_Chandra_Shah_And_Anr_on_27_September_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,0,7116,High,Criminal case
+Chairman_Lic_Of_India_Ors_vs_A_Masilamani_on_23_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,9,3022,Low,Criminal case; High legal complexity
+Chandi_Prasad_Uniyal_And_Ors_vs_State_Of_Uttarakhand_And_Ors_on_17_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,1,3194,Low,Criminal case
+Chandrakala_Trivedi_vs_State_Of_Rajasthan_Ors_on_12_January_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,856,Low,Criminal case
+Chandralekha_vs_State_Of_Rajasthan_Anr_on_14_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,14/9/2011,5411.0,1,1657,Very Low,Criminal case; Pending for 14 years
+Chandra_Kumar_Chopra_vs_Union_Of_India_Ors_on_11_May_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,4,6900,Low,Criminal case
+Chief_Controlling_Revenue_vs_Maharashtra_Sugar_Mills_Ltd_on_27_May_1950_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,0,4891,High,Civil case
+Chintaman_Rao_vs_The_State_Of_Madhya_Pradeshram_on_8_November_1950_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,2319,Low,Criminal case
+Chiranjit_Lal_Chowdhuri_vs_The_Union_Of_India_And_Others_on_4_December_1950_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,0,28123,High,Civil case
+Chittaranjan_Mukherji_vs_Barhoo_Mahto_on_5_May_1950_1,civil,IPC,,0,,0,,0,3,1,1,4.55,14-12-1944,29791.0,0,2134,Medium,Civil case; Pending for 81 years
+Chloro_Controls_I_P_Ltd_vs_Severn_Trent_Water_Purification_Inc_on_28_September_2012_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,3,34472,High,Civil case
+Church_Of_Christ_Charitable_Trust_Edu_vs_M_S_Ponniamman_Educationa_Trust_Rep_on_3_July_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,0,5938,Medium,Civil case
+Cicily_Kallarackal_vs_Vehicle_Factory_on_6_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,1,1285,Low,Criminal case
+Columbia_Sportswear_Company_vs_Director_Of_I_T_Bangalore_on_30_July_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,5,5391,Low,Civil case
+Commissioner_Of_Income_Tax_Bombay_vs_Ahmedbhai_Umarbhai_Co_Bombay_on_4_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,24501,Low,Civil case
+Commissioner_Of_Income_Tax_U_P_vs_Gappumal_Kanhaiya_Lal_on_26_May_1950_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,707,Low,Civil case
+Commissioner_Of_Income_Tax_West_vs_Calcutta_Agency_Ltd_on_21_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,3636,Low,Civil case
+Commissioner_Of_vs_Sri_Keshab_Chandra_Mandal_on_9_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,7352,Low,Civil case
+Commnr_Of_Central_Excise_Mumbai_vs_M_S_Fiat_India_P_Ltd_Anr_on_29_August_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,0,18243,Medium,Civil case
+Commnr_Of_Central_Excise_New_Delhi_vs_M_S_Connaught_Plaza_Rest_P_Ltd_N_D_on_27_November_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,27/11/2012,4971.0,0,10608,Low,Criminal case; Pending for 13 years
+Commnr_Of_Central_Excise_Surat_I_vs_M_S_Favourite_Industries_on_29_February_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,1-3-1997,10721.0,0,7241,Very Low,Criminal case; Pending for 29 years
+Commnr_Of_Central_Excise_vs_M_S_Wockhardt_Life_Science_Ltd_on_22_February_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,8008,Low,Civil case
+Court_On_Its_Own_Motion_vs_Union_Of_India_Ors_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,0,16777,Medium,Criminal case
+Co_Operative_Society_Of_Debts_vs_Nandlal_on_12_October_1950_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,2214,Low,Civil case
+C_I_T_Ii_vs_M_S_Krishi_Utpadan_Mandi_Samiti_on_27_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,3037,Low,Civil case
+C_K_Jaffer_Sharief_vs_State_Thr_C_B_I_on_9_November_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,1,3208,Medium,Criminal case
+C_N_Ramappa_Gowda_vs_C_C_Chaqndergowda_D_By_Lrs_Anr_on_23_April_2012_1,civil,IPC,,0,,0,8,1,3,0,3,3.05,,,1,4455,Low,Civil case; 1 CPC sections involved
+Dahari_Ors_vs_State_Of_U_P_on_11_October_2012_1,criminal,IPC,"141,148,149,302,34",5,"189,191,190,103,3",5,,0,10,0,1,4.5,,,15,3524,Medium,Criminal case; 5 IPC sections involved; High legal complexity
+Darbara_Singh_vs_State_Of_Punjab_on_12_September_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,0,1,4.5,,,11,4122,Medium,Criminal case; 2 IPC sections involved; High legal complexity
+Darshan_Lal_Nagpal_Ors_vs_Govt_Of_Nct_Of_Delhi_Ors_on_3_January_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,24-3-2008,6680.0,2,13494,Low,Civil case; Pending for 18 years
+Dayal_Singh_Ors_vs_State_Of_Uttaranchal_on_3_August_2012_1,criminal,IPC,"302,304,34",3,"103,105,3",3,,0,10,1,3,8.5,,,5,12069,Critical,Criminal case; 3 IPC sections involved
+Deepak_Kumar_Etc_vs_State_Of_Haryana_Ors_Etc_on_27_February_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,96/7/2000,,1,6514,Medium,Criminal case
+Delhi_Race_Club_Ltd_vs_Union_Of_India_Ors_on_13_July_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,7,9434,Low,Civil case; High legal complexity
+Deoki_Panjhiyara_vs_Shahshi_Bhushan_Narayan_Azad_Anr_on_12_December_2012_1,criminal,IPC,"494,495",2,"82,82",2,,0,4,1,1,5.4,,,3,3976,Medium,Criminal case; 2 IPC sections involved
+Desiya_Murpokku_Dravida_Kazhagam_Anr_vs_Election_Commission_Of_India_on_18_April_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,24-01-2006,7470.0,4,20835,Low,Criminal case; Pending for 20 years
+Devinder_Singh_Narula_vs_Meenakshi_Nangia_on_22_August_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,1,2255,Low,Civil case
+Dhiyan_Singh_And_Another_vs_Jugal_Kishore_And_Another_on_22_February_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.55,21-5-1940,31459.0,0,4843,Very Low,Civil case; Pending for 86 years
+Dimpey_Gujral_Ors_vs_U_T_Chandigarh_Ors_on_6_December_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,26/10/2006,7195.0,1,1552,Low,Criminal case; Pending for 19 years
+Dipak_Kumar_Mukherjee_vs_Kolkata_Mun_Corp_Ors_on_8_October_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,1,9669,Medium,Civil case
+Dipak_Subhashchandra_Mehta_vs_C_B_I_Anr_on_10_February_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,0,4545,High,Criminal case
+Dirctor_General_Of_Posts_Ors_vs_K_Chandrashekar_Rao_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,6374,Low,Civil case
+Dropti_Devi_Anr_vs_Union_Of_India_Ors_on_2_July_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,73/02/2009,,0,15695,High,Criminal case
+Dr_Babu_Ram_Saksena_vs_The_State_on_5_May_1950_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,8319,Low,Criminal case
+Dr_Mehmood_Nayyar_Azam_vs_State_Of_Chattisgarh_And_Ors_on_3_August_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,10,8852,High,Criminal case; High legal complexity
+Dr_Mrs_Nupur_Talwar_vs_Cbi_Delhi_And_Anr_on_6_January_2012_1,criminal,IPC,"201,302,34",3,"238,103,3",3,,0,10,1,5,9.0,06-01-2012,5297.0,2,3653,Critical,Criminal case; 3 IPC sections involved; Pending for 14 years
+Dr_N_B_Khare_vs_The_State_Of_Delhi_on_26_May_1950_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,6176,Low,Criminal case
+Dr_Subramanian_Swamy_vs_Dr_Manmohan_Singh_And_Anr_on_31_January_2012_1,criminal,IPC,21,1,2,1,,0,4,0,5,4.4,,,4,17163,Medium,Criminal case; 1 IPC sections involved
+Dy_Inspector_Gen_Of_Police_Anr_vs_S_Samuthiram_on_30_November_2012_1,criminal,IPC,"4,509",2,79,1,,0,4,1,3,6.4,,,1,6215,High,Criminal case; 2 IPC sections involved
+Executors_Of_The_Estate_Of_J_K_Dubash_vs_Commissioner_Of_Income_Tax_Bombaycity_on_21_December_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,4015,Low,Criminal case
+Faiza_Choudhary_vs_State_Of_J_K_Anr_on_6_September_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,1,2751,Low,Criminal case
+Gajoo_vs_State_Of_Uttarakhand_on_13_September_2012_1,criminal,IPC,302,1,103,1,,0,10,0,1,4.5,,,2,5863,Medium,Criminal case; 1 IPC sections involved
+Gaytri_Bajaj_vs_Jiten_Bhalla_on_5_October_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,1,3067,Medium,Civil case
+Geeta_Mehrotra_Anr_vs_State_Of_U_P_Anr_on_17_October_2012_1,criminal,IPC,"323,498a,504,506",4,"115,86,352,351",4,,0,6,0,1,3.1,,,3,6143,Low,Criminal case; 4 IPC sections involved
+General_Officer_Commanding_vs_Cbi_Anr_on_1_May_2012_1,criminal,IPC,"166,167,6",3,"198,201,3",3,,0,4,0,5,4.4,,,58,15553,Medium,Criminal case; 3 IPC sections involved; High legal complexity
+Ghanshyam_Das_Gupta_vs_Makhan_Lal_on_21_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,1411,Low,Civil case
+Gian_Singh_vs_State_Of_Punjab_Anr_on_24_September_2012_1,criminal,IPC,"120b,302,307,326,34,354,394,420,467,468,469,506",12,"61,103,109,118,3,74,309,318,338,336,336,351",12,,0,10,1,5,9.0,11-1-2004,8214.0,4,19206,Critical,Criminal case; 12 IPC sections involved; Pending for 22 years
+Girish_Ramchandra_Deshpande_vs_Cen_Information_Commr_Ors_on_3_October_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,2633,Low,Criminal case
+Gnanambal_Ammal_vs_T_Raju_Ayyar_And_Ors_on_21_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,4345,Low,Civil case
+Gnanambal_Ammal_vs_T_Raju_Ayyar_And_Others_on_21_October_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,4520,Low,Civil case
+Gorakhram_Sadhuram_vs_Laxmibai_Wife_Of_Inderlal_Nandlal_on_14_March_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.55,26-5-1943,30359.0,0,4422,Very Low,Civil case; Pending for 83 years
+Govindaraju_Govinda_vs_State_By_Sriramapuram_P_S_Anr_on_15_March_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,1,1,7.0,16-5-2011,5532.0,3,13381,High,Criminal case; 2 IPC sections involved; Pending for 15 years
+Gurcharan_Singh_vs_Surjit_Singh_Anr_on_2_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,11,1802,Low,Civil case; High legal complexity
+Gurgaon_Gramin_Bank_vs_Khazani_Anr_on_4_September_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,2144,Low,Criminal case
+Gurpal_Singh_vs_High_Court_Of_Judicature_For_Rajasthan_on_27_November_2012_1,criminal,IPC,"201,409",2,"238,316",2,,0,8,1,5,8.8,,,1,10043,Critical,Criminal case; 2 IPC sections involved
+Guru_Basavaraj_Benne_Settappa_vs_State_Of_Karnataka_on_29_August_2012_1,criminal,IPC,304a,1,106,1,,0,4,1,3,6.4,,,3,5459,High,Criminal case; 1 IPC sections involved
+Haradhan_Das_vs_State_Of_West_Bengal_on_13_December_2012_1,criminal,IPC,"149,302,460",3,"190,103,331",3,,0,10,0,1,4.5,,,1,7063,Medium,Criminal case; 3 IPC sections involved
+Haryana_State_Indusl_Devt_Corp_Ltd_vs_Mawasi_Ors_Etc_Etc_on_2_July_2012_1,civil,IPC,,0,,0,47,1,3,0,3,3.05,,,10,11987,Low,Civil case; 1 CPC sections involved; High legal complexity
+Head_Master_Lawrence_School_Lovedale_vs_Jayanthi_Raghu_Anr_on_16_March_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,11,5873,Low,Criminal case; High legal complexity
+Hem_Raj_Ors_vs_Kartar_Singh_D_By_Lrs_Ors_on_29_November_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,11-12-1974,18837.0,0,3386,Low,Civil case; Pending for 51 years
+Horil_vs_Keshav_Anr_on_20_January_2012_1,civil,IPC,,0,,0,9,1,3,0,1,2.05,,,1,2532,Low,Civil case; 1 CPC sections involved
+Huidrom_Konungjao_Singh_vs_State_Of_Manipur_Ors_on_17_May_2012_1,criminal,IPC,302,1,103,1,,0,10,1,3,8.5,,,16,2872,Critical,Criminal case; 1 IPC sections involved; High legal complexity
+H_P_Housing_Urban_Devt_Auth_Anr_vs_Ranjit_Singh_Rana_on_12_March_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,1634,Low,Civil case
+H_P_Singh_vs_Thakur_Prasad_Tewari_And_Anr_on_21_December_1950_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,19-2-1948,28629.0,0,1560,Very Low,Criminal case; Pending for 78 years
+Imtiyaz_Ahmad_vs_State_Of_U_P_Ors_on_1_February_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,0,8447,High,Criminal case
+Indra_Kumar_Patodia_Anr_vs_Reliance_Inds_Ltd_Ors_on_22_November_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,32/9/1999,,2,5440,Low,Criminal case
+In_The_Supreme_Court_Of_India_vs_Kadar_Unnisa_Begum_And_Others_on_12_October_1950_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,2864,Low,Civil case
+In_The_Supreme_Court_Of_India_vs_Nandlal_on_12_October_1950_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,2262,Low,Civil case
+In_The_Supreme_Court_Of_India_vs_Shankar_And_Others_on_13_October_1950_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,1514,Low,Civil case
+I_T_C_Ltd_vs_Adarsh_Coop_Housing_Soc_Ltd_on_27_August_2012_1,civil,IPC,,0,,0,145,1,3,1,3,6.05,,,0,3468,High,Civil case; 1 CPC sections involved
+Jagroop_Singh_vs_State_Of_Punjab_on_20_July_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,15,6683,Low,Criminal case; High legal complexity
+Jainendra_Singh_vs_State_Of_U_P_Tr_Prinl_Sec_Home_Ors_on_30_July_2012_1,criminal,IPC,"148,323,325,34,380,427,596",7,"191,115,117,3,305,324",6,,0,4,0,1,1.9,20-11-1995,11188.0,0,6863,Very Low,Criminal case; 7 IPC sections involved; Pending for 30 years
+Jai_Prakash_Singh_vs_State_Of_Bihar_Anr_Etc_on_14_March_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,8,3705,High,Criminal case; High legal complexity
+Janardan_Reddy_And_Others_vs_The_State_on_14_December_1950_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,3317,Low,Criminal case
+Jasarvinder_Singh_Ors_vs_President_Land_Acquisition_Ors_on_9_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,989,Low,Criminal case
+Jayrajsingh_Digvijaysingh_Rana_vs_State_Of_Gujarat_Anr_on_20_July_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,1,2734,Low,Criminal case
+Jeetu_Jitendera_Ors_vs_State_Of_Chhattisgarh_on_4_December_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,5,3436,High,Criminal case
+Jeevantha_And_Ors_vs_Hanumantha_And_Ors_on_20_November_1950_1,civil,IPC,,0,,0,,0,3,0,3,2.55,30-1-1913,41432.0,0,1233,Low,Civil case; Pending for 113 years
+Jeevan_Chandrabhan_Idnani_Anr_vs_Divisional_Commr_Konkan_Bhavan_Ors_on_31_January_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,1,4509,Low,Criminal case
+Jegannathan_vs_Raju_Sigamani_Anr_on_2_April_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,1,1820,Medium,Civil case
+Jik_Industries_Ltd_Ors_vs_Amarlal_V_Jumani_Anr_on_1_February_2012_1,criminal,IPC,4,1,,0,,0,4,0,5,4.4,,,5,9713,Medium,Criminal case; 1 IPC sections involved
+Jitender_Kumar_vs_State_Of_Haryana_on_8_May_2012_1,criminal,IPC,"109,120,120b,149,302,34,342",7,"49,60,61,190,103,3,127",7,,0,10,1,1,7.5,,,2,11099,High,Criminal case; 7 IPC sections involved
+Jitendra_Nath_Singh_vs_Official_Liquidator_Ors_on_21_September_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,12-10-1993,11957.0,0,18715,Low,Civil case; Pending for 32 years
+Jitu_Patnaik_vs_Sanatan_Mohakud_Ors_on_2_March_2012_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,2,8433,High,Civil case
+Jugendra_Singh_vs_State_Of_U_P_on_29_May_2012_1,criminal,IPC,302,1,103,1,,0,10,1,3,8.5,,,14,6434,Critical,Criminal case; 1 IPC sections involved; High legal complexity
+J_Samuel_Ors_vs_Gattu_Mhesh_Ors_on_16_January_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,1,3659,Medium,Civil case
+Kalu_Amit_vs_State_Of_Haryana_on_17_August_2012_1,criminal,IPC,,0,,0,,0,3,1,1,4.55,11/7/2006,7302.0,1,4476,Medium,Criminal case; Pending for 20 years
+Kanwar_Singh_Meena_vs_State_Of_Rajasthan_Anr_on_16_October_2012_1,criminal,IPC,,0,,0,,0,3,1,1,4.55,20/5/2009,6258.0,1,4927,Medium,Criminal case; Pending for 17 years
+Kapildeo_Singh_vs_The_King_on_24_January_1950_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,0,2876,Medium,Criminal case
+Kashmir_Kaur_Anr_vs_State_Of_Punjab_on_12_December_2012_1,criminal,IPC,"304b,498a",2,"80,86",2,,0,9,1,3,8.15,,,1,5492,Critical,Criminal case; 2 IPC sections involved
+Kathi_Bharat_Vajsur_Anr_vs_State_Of_Gujarat_on_8_May_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,1,6298,Medium,Criminal case
+Kavita_Solunke_vs_State_Of_Maharashtra_Ors_on_9_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,20-7-1962,23364.0,1,5309,Low,Criminal case; Pending for 64 years
+Kavita_vs_Deepak_And_Ors_on_22_August_2012_1,criminal,IPC,"279,337,338",3,"281,125,125",3,,0,4,0,1,1.9,26/06/2004,8047.0,1,5672,Very Low,Criminal case; 3 IPC sections involved; Pending for 22 years
+Khoday_Distilleries_Ltd_Ors_vs_Mahadeshwara_S_S_K_Ltd_on_19_October_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,2341,Low,Civil case
+Kishan_Chand_vs_State_Of_Haryana_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,1,6629,Medium,Criminal case
+Kishore_Samrite_vs_State_Of_U_P_Ors_on_18_October_2012_1,criminal,IPC,,0,,0,,0,3,1,5,6.55,18/10/2012,5011.0,5,17145,High,Criminal case; Pending for 13 years
+Kotak_Mahindra_Bank_Ltd_vs_Hindustan_National_Glass_Ind_Ltd_on_11_December_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,0,14387,Medium,Criminal case
+Krishan_Lal_vs_Food_Corpn_Of_India_And_Ors_on_24_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,3297,Low,Civil case
+Krishnappa_Ors_vs_State_Of_Karnataka_By_Babaleshwara_P_S_on_31_July_2012_1,criminal,IPC,"149,302",2,"190,103",2,,0,10,0,1,4.5,,,3,3318,Medium,Criminal case; 2 IPC sections involved
+Krushnakant_B_Parmar_vs_Union_Of_India_Anr_on_15_February_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,2795,Low,Criminal case
+Kuria_Anr_vs_State_Of_Rajasthan_on_13_September_2012_1,criminal,IPC,"302,34,364",3,"103,3,140",3,,0,10,1,1,7.5,,,1,8970,High,Criminal case; 3 IPC sections involved
+K_B_Nagur_M_D_Ayu_vs_Union_Of_India_on_24_February_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,1,5927,Medium,Civil case
+K_Suresh_vs_New_India_Assurance_Co_Ltd_Anr_on_19_October_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,2,6010,Low,Criminal case
+K_Venkateshwarlu_vs_State_Of_A_P_on_17_August_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,20/10/2009,6105.0,3,3083,Very Low,Criminal case; Pending for 16 years
+Lahu_Kamlakar_Patil_Anr_vs_State_Of_Maharashtra_on_14_December_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,4960,Low,Criminal case
+Lakhi_Narayan_Das_And_Ors_vs_The_Province_Of_Bihar_on_30_March_1950_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,7792,Low,Civil case
+Lalita_Kumari_vs_Govt_Of_U_P_Ors_on_27_February_2012_1,criminal,IPC,"120b,363,366,506",4,"61,137,87,351",4,,0,8,1,5,8.8,,,8,17358,Critical,Criminal case; 4 IPC sections involved; High legal complexity
+Lavesh_vs_State_Nct_Of_Delhi_on_31_August_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,0,2116,Medium,Criminal case
+Lee_Kun_Hee_Ors_vs_State_Of_U_P_Ors_on_1_February_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,22 June 2002,8782.0,0,16620,Low,Criminal case; Pending for 24 years
+Lokesh_Shivakumar_vs_State_Of_Karnataka_on_10_February_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,1,3333,Medium,Criminal case
+Maa_Vaishno_Devi_Mahila_Mahavidyalaya_vs_State_Of_U_P_Ors_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,29-9-1993,11970.0,3,21631,Low,Criminal case; Pending for 32 years
+Madhu_vs_State_Of_Kerala_on_13_January_2012_1,criminal,IPC,"302,304b",2,"103,80",2,,0,10,1,5,9.5,,,1,14935,Critical,Criminal case; 2 IPC sections involved
+Mahasay_Ganesh_Prasad_Ray_And_Anr_vs_Narendra_Nath_Sen_And_Ors_on_1_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.55,30-7-1896,47459.0,0,2160,Very Low,Civil case; Pending for 130 years
+Mahesh_Chandra_Verma_Ors_vs_State_Of_Jharkhand_Ors_on_19_September_2012_1,criminal,IPC,,0,,0,,0,3,0,5,3.55,07/03/2011,5602.0,2,14933,Low,Criminal case; Pending for 15 years
+Mahesh_Kumar_D_By_Lrs_vs_Vinod_Kumar_Ors_on_13_March_2012_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,2,9295,High,Civil case
+Mangal_Amusement_Park_P_Ltd_Anr_vs_State_Of_M_P_Ors_on_28_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,3-47-0000,,5,6599,Low,Civil case
+Mangani_Lal_Mandal_vs_Bishnu_Deo_Bhandari_on_1_February_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,1,1742,Low,Criminal case
+Mangan_Lal_Deoshi_vs_Mohammad_Moinul_Haoque_Others_on_1_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,2871,Low,Civil case
+Manharibhai_Muljibhai_Kakadia_Anr_vs_Shaileshbhai_Mohanbhai_Patel_Ors_on_1_October_2012_1,criminal,IPC,420,1,318,1,,0,5,1,3,6.75,,,2,13168,High,Criminal case; 1 IPC sections involved
+Manohar_vs_State_Of_Maharashtra_Anr_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,2,8268,Low,Civil case
+Mano_Dutt_Anr_vs_State_Of_U_P_on_29_February_2012_1,criminal,IPC,"149,302,323,34,38",5,"190,103,115,3,3",5,,0,10,0,1,4.5,,,2,8555,Medium,Criminal case; 5 IPC sections involved
+Manubhai_Ratilal_Patel_Tr_Ushaben_vs_State_Of_Gujarat_Ors_on_28_September_2012_1,criminal,IPC,,0,,0,,0,3,1,3,5.55,16/07/2012,5105.0,22,5525,Medium,Criminal case; Pending for 13 years; High legal complexity
+Maria_Margadia_Sequeria_Fernandes_Ors_vs_Erasmo_Jack_De_Sequeria_D_Tr_Lrs_Ors_on_21_March_2012_1,civil,IPC,,0,,0,30,1,3,1,3,6.05,,,1,11164,High,Civil case; 1 CPC sections involved
+Markio_Tado_vs_Takam_Sorang_Ors_on_2_February_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,4,6379,Medium,Criminal case
+Maruti_Nivrutti_Navale_vs_State_Of_Maharashtra_Anr_on_7_September_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,0,2418,Medium,Criminal case
+Maulana_Mohd_Amir_Rashadi_vs_State_Of_U_P_Anr_on_16_January_2012_1,criminal,IPC,"302,307,325",3,"103,109,117",3,,0,10,0,1,4.5,,,1,1456,Medium,Criminal case; 3 IPC sections involved
+Mayawati_vs_Union_Of_India_Ors_on_6_July_2012_1,criminal,IPC,"420,467,468,471",4,"318,338,336,340",4,,0,5,0,5,4.75,,,1,8173,Medium,Criminal case; 4 IPC sections involved
+Md_Ajmal_Md_Amir_Kasab_Abu_Majahid_vs_State_Of_Maharashtra_on_29_August_2012_1,criminal,IPC,"120b,121,302",3,"61,147,103",3,,0,10,1,5,9.5,84-00-0541,,2,107124,Critical,Criminal case; 3 IPC sections involved
+Medha_Kotwal_Lele_Ors_vs_U_O_I_Ors_on_19_October_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,0,5193,High,Criminal case
+Mehrawal_Khewaji_Trust_Regd_vs_State_Of_Punjab_Ors_on_27_April_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,3,2754,Low,Criminal case
+Messrs_Khimji_Poonja_And_Company_vs_Shri_Baldev_Das_C_Parikh_on_14_March_1950_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,0,4347,Medium,Civil case
+Mohammad_Khalil_Chisti_vs_State_Of_Rajasthan_Ors_on_12_December_2012_1,criminal,IPC,"148,149,307,324,326,34,452",7,"191,190,109,118,118,3,333",7,,0,8,1,3,7.8,,,1,10751,High,Criminal case; 7 IPC sections involved
+Mohan_Soni_vs_Ram_Avtar_Tomar_Ors_on_10_January_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,1,2854,Low,Criminal case
+Mohd_Ayub_Anr_vs_Mukesh_Chand_on_5_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,3174,Low,Civil case
+Mohd_Hussain_Julfikar_Ali_vs_The_State_Govt_Of_Nct_Delhi_on_11_January_2012_1,criminal,IPC,"3,302,307",3,"103,109",2,,0,10,1,5,9.0,27/7/2000,9477.0,4,17326,Critical,Criminal case; 3 IPC sections involved; Pending for 25 years
+Mohd_Sahabuddin_Anr_vs_State_Of_Assam_on_5_October_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,0,2355,Medium,Criminal case
+Mohinder_Singh_vs_The_State_on_17_October_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,4864,Low,Criminal case
+Monnet_Ispat_And_Energy_Ltd_vs_Union_Of_India_And_Ors_on_26_July_2012_1,civil,IPC,,0,,0,,0,3,1,5,7.05,5/40/2004,,16,74756,High,Civil case; High legal complexity
+Mp_Rural_Road_Dev_Authority_And_Anr_vs_M_S_L_G_Chaudhary_Engineers_And_Cont_on_24_January_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,24-01-2012,5279.0,2,7979,Low,Civil case; Pending for 14 years
+Msr_Leathers_vs_S_Palaniappan_And_Anr_on_26_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,7,8318,Low,Civil case; High legal complexity
+Mst_Param_Pal_Singh_Tr_Father_vs_M_S_National_Insurance_Co_Anr_on_14_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,15/2/1999,10005.0,3,6899,Very Low,Criminal case; Pending for 27 years
+Mukut_Bihari_Anr_vs_State_Of_Rajasthan_on_25_May_2012_1,criminal,IPC,120b,1,61,1,,0,8,0,3,4.8,,,12,2838,Medium,Criminal case; 1 IPC sections involved; High legal complexity
+Munagala_Yadamma_vs_State_Of_A_P_Ors_on_5_January_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,1,1379,High,Criminal case
+Munish_Mubar_vs_State_Of_Haryana_on_4_October_2012_1,criminal,IPC,"201,404",2,"238,315",2,,0,8,0,1,3.8,,,4,5454,Low,Criminal case; 2 IPC sections involved
+Munna_Kumar_Upadhyaya_M_Upadhyaya_vs_State_Of_A_P_Tr_Pub_Prosecutor_on_8_May_2012_1,criminal,IPC,"201,302,411",3,"238,103,317",3,,0,10,1,3,8.0,18-03-2003,8513.0,1,13521,Critical,Criminal case; 3 IPC sections involved; Pending for 23 years
+Murugesan_16_Ors_vs_State_Tr_Insp_Of_Police_on_12_October_2012_1,criminal,IPC,"120b,149,302,34",4,"61,190,103,3",4,,0,10,1,3,8.0,04-09-2008,6516.0,5,8653,Critical,Criminal case; 4 IPC sections involved; Pending for 17 years
+Mustafa_Shahadal_Shaikh_vs_State_Of_Maharashtra_on_14_September_2012_1,criminal,IPC,"304b,498a",2,"80,86",2,,0,9,0,1,4.15,,,2,3724,Medium,Criminal case; 2 IPC sections involved
+Myla_Venkateswarlu_vs_State_Of_A_P_on_4_April_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,5/1/2001,9315.0,1,3430,Very Low,Criminal case; Pending for 25 years
+M_R_Prabhakar_Ors_vs_Canara_Bank_Ors_on_3_October_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,27-05-1970,20496.0,1,4677,Low,Criminal case; Pending for 56 years
+M_S_Best_Sellers_Retail_I_P_Ltd_vs_M_S_Aditya_Birla_Nuvo_Ltd_Ors_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,1,4097,High,Civil case
+M_S_Dsr_Steel_P_Ltd_vs_State_Of_Rajasthan_Ors_on_1_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,8,4406,Low,Civil case; High legal complexity
+M_S_Heinz_India_Pvt_Ltd_Anr_vs_State_Of_U_P_Ors_on_23_March_2012_1,criminal,IPC,499,1,356,1,,0,4,1,3,6.4,,,12,15128,High,Criminal case; 1 IPC sections involved; High legal complexity
+M_S_Ifb_Industries_Ltd_vs_State_Of_Kerala_on_27_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,5582,Low,Civil case
+M_S_Laxmi_Dyechem_vs_State_Of_Gujarat_Ors_on_27_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,2,9716,Low,Criminal case
+M_S_Michigan_Rubber_I_Ltd_vs_State_Of_Karnataka_Ors_on_17_August_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,1,7141,Low,Civil case
+M_S_Narne_Construction_P_Ltd_Etc_Etc_vs_Union_Of_India_Ors_Etc_on_10_May_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,2,211,Low,Criminal case
+M_S_National_Seeds_Corpn_Ltd_vs_M_Madhusudhan_Reddy_Anr_on_16_January_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,4-1-1996,11143.0,1,17768,Low,Civil case; Pending for 30 years
+M_S_Patel_Enginnering_Ltd_vs_Union_Of_India_Anr_on_11_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,17-01-2011,5651.0,1,5508,Low,Civil case; Pending for 15 years
+M_S_Purbanchal_Cables_Conductors_vs_Assam_State_Electricity_Board_Anr_on_10_July_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,23-9-1992,12341.0,1,18108,Low,Civil case; Pending for 33 years
+M_S_Real_Estate_Agencies_vs_Govt_Of_Goa_Ors_on_10_September_2012_1,civil,IPC,,0,,0,,0,3,1,5,7.05,,,1,4672,High,Civil case
+M_S_Sundaram_Fin_Ltd_vs_Asst_Commissioner_Of_Income_on_11_September_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,11/09/2012,5048.0,0,1462,Very Low,Criminal case; Pending for 13 years
+M_S_Topman_Exports_vs_Commr_Of_Income_Tax_Mumbai_on_8_February_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,11219,Low,Criminal case
+M_S_Virgo_Industries_Eng_P_Ltd_vs_M_S_Venturetech_Solutions_P_Ltd_on_7_September_2012_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,3,4204,High,Civil case
+M_S_Zunaid_Enterprises_Ors_vs_State_Of_M_P_Ors_on_22_February_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,0,1239,Medium,Criminal case
+M_T_Enrica_Lexie_Anr_vs_Doramma_Ors_on_2_May_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,2,4673,High,Criminal case
+Nagesh_vs_State_Of_Karnataka_on_8_May_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,0,5,6.5,,,11,6204,High,Criminal case; 2 IPC sections involved; High legal complexity
+Naguba_Appa_vs_Namdev_on_20_November_1950_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,533,Low,Civil case
+Namit_Sharma_vs_Union_Of_India_on_13_September_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,16,25445,Medium,Civil case; High legal complexity
+Nanalal_Zaver_And_Another_vs_Bombay_Life_Assurance_Co_Ltd_And_on_4_May_1950_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,0,18637,High,Civil case
+Nand_Kumar_Verma_vs_State_Of_Jharkhand_Ors_on_1_February_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,29-11-1996,10813.0,1,6453,Low,Criminal case; Pending for 29 years
+Narender_Kumar_vs_State_N_C_T_Of_Delhi_on_25_May_2012_1,criminal,IPC,376,1,65,1,,0,10,0,1,4.5,,,9,4317,Medium,Criminal case; 1 IPC sections involved; High legal complexity
+Narendra_Champaklal_Trivedi_vs_State_Of_Gujarat_on_29_May_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,5,4886,Medium,Criminal case
+Narinderjit_Singh_vs_North_Star_Estate_Promoters_Ltd_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,1,5788,Low,Civil case
+National_Bank_Of_Oman_vs_Barakara_Abdul_Aziz_Anr_on_3_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,03/10/2012,5026.0,0,2062,Very Low,Criminal case; Pending for 13 years
+National_Council_For_Teacher_Edn_Anr_vs_Venus_Public_Education_Society_Ors_on_1_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,2,8685,Low,Criminal case
+National_Ins_Co_Ltd_vs_Balakrishnan_Anr_on_20_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,73/11/2009,,2,6898,Low,Civil case
+Neel_Kumar_Anil_Kumar_vs_State_Of_Haryana_on_7_May_2012_1,criminal,IPC,"201,302",2,"238,103",2,,0,10,1,5,9.5,,,13,4431,Critical,Criminal case; 2 IPC sections involved; High legal complexity
+New_India_Assurance_Co_Ltd_vs_Gopali_Ors_on_5_July_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,1,5078,Medium,Civil case
+New_India_Assurance_Co_Ltd_vs_Yogesh_Devi_Ors_on_10_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,10-12-2002,8611.0,1,2973,Very Low,Civil case; Pending for 23 years
+Nupur_Talwar_vs_Cbi_Anr_on_7_June_2012_1,criminal,IPC,"201,302,34",3,"238,103,3",3,,0,10,1,5,9.0,16/05/2008,6627.0,9,22197,Critical,Criminal case; 3 IPC sections involved; Pending for 18 years; High legal complexity
+N_K_Bajpai_vs_Union_Of_India_Anr_on_15_March_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,,,4,12951,Medium,Criminal case
+N_V_Subba_Rao_vs_State_Insp_Of_Police_C_B_I__S_P_E_on_3_December_2012_1,criminal,IPC,"420,468",2,"318,336",2,,0,5,0,5,4.75,,,0,7632,Medium,Criminal case; 2 IPC sections involved
+Office_Of_The_Chief_Post_Master_Ors_vs_Living_Media_India_Ltd_Anr_on_24_February_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,1,5565,Low,Criminal case
+Oma_Omprakash_Anr_vs_State_Of_Tamilnadu_on_11_December_2012_1,criminal,IPC,"302,34,395,396,397",5,"103,3,310,310,311",5,,0,10,0,4,6.0,,,1,10453,High,Criminal case; 5 IPC sections involved
+Om_Kr_Dhankar_vs_State_Of_Haryana_Anr_on_28_February_2012_1,criminal,IPC,"161,406,409,420,427",5,"316,316,318,324",4,,0,5,0,3,3.75,,,0,1890,Low,Criminal case; 5 IPC sections involved
+Om_Prakash_Ors_vs_State_Of_Jharkhand_Anr_on_26_September_2012_1,criminal,IPC,,0,,0,,0,3,0,2,2.05,1/5/2006,7373.0,2,11313,Low,Criminal case; Pending for 20 years
+Om_Prakash_vs_State_Of_Rajasthan_Anr_on_13_April_2012_1,criminal,IPC,"323,365,376",3,"115,140,65",3,,0,10,1,4,9.0,,,1,6656,Critical,Criminal case; 3 IPC sections involved
+Oriental_Insurance_Co_Ltd_vs_Siby_George_Ors_on_31_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,15-9-1995,11254.0,4,3041,Very Low,Civil case; Pending for 30 years
+Oriental_Insurance_Co_Ltd_vs_Surendra_Nath_Loomba_And_Ors_on_20_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,3233,Low,Civil case
+O_M_Baby_Dead_By_Legal_vs_State_Of_Kerala_on_3_July_2012_1,criminal,IPC,"342,376",2,"127,65",2,,0,10,0,1,4.5,,,1,3679,Medium,Criminal case; 2 IPC sections involved
+Padmakar_Tukaram_Bhavnagare_Anr_vs_State_Of_Maharashtra_Anr_on_26_November_2012_1,criminal,IPC,,0,,0,,0,3,1,3,5.55,27/03/2012,5216.0,0,2209,Medium,Criminal case; Pending for 14 years
+Pannalal_Jankidas_vs_Mohanlal_And_Another_on_21_December_1950_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,0,11618,Medium,Civil case
+Paramjeet_Batra_vs_State_Of_Uttarakhand_Ors_on_14_December_2012_1,criminal,IPC,,0,,0,,0,3,1,1,4.55,22/3/2005,7778.0,0,1761,Medium,Criminal case; Pending for 21 years
+Paras_Nath_Rai_Ors_vs_State_Of_Bihar_Ors_on_5_October_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,8,7334,Low,Civil case; High legal complexity
+Parshavanath_Charitable_Trust_Ors_vs_All_India_Council_For_Tech_Edu_Ors_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,10959,Low,Civil case
+Patasi_Devi_vs_State_Of_Haryana_Ors_on_29_August_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,1,4433,Low,Criminal case
+Pathan_Hussain_Basha_vs_State_Of_A_P_on_16_August_2012_1,criminal,IPC,"304b,498a",2,"80,86",2,,0,9,0,3,4.65,19-11-1986,14476.0,1,5388,Medium,Criminal case; 2 IPC sections involved; Pending for 39 years
+Payal_Vision_Ltd_vs_Radhika_Choudhary_on_20_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,4083,Low,Civil case
+Ponnala_Lakshmaiah_vs_Kommuri_Pratap_Reddy_Ors_on_6_July_2012_1,civil,IPC,,0,,0,7,1,3,0,3,3.05,,,3,7039,Low,Civil case; 1 CPC sections involved
+Pradeep_Kumar_Sharma_vs_U_P_F_C_Rajpur_Road_Dehradun_Ors_on_19_October_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,2499,Low,Civil case
+Prakash_Chandra_vs_Narayan_on_23_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,2304,Low,Civil case
+Prandas_vs_The_State_on_14_March_1950_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,15-8-1948,28451.0,0,3214,Low,Criminal case; Pending for 77 years
+Pratapbhai_Hamirbhai_Solanki_vs_State_Of_Gujarat_Anr_on_12_October_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,0,5791,High,Criminal case
+Praveen_Pradhan_vs_State_Of_Uttranchal_Anr_on_4_October_2012_1,criminal,IPC,"107,306",2,"45,108",2,,0,4,0,1,2.4,,,8,3562,Low,Criminal case; 2 IPC sections involved; High legal complexity
+Premji_Nathu_vs_State_Of_Gujarat_Anr_on_9_April_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,4,4356,Low,Civil case
+Pritam_Singh_vs_The_State_on_5_May_1950_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,2500,Low,Criminal case
+Priya_Gupta_vs_State_Of_Chhattisgarh_Ors_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,11/1/2006,7483.0,1,14258,Low,Civil case; Pending for 20 years
+Province_Of_Bombay_vs_Kusaldas_S_Advani_And_Others_on_15_September_1950_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,0,49617,High,Civil case
+Pudhu_Raja_Anr_vs_State_Tr_Insp_Of_Police_on_19_September_2012_1,criminal,IPC,302,1,103,1,,0,10,1,1,7.5,,,2,4188,High,Criminal case; 1 IPC sections involved
+Pushpanjali_Sahu_vs_State_Of_Orissa_Anr_on_18_September_2012_1,criminal,IPC,"324,452",2,"118,333",2,,0,4,1,4,6.9,,,1,4235,High,Criminal case; 2 IPC sections involved
+P_A_Mohammed_Riyas_vs_M_K_Raghavan_Ors_on_27_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,14-4-2009,6294.0,3,5579,Very Low,Civil case; Pending for 17 years
+P_Sanjeeva_Rao_vs_State_Of_A_P_on_2_July_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,3942,Low,Criminal case
+Rachpal_Mahraj_vs_Bhagwandas_Darukaand_Others_on_5_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,1746,Low,Civil case
+Radhakrishna_Nagesh_vs_State_Of_A_P_on_13_December_2012_1,criminal,IPC,"375,376",2,"63,65",2,,0,10,1,3,8.5,,,2,10849,Critical,Criminal case; 2 IPC sections involved
+Raheja_Universal_Limited_vs_Nrc_Limited_And_Ors_on_7_February_2012_1,civil,IPC,,0,,0,,0,3,1,3,5.55,12/12/2007,6783.0,8,21094,Medium,Civil case; Pending for 18 years; High legal complexity
+Rai_Sandeep_Deepu_vs_State_Of_Nct_Of_Delhi_on_7_August_2012_1,criminal,IPC,,0,,0,,0,3,0,2,2.55,,,2,7287,Low,Criminal case
+Rajan_Purohit_Ors_vs_Raj_Univ_Of_Health_Science_Ors_on_30_August_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,0,17866,Medium,Civil case
+Raja_Kamala_Ranjan_Roy_vs_Baijnath_Bajoria_on_1_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,4238,Low,Civil case
+Rajendra_Pralhadrao_Wasnik_vs_The_State_Of_Mahrashtra_on_29_February_2012_1,criminal,IPC,"302,377",2,103,1,,0,10,1,3,8.5,,,4,6961,Critical,Criminal case; 2 IPC sections involved
+Rajesh_Awasthi_vs_Nand_Lal_Jaiswal_Ors_on_19_October_2012_1,civil,IPC,,0,,0,,0,3,1,5,7.05,,,9,9349,High,Civil case; High legal complexity
+Rajesh_Talwar_vs_C_B_I_Ors_on_2_March_2012_1,criminal,IPC,"193,201,307",3,"229,238,109",3,,0,8,1,5,8.3,24-11-2004,7896.0,1,14522,Critical,Criminal case; 3 IPC sections involved; Pending for 21 years
+Rajoo_Ramakant_vs_State_Of_M_P_on_9_August_2012_1,criminal,IPC,,0,,0,,0,3,1,4,6.55,,,1,2597,High,Criminal case
+Raju_Balachandran_Ors_vs_State_Of_Tamil_Nadu_on_27_November_2012_1,criminal,IPC,326,1,118,1,,0,6,1,1,6.1,,,2,4638,High,Criminal case; 1 IPC sections involved
+Rakesh_Kapoor_vs_State_Of_H_P_on_22_November_2012_1,criminal,IPC,"109,149,161,272,302,328",6,"49,190,274,103,123",5,,0,10,1,5,9.5,,,0,3770,Critical,Criminal case; 6 IPC sections involved
+Rameshbhai_Dabhai_Naika_vs_State_Of_Gujarat_Ors_on_18_January_2012_1,criminal,IPC,,0,,0,,0,3,1,3,5.55,23/6/1961,23756.0,8,12133,Medium,Criminal case; Pending for 65 years; High legal complexity
+Rameshkumar_Agarwal_vs_Rajmala_Exports_P_Ltd_Ors_on_30_March_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,2674,Low,Civil case
+Ramesh_Ahluwalia_vs_State_Of_Punjab_Ors_on_13_September_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,3590,Low,Civil case
+Ramesh_Harijan_vs_State_Of_U_P_on_21_May_2012_1,criminal,IPC,"302,376",2,"103,65",2,,0,10,0,1,4.5,,,22,5233,Medium,Criminal case; 2 IPC sections involved; High legal complexity
+Ramnaresh_Ors_vs_State_Of_Chhattisgarh_on_28_February_2012_1,criminal,IPC,"302,34,376",3,"103,3,65",3,,0,10,1,3,8.0,31-7-2007,6917.0,1,14221,Critical,Criminal case; 3 IPC sections involved; Pending for 18 years
+Rampal_Singh_vs_State_Of_U_P_on_24_July_2012_1,criminal,IPC,304,1,105,1,,0,9,1,1,7.15,,,4,7130,High,Criminal case; 1 IPC sections involved
+Ram_Dhari_Jindal_Memorial_Trust_vs_Union_Of_India_Ors_on_21_March_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,5,5929,Low,Civil case
+Ram_Gopal_vs_Nand_Lal_And_Others_on_14_November_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,5817,Low,Civil case
+Ram_Karan_Gupta_vs_J_S_Exim_Ltd_Ors_on_3_December_2012_1,civil,IPC,,0,,0,21,1,3,0,3,3.05,,,4,5097,Low,Civil case; 1 CPC sections involved
+Ram_Krishna_Ramnath_Agarwalof_Kamptee_vs_Secretary_Municipal_on_14_March_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,4002,Low,Criminal case
+Ranjan_Dwivedi_vs_C_B_I_Tr_Director_General_on_17_August_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,1,8730,High,Criminal case
+Rashid_Ahmed_vs_The_Municipal_Board_Kairana_The_Union_on_19_May_1950_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,2237,Low,Criminal case
+Rashid_Kapadia_vs_Medha_Gadgil_Ors_on_25_July_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,20-07-2011,5467.0,0,1441,Low,Criminal case; Pending for 14 years
+Rashmi_Rekha_Thatoi_Anr_vs_State_Of_Orissa_Ors_on_4_May_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,4,6317,High,Criminal case
+Rashtriya_Ispat_Nigam_Ltd_vs_M_S_Dewan_Chand_Ram_Saran_on_25_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,6572,Low,Civil case
+Ratnagiri_Gas_Power_Pvt_Ltd_vs_Rds_Projects_Ltd_Ors_on_18_October_2012_1,civil,IPC,,0,,0,,0,3,0,5,3.55,17/10/2011,5378.0,5,12985,Low,Civil case; Pending for 14 years
+Rattiram_Ors_vs_State_Of_M_P_Tr_Insp_Of_Police_on_17_February_2012_1,criminal,IPC,"148,149,302,323,354,448",6,"191,190,103,115,74,329",6,,0,10,1,3,8.5,,,20,12041,Critical,Criminal case; 6 IPC sections involved; High legal complexity
+Ravi_Kapur_vs_State_Of_Rajasthan_on_16_August_2012_1,criminal,IPC,"279,299,300,302,304",5,"281,100,101,103,105",5,,0,10,1,3,8.5,,,2,12424,Critical,Criminal case; 5 IPC sections involved
+Ravi_Yashwant_Bhoir_vs_The_Collector_District_Raigad_Ors_on_2_March_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,46,11991,Medium,Civil case; High legal complexity
+Registrar_General_Patna_High_Court_vs_Pandey_Gajendra_Prasad_Ors_on_11_May_2012_1,criminal,IPC,,0,,0,,0,3,1,4,6.55,,,0,5487,High,Criminal case
+Rev_Mother_Marykutty_vs_Reni_C_Kottaram_Anr_on_12_October_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,0,3777,Medium,Civil case
+Re_Ramlila_Maidan_Incident_Dt_vs_Home_Secretary_And_Ors_on_23_February_2012_1,criminal,IPC,"149,188",2,"190,223",2,,0,4,1,5,7.4,36/1/2010,,31,57162,High,Criminal case; 2 IPC sections involved; High legal complexity
+Ritesh_Sinha_vs_State_Of_U_P_Anr_on_7_December_2012_1,criminal,IPC,,0,,0,,0,3,1,3,5.55,7/12/2009,6057.0,6,20434,Medium,Criminal case; Pending for 16 years; High legal complexity
+Rohitash_Kumar_Ors_vs_Om_Prakash_Sharma_Ors_on_6_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,34,4717,Low,Criminal case; High legal complexity
+Rohtash_vs_State_Of_Haryana_on_22_May_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,2,3156,Low,Criminal case
+Romesh_Thappar_vs_The_State_Of_Madras_on_26_May_1950_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,0,4440,High,Criminal case
+Roy_Fernandes_vs_State_Of_Goa_Ors_on_1_February_2012_1,criminal,IPC,"149,34",2,"190,3",2,,0,4,1,1,5.4,,,8,7148,Medium,Criminal case; 2 IPC sections involved; High legal complexity
+Rushikesh_Tanaji_Bhoite_vs_State_Of_Maharashtra_Ors_on_4_January_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,13/05/2011,5535.0,2,2067,Very Low,Criminal case; Pending for 15 years
+R_C_Chandel_vs_High_Court_Of_M_P_Anr_on_8_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,14 February 1996,11102.0,1,7087,Low,Criminal case; Pending for 30 years
+R_Mohan_vs_A_K_Vijaya_Kumar_on_3_July_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,15/12/2011,5319.0,1,4319,Very Low,Criminal case; Pending for 14 years
+Sadhupati_Nageswara_Rao_vs_State_Of_A_P_on_3_August_2012_1,criminal,IPC,"405,406,409,420",4,"316,316,316,318",4,,0,5,0,1,2.75,,,1,2877,Low,Criminal case; 4 IPC sections involved
+Saeed_Zakir_Hussain_Malik_vs_State_Of_Maharashtra_Ors_on_9_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,3-8-1990,13123.0,2,4661,Low,Criminal case; Pending for 35 years
+Sahabuddin_Anr_vs_State_Of_Assam_on_13_December_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,0,3,5.0,10/9/2001,9067.0,3,7587,Medium,Criminal case; 2 IPC sections involved; Pending for 24 years
+Sahadevan_Anr_vs_State_Of_T_Nadu_on_8_May_2012_1,criminal,IPC,"120b,302,304",3,"61,103,105",3,,0,10,1,3,8.5,,,0,8266,Critical,Criminal case; 3 IPC sections involved
+Sahara_India_Real_Estate_Corp_Ltd_Ors_vs_Securities_Exch_Board_Of_India_Anr_on_11_September_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,11,12537,High,Criminal case; High legal complexity
+Sahara_India_Real_Estate_Corp_Ltd_Ors_vs_Securities_Exch_Board_Of_India_Anr_on_31_August_2012_1,civil,IPC,,0,,0,,0,3,1,5,7.05,,,2,86069,High,Civil case
+Sajeesh_Babu_K_vs_N_K_Santhosh_Ors_on_19_October_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,2,3969,Low,Criminal case
+Salauddin_Ahmed_Anr_vs_Samta_Andolan_on_29_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,3,7655,Low,Criminal case
+Samaj_Parivartana_Samudaya_Ors_vs_State_Of_Karnataka_Ors_on_11_May_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.05,28/61/2009,,3,11361,Medium,Criminal case
+Sampath_Kumar_vs_Inspector_Of_Police_Krishnagiri_on_2_March_2012_1,criminal,IPC,"302,324,34",3,"103,118,3",3,,0,10,1,3,8.5,,,9,4081,Critical,Criminal case; 3 IPC sections involved; High legal complexity
+Sandeep_vs_State_Of_U_P_on_11_May_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,1,1,7.5,,,8,12409,High,Criminal case; 2 IPC sections involved; High legal complexity
+Sandesh_Sainath_Kailash_Abhang_vs_State_Of_Maharashtra_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,1,4841,Medium,Criminal case
+Sangeetaben_Mahendrabhai_Patel_vs_State_Of_Gujarat_Anr_on_23_April_2012_1,criminal,IPC,"114,201,330,348,406,409,420,71",8,"54,238,120,127,316,316,318,9",8,,0,8,0,5,5.3,21-9-1969,20744.0,29,6252,Medium,Criminal case; 8 IPC sections involved; Pending for 56 years; High legal complexity
+Sangeet_Anr_vs_State_Of_Haryana_on_20_November_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,3,12534,High,Criminal case
+Sanjeev_Kr_Samrat_vs_National_Insurance_Co_Ltd_And_Ors_on_11_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,5073,Low,Civil case
+Santosh_Devi_vs_National_Insurance_Co_Ltd_Ors_on_23_April_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,1,3623,Low,Criminal case
+Sarju_Pershad_vs_Raja_Jwaleshwari_Pratap_Narain_Singh_on_14_November_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,4597,Low,Civil case
+Sathya_Narayanan_vs_State_Tr_Insp_Of_Police_on_2_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,2,7240,Low,Criminal case
+Satish_Batra_vs_Sudhir_Rawal_on_18_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,3,3995,Low,Civil case
+Satish_Mehra_vs_State_Of_N_C_T_Of_Delhi_And_Anr_on_22_November_2012_1,criminal,IPC,"120b,420,467,468,471",5,"61,318,338,336,340",5,,0,8,1,3,7.8,,,0,5632,High,Criminal case; 5 IPC sections involved
+Satyabrata_Sahoo_Ors_vs_State_Of_Orissa_Ors_on_3_August_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,6071,Low,Civil case
+Satyajit_Ballubhai_Desai_Ors_vs_State_Of_Gujarat_on_20_July_2012_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,1,4736,High,Civil case
+Satya_Jain_D_Ors_vs_Anis_Ahmed_Rushdie_D_Tr_Lrs_Ors_on_3_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,6,8248,Low,Civil case; High legal complexity
+Sayed_Mohd_Ahmed_Kazmi_vs_State_Gnctd_Ors_on_19_October_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,1,4380,High,Criminal case
+Seth_Premchand_Satramdas_vs_The_State_Of_Bihar_on_30_November_1950_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,0,2756,Medium,Civil case
+Shahejadkhan_Mahebubkhan_Pathan_vs_State_Of_Gujarat_on_5_October_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,3,4353,Low,Criminal case
+Shailendra_Bhardwaj_Ors_vs_Chandra_Pal_Anr_on_21_November_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,1,2718,Low,Civil case
+Shanti_Devi_W_O_Shanker_Lal_vs_State_Of_Rajasthan_on_5_October_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,2,4694,Medium,Criminal case
+Sheodhari_Rai_And_Ors_vs_Suraj_Prasad_Singh_And_Ors_on_1_December_1950_1,civil,IPC,,0,,0,,0,3,1,1,4.55,23-2-1948,28625.0,0,1713,Medium,Civil case; Pending for 78 years
+Sheoraj_Singh_Ahlawat_Ors_vs_State_Of_U_P_Anr_on_9_November_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,,,0,4432,Medium,Criminal case
+Sheth_Maneklal_Mansukhbhai_vs_Messrs_Hormusji_Jamshedji_on_21_March_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,5141,Low,Civil case
+Shreejith_L_vs_Deputy_Director_Education_Kerala_on_3_July_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,6571,Low,Criminal case
+Shudhakar_vs_State_Of_M_P_on_24_July_2012_1,criminal,IPC,302,1,103,1,,0,10,0,1,4.0,18-7-1994,11678.0,1,8725,Medium,Criminal case; 1 IPC sections involved; Pending for 31 years
+Shyamal_Ghosh_vs_State_Of_West_Bengal_on_11_July_2012_1,criminal,IPC,"149,201,302,34,379",5,"190,238,103,3,303",5,,0,10,1,1,7.5,,,0,18258,High,Criminal case; 5 IPC sections involved
+Shyam_Babu_vs_State_Of_U_P_on_7_September_2012_1,criminal,IPC,149,1,190,1,,0,4,0,3,3.4,,,1,3773,Low,Criminal case; 1 IPC sections involved
+Society_For_Un_Aided_P_School_Of_Raj_vs_U_O_I_Anr_on_12_April_2012_1,civil,IPC,,0,,0,,0,3,1,5,6.55,15-7-2004,8028.0,1,41771,High,Civil case; Pending for 21 years
+Soman_vs_State_Of_Kerala_on_14_December_2012_1,criminal,IPC,,0,,0,,0,3,1,1,4.55,23 May 2005,7716.0,0,5382,Medium,Criminal case; Pending for 21 years
+Speaker_Haryana_Vidhan_Sabha_vs_Kuldeep_Bishnoi_Ors_on_28_September_2012_1,civil,IPC,,0,,0,41,1,3,0,3,3.05,,,2,9086,Low,Civil case; 1 CPC sections involved
+Sri_Bhagwan_vs_State_Of_U_P_on_6_December_2012_1,criminal,IPC,326,1,118,1,,0,6,0,1,2.6,06/12/2012,4962.0,0,6751,Low,Criminal case; 1 IPC sections involved; Pending for 13 years
+Sri_Marcel_Martins_vs_M_Printer_Ors_on_27_April_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.05,,,1,6251,Medium,Civil case
+Sri_Ranga_Nilayam_Rama_Krishna_Rao_vs_Kandokori_Chellayamma_Alias_Mangamma_on_17_October_1950_1,civil,IPC,,0,,0,,0,3,0,3,2.55,1-10-1937,32422.0,0,5949,Low,Civil case; Pending for 88 years
+State_Of_A_P_Ors_vs_D_Raghukul_Pershad_D_By_Lrs_Ors_on_8_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,1,1630,Low,Civil case
+State_Of_Bihar_Anr_vs_Arvind_Kumar_Anr_on_23_July_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,2,2472,Low,Criminal case
+State_Of_Bombay_vs_Narothamdas_Jethabai_And_Anr_on_20_December_1950_1,civil,IPC,,0,,0,9,1,3,0,3,3.05,,,0,30758,Low,Civil case; 1 CPC sections involved
+State_Of_Gujarat_Anr_vs_Manoharsinhji_Pradyumansinhji_Jadeja_on_4_December_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,5,25741,Medium,Civil case
+State_Of_Gujarat_Ors_vs_Arvindkumar_T_Tiwari_Anr_on_14_September_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,9,2510,Low,Criminal case; High legal complexity
+State_Of_Gujarat_Ors_vs_Essar_Oil_Ltd_Anr_on_17_January_2012_1,civil,IPC,,0,,0,,0,3,1,5,7.05,,,4,9720,High,Civil case
+State_Of_Haryana_Ors_vs_Vijay_Singh_Ors_on_22_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,1/95/3515,,1,8873,Low,Criminal case
+State_Of_Kerala_Ors_vs_M_S_Mar_Appraem_Kuri_Co_Ltd_Anr_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,9-9-1976,18199.0,6,20362,Low,Civil case; Pending for 49 years; High legal complexity
+State_Of_Maharashtra_Tr_C_B_I_vs_Balakrishna_Dattatrya_Kumbhar_on_15_October_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,6,2564,Low,Criminal case; High legal complexity
+State_Of_Maharashtra_vs_Vishwanath_Maranna_Shetty_on_19_October_2012_1,criminal,IPC,,0,,0,,0,3,1,2,5.55,,,0,6736,Medium,Criminal case
+State_Of_M_P_Anr_vs_Ram_Prakash_Singh_Anr_on_10_January_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,0,2334,High,Criminal case
+State_Of_M_P_Ors_vs_Sandhya_Tomar_Anr_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,10,1900,Low,Civil case; High legal complexity
+State_Of_M_P_vs_Rakesh_Kohli_Anr_on_11_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,11,7032,Low,Civil case; High legal complexity
+State_Of_M_P_vs_Surendra_Kori_on_26_September_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,25/3/2006,7410.0,1,5478,Low,Criminal case; Pending for 20 years
+State_Of_N_C_T_Of_Delhi_vs_Ajay_Kumar_Tyagi_on_31_August_2012_1,criminal,IPC,,0,,0,,0,3,0,5,3.55,27-3-1996,11060.0,0,4624,Low,Criminal case; Pending for 30 years
+State_Of_Orissa_Ors_vs_Ujjal_Kumar_Burdhan_on_19_March_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,3-10-1997,10505.0,1,2922,Very Low,Criminal case; Pending for 28 years
+State_Of_Punjab_vs_Balwinder_Singh_Etc_on_6_January_2012_1,criminal,IPC,"279,304a,337",3,"281,106,125",3,,0,4,1,1,5.4,,,1,2357,Medium,Criminal case; 3 IPC sections involved
+State_Of_Punjab_vs_Dalbir_Singh_on_1_February_2012_1,criminal,IPC,,0,,0,,0,3,1,4,6.55,,,1,15262,High,Criminal case
+State_Of_Rajasthan_vs_Darshan_Singh_Darshan_Lal_on_21_May_2012_1,criminal,IPC,"120b,201,302,449",4,"61,238,103,332",4,,0,10,1,3,8.5,,,3,4193,Critical,Criminal case; 4 IPC sections involved
+State_Of_Rajasthan_vs_Rajkumar_Agarwal_Anr_on_17_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,10/9/2009,6145.0,1,2949,Low,Criminal case; Pending for 16 years
+State_Of_Rajasthan_vs_Vinod_Kumar_on_18_May_2012_1,criminal,IPC,"120b,376",2,"61,65",2,,0,10,1,3,8.5,,,26,4610,Critical,Criminal case; 2 IPC sections involved; High legal complexity
+State_Of_Uttarakhand_Prev_U_P_vs_Mohan_Singh_Ors_on_12_September_2012_1,civil,IPC,,0,,0,100,1,3,1,1,5.05,,,2,6724,Medium,Civil case; 1 CPC sections involved
+State_Of_U_P_Ors_vs_Ambrish_Tandon_Anr_on_20_January_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,1,1930,Low,Civil case
+State_Of_U_P_Ors_vs_Ashok_Kumar_Nigam_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,5844,Low,Criminal case
+State_Of_U_P_vs_Sanjay_Kumar_on_21_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,18,4156,Low,Criminal case; High legal complexity
+State_Tr_P_S_Lodhi_Colony_New_Delhi_vs_Sanjeev_Nanda_on_3_August_2012_1,criminal,IPC,"201,299,300,304,304a,338",6,"238,100,101,105,106,125",6,,0,9,0,3,5.15,,,12,20428,Medium,Criminal case; 6 IPC sections involved; High legal complexity
+Subramanian_Swamy_vs_A_Raja_on_24_August_2012_1,criminal,IPC,"120b,409,420,468,471",5,"61,316,318,336,340",5,,0,8,0,5,5.8,,,1,14311,Medium,Criminal case; 5 IPC sections involved
+Sudevanand_vs_State_Through_Cbi_on_19_January_2012_1,criminal,IPC,"307,4",2,109,1,,0,8,0,3,4.3,6-2-1991,12936.0,0,6479,Medium,Criminal case; 2 IPC sections involved; Pending for 35 years
+Sukhdev_Singh_vs_State_Of_Haryana_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,1,5795,Low,Criminal case
+Sumit_Tomar_vs_State_Of_Punjab_on_19_October_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,2071,Low,Criminal case
+Sunil_Clifford_Daniel_vs_State_Of_Punjab_on_14_September_2012_1,criminal,IPC,"201,302",2,"238,103",2,,0,10,0,3,5.5,,,19,8989,Medium,Criminal case; 2 IPC sections involved; High legal complexity
+Sunil_Kumar_vs_State_Of_Haryana_on_27_March_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,10,2141,Low,Criminal case; High legal complexity
+Super_Cassetts_Industries_Ltd_vs_Music_Broadcast_Pvt_Ltd_on_3_May_2012_1,civil,IPC,,0,,0,151,1,3,1,3,6.05,,,2,10878,High,Civil case; 1 CPC sections involved
+Surat_Singh_vs_State_Of_Uttaranchal_Anr_on_10_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,1091,Low,Criminal case
+Suresh_Ors_vs_State_Of_Madhya_Pradesh_on_22_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,5483,Low,Criminal case
+Suresh_Sakharam_Nangre_vs_State_Of_Maharashtra_on_21_September_2012_1,criminal,IPC,34,1,3,1,,0,4,0,1,2.4,,,0,3751,Low,Criminal case; 1 IPC sections involved
+Surinder_Kumar_vs_State_Of_Punjab_on_21_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,0,2938,Low,Criminal case
+Surjit_Sarkar_vs_State_Of_West_Bengal_on_4_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,3,7573,Low,Criminal case
+Tejas_Construction_Infras_Pvt_Ltd_vs_Municipal_Council_Sendhwa_Anr_on_4_May_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,0,5498,Medium,Civil case
+The_Bharat_Bank_Ltd_Delhi_vs_Employees_Of_The_Bharat_Bank_on_26_May_1950_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,0,26117,Low,Civil case
+The_Bharat_Bank_Ltd_Delhi_vs_The_Employees_Of_The_Bharat_Bank_Ltd_on_1_March_1950_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,0,25300,High,Civil case
+The_New_Piecegoods_Bazar_Co_vs_The_Commissioner_Of_Income_Tax_Bombay_on_26_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,3989,Low,Civil case
+The_Registrar_Rajiv_Gandhi_University_vs_G_Hemlatha_And_Ors_on_23_August_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,,,2,1849,Low,Criminal case
+The_State_Of_Maharashtra_And_Etc_Etc_vs_Saeed_Sohail_Sheikh_Etc_Etc_on_2_November_2012_1,criminal,IPC,,0,,0,,0,3,1,4,6.55,,,5,9777,High,Criminal case
+The_State_Of_Tripura_vs_The_Province_Of_East_Bengalunion_Of_on_20_December_1950_1,civil,IPC,,0,,0,9,1,3,0,3,3.05,,,0,31355,Low,Civil case; 1 CPC sections involved
+The_State_Of_Tripura_vs_The_Province_Of_East_Bengalunion_Of_on_4_December_1950_1,civil,IPC,,0,,0,,0,3,1,3,6.05,,,0,20790,High,Civil case
+Thoti_Manohar_vs_State_Of_A_P_on_15_May_2012_1,criminal,IPC,302,1,103,1,,0,10,0,3,5.5,,,16,7055,Medium,Criminal case; 1 IPC sections involved; High legal complexity
+Tukaram_Kana_Joshi_Ors_Thr_Poa_Holder_vs_M_I_D_C_Ors_on_2_November_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,14,3755,Medium,Civil case; High legal complexity
+Tulshiram_Sahadu_Suryawanshi_Anr_vs_State_Of_Maharashtra_on_14_September_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,0,4288,High,Criminal case
+T_N_Godavarman_Thirumulpad_vs_Union_Of_India_Ors_on_13_February_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,,,1,11758,Medium,Civil case
+Union_Of_India_Anr_vs_Shashank_Goswami_Anr_on_23_May_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,1733,Low,Criminal case
+Union_Of_India_Anr_vs_Talwinder_Singh_on_20_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,6,1778,Low,Civil case; High legal complexity
+Union_Of_India_Ors_vs_Brigadier_P_S_Gill_on_23_March_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,0,4251,Low,Criminal case
+Union_Of_India_Ors_vs_Madhu_E_V_Anr_on_26_April_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,27-12-1995,11151.0,0,2899,Very Low,Criminal case; Pending for 30 years
+Union_Of_India_Ors_vs_N_R_Parmar_Ors_on_27_November_2012_1,criminal,IPC,,0,,0,,0,3,1,3,5.55,11/7/1986,14607.0,0,17191,Medium,Criminal case; Pending for 40 years
+Union_Of_India_Ors_vs_S_Srinivasan_on_21_May_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,11,7568,Low,Criminal case; High legal complexity
+Union_Of_India_vs_Ibrahim_Uddin_Anr_on_17_July_2012_1,civil,IPC,,0,,0,100,1,3,1,3,6.05,,,71,13983,High,Civil case; 1 CPC sections involved; High legal complexity
+U_P_Power_Corp_Ltd_vs_Rajesh_Kumar_Ors_on_27_April_2012_1,criminal,IPC,,0,,0,,0,3,0,3,2.55,10-2-1995,11471.0,6,18210,Low,Criminal case; Pending for 31 years; High legal complexity
+U_Sree_vs_U_Srinivas_on_11_December_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,2,7798,High,Criminal case
+Vasanti_Dubey_vs_State_Of_M_P_on_17_January_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,3,5333,Low,Criminal case
+Vidur_Impex_Traders_Pvt_Ltd_Ors_vs_Tosh_Apartments_Pvt_Ltd_Ors_on_21_August_2012_1,civil,IPC,,0,,0,"151,22",2,3,1,1,4.55,2-12-1991,12637.0,2,15511,Medium,Civil case; 2 CPC sections involved; Pending for 34 years
+Vijay_Kumar_Kaul_Ors_vs_U_O_I_Ors_on_25_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,,,13,5361,Low,Civil case; High legal complexity
+Vijay_Singh_vs_State_Of_Delhi_on_29_August_2012_1,criminal,IPC,,0,,0,,0,3,1,1,4.55,1-4-2001,9229.0,1,5974,Medium,Criminal case; Pending for 25 years
+Vijay_Singh_vs_State_Of_U_P_Ors_on_13_April_2012_1,criminal,IPC,2,1,,0,,0,4,0,1,2.4,,,11,2863,Low,Criminal case; 1 IPC sections involved; High legal complexity
+Vilas_Pandurang_Pawar_Anr_vs_State_Of_Maharashtra_Ors_on_10_September_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,2,2268,High,Criminal case
+Village_Panchayat_Calangute_vs_Additional_Director_Of_Panchayat_Ii_on_2_July_2012_1,civil,IPC,,0,,0,,0,3,1,5,7.05,,,3,8431,High,Civil case
+Vinayak_Kashinath_Shilkar_vs_Dy_Collector_Competent_Auth_Ors_on_29_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,1614,Low,Civil case
+Vinay_Tyagi_vs_Irshad_Ali_Deepak_Ors_on_13_December_2012_1,criminal,IPC,"120b,121,121a,122,123",5,"61,147,148,149,150",5,,0,8,1,5,8.8,,,1,15708,Critical,Criminal case; 5 IPC sections involved
+Vinod_Kapoor_vs_State_Of_Goa_Ors_on_3_October_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,13-3-1997,10709.0,0,2318,Low,Civil case; Pending for 29 years
+Vipul_Shital_Prasad_Agarwal_vs_State_Of_Gujarat_Anr_on_6_November_2012_1,criminal,IPC,25,1,2,1,,0,4,1,3,6.4,,,1,3418,High,Criminal case; 1 IPC sections involved
+Vodafone_International_Holdings_B_V_vs_Union_Of_India_Anr_on_20_January_2012_1,civil,IPC,,0,,0,,0,3,1,5,6.55,31 December 2006,7129.0,9,60965,High,Civil case; Pending for 19 years; High legal complexity
+V_Chandrasekaran_Anr_vs_Administrative_Officer_Ors_on_18_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,27,8776,Low,Civil case; High legal complexity
+V_D_Bhanot_vs_Savita_Bhanot_on_7_February_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,,,0,2250,High,Criminal case
+V_K_Sasikala_vs_State_Rep_By_Superintendent_Of_Police_on_27_September_2012_1,criminal,IPC,,0,,0,,0,3,1,5,7.05,,,1,9051,High,Criminal case
+V_V_R_N_M_Subbayya_Chettiar_vs_Commissioner_Of_Income_Tax_Madras_on_21_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,,,0,2786,Low,Civil case
+West_U_P_Sugar_Mills_Association_Ors_vs_State_Of_Uttar_Pradesh_Ors_on_17_January_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,,,2,3331,Low,Criminal case
+Yanab_Sheikh_Gagu_vs_State_Of_West_Bengal_on_13_December_2012_1,criminal,IPC,"302,34,410",3,"103,3,317",3,,0,10,0,5,6.0,20-5-1995,11372.0,1,12274,High,Criminal case; 3 IPC sections involved; Pending for 31 years
+Yeswant_Deorao_Deshmukh_vs_Walchand_Ramchand_Kothari_on_1_December_1950_1,civil,IPC,,0,,0,48,1,3,1,3,6.05,,,0,6523,High,Civil case; 1 CPC sections involved
+Yumman_Ongbi_Lembi_Leima_vs_State_Of_Manipur_Ors_on_4_January_2012_1,criminal,IPC,"302,34,386",3,"103,3,308",3,,0,10,1,3,8.5,,,0,3417,Critical,Criminal case; 3 IPC sections involved
+Y_K_Singla_vs_Punjab_National_Bank_Ors_on_14_December_2012_1,criminal,IPC,"196,5",2,233,1,,0,4,0,3,3.4,,,0,7308,Low,Criminal case; 2 IPC sections involved
