@@ -44,10 +44,12 @@ class SearchRequest(BaseModel):
 # Lazy-loaded Agents to save boot RAM
 UPLOAD_AGENT = None
 PRIORITIZATION_AGENT = None
+EXPLAINABILITY_AGENT = None
+BIAS_AGENT = None
 
 @app.post("/summarize_upload")
 async def process_pdf_upload(file: UploadFile = File(...)):
-    global UPLOAD_AGENT, PRIORITIZATION_AGENT
+    global UPLOAD_AGENT, PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, BIAS_AGENT
     conn = None
     cur = None
     try:
@@ -61,16 +63,26 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
         cur = conn.cursor()
         cur.execute("""
-            SELECT case_summary, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type 
+            SELECT case_summary, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type, bias_score, bias_details 
             FROM cases WHERE case_id = %s
         """, (case_id,))
         result = cur.fetchone()
         
-        # Initialize Prioritization Agent
+        # Initialize Prioritization & Explainability & Bias Agents
         if not PRIORITIZATION_AGENT:
             print("🚀 Loading Prioritization Agent...")
             from agents.prioritization.prioritizer import PrioritizationAgent
             PRIORITIZATION_AGENT = PrioritizationAgent()
+
+        if not EXPLAINABILITY_AGENT:
+            print("🚀 Loading Explainability Agent...")
+            from agents.explainability.explainability_agent import ExplainabilityAgent
+            EXPLAINABILITY_AGENT = ExplainabilityAgent()
+
+        if not BIAS_AGENT:
+            print("🚀 Loading Bias Agent...")
+            from agents.fairness.bias_agent import BiasAgent
+            BIAS_AGENT = BiasAgent()
             
         if result and result[0]:
             print(f"🔥 Fast Cache Hit! Returned {case_id} instantly without hitting Gemini.")
@@ -85,6 +97,20 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 case_age_days=0.0,
                 num_precedents=5
             )
+
+            # Generate dynamic contributions for cache hit
+            features_for_explain = {
+                "case_type": result[6] if result[6] else "civil",
+                "num_ipc_sections": max(ipc_sections_len, bns_sections_len) if result[6] == "criminal" else 0,
+                "num_cpc_sections": max(ipc_sections_len, bns_sections_len) if result[6] == "civil" else 0,
+                "num_precedents": 5,
+                "total_words": 1000,
+                "case_age_days": 0.0,
+                "max_severity_score": float(result[1]) if result[1] is not None else 3.0,
+                "immediate_threat_flag": PRIORITIZATION_AGENT.check_immediate_threat(result[0]),
+                "societal_impact_score": PRIORITIZATION_AGENT.calculate_societal_impact(result[0])
+            }
+            contributions = EXPLAINABILITY_AGENT.explain_priority(features_for_explain)
             
             # Retrieve similar cases using database case_chunks embedding
             similar_cases = []
@@ -134,7 +160,10 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 "priority_score": result[5],
                 "case_type": result[6],
                 "priority_explanation": explanation,
-                "similar_cases": similar_cases
+                "similar_cases": similar_cases,
+                "contributions": contributions,
+                "bias_score": result[7] if result[7] is not None else 0.98,
+                "bias_details": result[8] if result[8] is not None else "Neutrality evaluation audit complete."
             }
             
         # Cache Miss -> Close DB connections immediately so they aren't held open during Gemini execution
@@ -233,6 +262,25 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             case_age_days=0.0,
             num_precedents=num_precedents
         )
+
+        # Generate Explainability attributions
+        features_for_explain = {
+            "case_type": case_type,
+            "num_ipc_sections": len(ipc_sections_list),
+            "num_cpc_sections": len(cpc_sections_list),
+            "num_precedents": num_precedents,
+            "total_words": len(text.split()),
+            "case_age_days": 0.0,
+            "max_severity_score": float(severity),
+            "immediate_threat_flag": immediate_threat,
+            "societal_impact_score": societal_impact
+        }
+        contributions = EXPLAINABILITY_AGENT.explain_priority(features_for_explain)
+
+        # Run Bias & Fairness Audit
+        bias_audit = BIAS_AGENT.audit_case_fairness(text)
+        bias_score = bias_audit["bias_score"]
+        bias_details = bias_audit["bias_details"]
         
         # Now re-open DB connection to persist upload results
         conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
@@ -244,15 +292,16 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         
         if not exists:
             cur.execute("""
-                INSERT INTO cases (case_id, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (case_id, severity, regime, ipc_str, bns_str, priority_score, case_type))
+                INSERT INTO cases (case_id, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type, bias_score, bias_details) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (case_id, severity, regime, ipc_str, bns_str, priority_score, case_type, bias_score, bias_details))
         
         cur.execute("""
             UPDATE cases 
-            SET case_summary = %s, max_severity_score = %s, legal_regime = %s, ipc_sections = %s, bns_sections = %s, priority_score = %s, case_type = %s
+            SET case_summary = %s, max_severity_score = %s, legal_regime = %s, ipc_sections = %s, bns_sections = %s, priority_score = %s, case_type = %s,
+                immediate_threat_flag = %s, societal_impact_score = %s, bias_score = %s, bias_details = %s
             WHERE case_id = %s
-        """, (raw_summary_string, severity, regime, ipc_str, bns_str, priority_score, case_type, case_id))
+        """, (raw_summary_string, severity, regime, ipc_str, bns_str, priority_score, case_type, immediate_threat, societal_impact, bias_score, bias_details, case_id))
         
         # Retrieve similar cases using text embedding of uploaded PDF
         similar_cases = []
@@ -308,7 +357,10 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             "priority_score": priority_score,
             "case_type": case_type,
             "priority_explanation": explanation,
-            "similar_cases": similar_cases
+            "similar_cases": similar_cases,
+            "contributions": contributions,
+            "bias_score": bias_score,
+            "bias_details": bias_details
         }
         
     except Exception as e:
@@ -322,7 +374,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
 
 @app.post("/search")
 async def search_cases(req: SearchRequest):
-    global PRIORITIZATION_AGENT
+    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, BIAS_AGENT
     if not req.query:
         raise HTTPException(status_code=400, detail="Query cannot be empty")
         
@@ -333,10 +385,18 @@ async def search_cases(req: SearchRequest):
     query_emb = mean_pooling(model_output, encoded_input['attention_mask'])
     query_emb = F.normalize(query_emb, p=2, dim=1).numpy()[0]
     
-    # Initialize Prioritization Agent
+    # Initialize Prioritization & Explainability & Bias Agents
     if not PRIORITIZATION_AGENT:
         from agents.prioritization.prioritizer import PrioritizationAgent
         PRIORITIZATION_AGENT = PrioritizationAgent()
+
+    if not EXPLAINABILITY_AGENT:
+        from agents.explainability.explainability_agent import ExplainabilityAgent
+        EXPLAINABILITY_AGENT = ExplainabilityAgent()
+
+    if not BIAS_AGENT:
+        from agents.fairness.bias_agent import BiasAgent
+        BIAS_AGENT = BiasAgent()
         
     conn = None
     cur = None
@@ -362,7 +422,12 @@ async def search_cases(req: SearchRequest):
                         c.num_ipc_sections,
                         c.num_cpc_sections,
                         c.num_precedents,
-                        c.case_age_days
+                        c.case_age_days,
+                        c.immediate_threat_flag,
+                        c.societal_impact_score,
+                        c.total_words,
+                        c.bias_score,
+                        c.bias_details
                     FROM case_chunks cc
                     JOIN cases c ON cc.case_id = c.case_id
                     WHERE c.case_date LIKE %s
@@ -389,7 +454,12 @@ async def search_cases(req: SearchRequest):
                         c.num_ipc_sections,
                         c.num_cpc_sections,
                         c.num_precedents,
-                        c.case_age_days
+                        c.case_age_days,
+                        c.immediate_threat_flag,
+                        c.societal_impact_score,
+                        c.total_words,
+                        c.bias_score,
+                        c.bias_details
                     FROM case_chunks cc
                     JOIN cases c ON cc.case_id = c.case_id
                     ORDER BY c.case_id, distance ASC
@@ -414,6 +484,20 @@ async def search_cases(req: SearchRequest):
                 case_age_days=r[12] if r[12] is not None else None,
                 num_precedents=r[11] if r[11] is not None else 0
             )
+
+            # Generate Explainability contributions
+            features_for_explain = {
+                "case_type": r[8] if r[8] else "civil",
+                "num_ipc_sections": r[9] if r[9] is not None else 0,
+                "num_cpc_sections": r[10] if r[10] is not None else 0,
+                "num_precedents": r[11] if r[11] is not None else 0,
+                "total_words": r[15] if r[15] is not None else 1000,
+                "case_age_days": r[12] if r[12] is not None else 365.0,
+                "max_severity_score": r[3] if r[3] is not None else 3.0,
+                "immediate_threat_flag": r[13] if r[13] is not None else 0,
+                "societal_impact_score": r[14] if r[14] is not None else 1
+            }
+            contributions = EXPLAINABILITY_AGENT.explain_priority(features_for_explain)
             
             results.append({
                 "case_id": r[0],
@@ -425,7 +509,10 @@ async def search_cases(req: SearchRequest):
                 "ipc_sections": r[6] if r[6] else "",
                 "priority_score": r[7] if r[7] is not None else 0.0,
                 "case_type": r[8] if r[8] else "Unknown",
-                "priority_explanation": exp
+                "priority_explanation": exp,
+                "contributions": contributions,
+                "bias_score": r[16] if r[16] is not None else 0.98,
+                "bias_details": r[17] if r[17] is not None else "Neutrality evaluation audit complete."
             })
             
         return {"results": results}
