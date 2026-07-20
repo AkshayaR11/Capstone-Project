@@ -44,10 +44,13 @@ class SearchRequest(BaseModel):
 # Lazy-loaded Agents to save boot RAM
 UPLOAD_AGENT = None
 PRIORITIZATION_AGENT = None
+BIAS_DETECTOR = None
+EXPLAINABILITY_AGENT = None
+BIAS_AGENT = None
 
 @app.post("/summarize_upload")
 async def process_pdf_upload(file: UploadFile = File(...)):
-    global UPLOAD_AGENT, PRIORITIZATION_AGENT
+    global UPLOAD_AGENT, PRIORITIZATION_AGENT, BIAS_DETECTOR, EXPLAINABILITY_AGENT, BIAS_AGENT
     conn = None
     cur = None
     try:
@@ -127,6 +130,43 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             except Exception as sim_err:
                 print(f"⚠️ Warning: Cache hit semantic similarity lookup failed: {sim_err}")
             
+            # Audit priority
+            if not BIAS_DETECTOR:
+                from agents.bias.bias_detector import BiasDetector
+                BIAS_DETECTOR = BiasDetector()
+            if not EXPLAINABILITY_AGENT:
+                from agents.prioritization.explainability import ExplainabilityAgent
+                EXPLAINABILITY_AGENT = ExplainabilityAgent()
+            if not BIAS_AGENT:
+                from agents.bias.bias_agent import BiasAgent
+                BIAS_AGENT = BiasAgent()
+
+            _, severity_label = PRIORITIZATION_AGENT._get_base_priority(
+                result[6], result[4], result[3], result[0]
+            )
+            priority_result = {
+                "case_id": case_id,
+                "case_type": result[6] if result[6] else "Unknown",
+                "severity": severity_label,
+                "final_priority": float(result[5]) if result[5] is not None else 0.0,
+                "delay_factor": 1.0
+            }
+            audit_report = BIAS_DETECTOR.audit_case_priority({}, priority_result)
+            
+            # Compute SHAP and Neutrality Bias
+            case_features_dict = {
+                "case_type": result[6] if result[6] else "Unknown",
+                "num_ipc_sections": len(result[3].split(",")) if result[3] else 0,
+                "num_bns_sections": len(result[4].split(",")) if result[4] else 0,
+                "num_cpc_sections": 0,
+                "num_precedents": 5,
+                "total_words": len(result[0].split()) if result[0] else 0,
+                "case_age_days": 0.0,
+                "max_severity_score": float(result[1]) if result[1] is not None else 3.0
+            }
+            shap_attributions = EXPLAINABILITY_AGENT.explain_priority(case_features_dict)
+            opinion_audit = BIAS_AGENT.audit_case_fairness(result[0] if result[0] else "")
+            
             return {
                 "summary": result[0],
                 "severity": result[1],
@@ -136,7 +176,10 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 "priority_score": result[5],
                 "case_type": result[6],
                 "priority_explanation": explanation,
-                "similar_cases": similar_cases
+                "similar_cases": similar_cases,
+                "bias_audit": audit_report,
+                "shap_attributions": shap_attributions,
+                "opinion_audit": opinion_audit
             }
             
         # Cache Miss -> Close DB connections immediately so they aren't held open during Gemini execution
@@ -285,6 +328,41 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         except Exception as sim_err:
             print(f"⚠️ Warning: Semantic search during upload failed: {sim_err}")
             
+        # Audit priority
+        if not BIAS_DETECTOR:
+            from agents.bias.bias_detector import BiasDetector
+            BIAS_DETECTOR = BiasDetector()
+        if not EXPLAINABILITY_AGENT:
+            from agents.prioritization.explainability import ExplainabilityAgent
+            EXPLAINABILITY_AGENT = ExplainabilityAgent()
+        if not BIAS_AGENT:
+            from agents.bias.bias_agent import BiasAgent
+            BIAS_AGENT = BiasAgent()
+
+        _, severity_label = PRIORITIZATION_AGENT._get_base_priority(case_type, bns_str, ipc_str, text)
+        priority_result = {
+            "case_id": case_id,
+            "case_type": case_type if case_type else "Unknown",
+            "severity": severity_label,
+            "final_priority": float(priority_score) if priority_score is not None else 0.0,
+            "delay_factor": 1.0
+        }
+        audit_report = BIAS_DETECTOR.audit_case_priority({}, priority_result)
+        
+        # Compute SHAP and Neutrality Bias
+        case_features_dict = {
+            "case_type": case_type if case_type else "Unknown",
+            "num_ipc_sections": len(ipc_sections_list),
+            "num_bns_sections": len(bns_sections_list),
+            "num_cpc_sections": len(cpc_sections_list),
+            "num_precedents": num_precedents,
+            "total_words": len(text.split()) if text else 0,
+            "case_age_days": 0.0,
+            "max_severity_score": float(severity) if severity is not None else 3.0
+        }
+        shap_attributions = EXPLAINABILITY_AGENT.explain_priority(case_features_dict)
+        opinion_audit = BIAS_AGENT.audit_case_fairness(raw_summary_string if raw_summary_string else "")
+        
         conn.commit()
         
         return {
@@ -296,7 +374,10 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             "priority_score": priority_score,
             "case_type": case_type,
             "priority_explanation": explanation,
-            "similar_cases": similar_cases
+            "similar_cases": similar_cases,
+            "bias_audit": audit_report,
+            "shap_attributions": shap_attributions,
+            "opinion_audit": opinion_audit
         }
         
     except Exception as e:
@@ -310,7 +391,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
 
 @app.post("/search")
 async def search_cases(req: SearchRequest):
-    global PRIORITIZATION_AGENT
+    global PRIORITIZATION_AGENT, BIAS_DETECTOR, EXPLAINABILITY_AGENT, BIAS_AGENT
     if not req.query:
         raise HTTPException(status_code=400, detail="Query cannot be empty")
         
@@ -390,6 +471,17 @@ async def search_cases(req: SearchRequest):
             
         records = cur.fetchall()
         
+        # Ensure bias detector and other agents are loaded
+        if not BIAS_DETECTOR:
+            from agents.bias.bias_detector import BiasDetector
+            BIAS_DETECTOR = BiasDetector()
+        if not EXPLAINABILITY_AGENT:
+            from agents.prioritization.explainability import ExplainabilityAgent
+            EXPLAINABILITY_AGENT = ExplainabilityAgent()
+        if not BIAS_AGENT:
+            from agents.bias.bias_agent import BiasAgent
+            BIAS_AGENT = BiasAgent()
+
         results = []
         for r in records:
             sim_score = 1 - float(r[1])
@@ -405,6 +497,33 @@ async def search_cases(req: SearchRequest):
                 ipc_sections=r[6] if r[6] else "",
             )
             
+            # Audit priority
+            _, severity_label = PRIORITIZATION_AGENT._get_base_priority(
+                r[8], r[5], r[6], r[4]
+            )
+            priority_result = {
+                "case_id": r[0],
+                "case_type": r[8] if r[8] else "Unknown",
+                "severity": severity_label,
+                "final_priority": float(r[7]) if r[7] is not None else 0.0,
+                "delay_factor": PRIORITIZATION_AGENT._get_age_multiplier(r[12] if r[12] is not None else 0.0)
+            }
+            audit_report = BIAS_DETECTOR.audit_case_priority({}, priority_result)
+            
+            # Compute SHAP and Neutrality Bias
+            case_features_dict = {
+                "case_type": r[8] if r[8] else "Unknown",
+                "num_ipc_sections": r[9] if r[9] is not None else 0,
+                "num_bns_sections": len(r[5].split(",")) if r[5] else 0,
+                "num_cpc_sections": r[10] if r[10] is not None else 0,
+                "num_precedents": r[11] if r[11] is not None else 0,
+                "total_words": len(r[4].split()) if r[4] else 0,
+                "case_age_days": r[12] if r[12] is not None else 365.0,
+                "max_severity_score": float(r[3]) if r[3] is not None else 3.0
+            }
+            shap_attributions = EXPLAINABILITY_AGENT.explain_priority(case_features_dict)
+            opinion_audit = BIAS_AGENT.audit_case_fairness(r[4] if r[4] else "")
+            
             results.append({
                 "case_id": r[0],
                 "score": round(sim_score, 4),
@@ -415,7 +534,10 @@ async def search_cases(req: SearchRequest):
                 "ipc_sections": r[6] if r[6] else "",
                 "priority_score": r[7] if r[7] is not None else 0.0,
                 "case_type": r[8] if r[8] else "Unknown",
-                "priority_explanation": exp
+                "priority_explanation": exp,
+                "bias_audit": audit_report,
+                "shap_attributions": shap_attributions,
+                "opinion_audit": opinion_audit
             })
             
         return {"results": results}
@@ -472,9 +594,42 @@ async def get_case_summary(case_id: str):
         cur.execute("UPDATE cases SET case_summary = %s WHERE case_id = %s", (raw_summary_string, case_id))
         conn.commit()
         
-        return {"summary": raw_summary_string}
+        return {"summary": res[0]}
     except Exception as e:
         print(f"Error generating summary: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if cur: cur.close()
+        if conn: conn.close()
+
+@app.get("/systemic_fairness")
+async def get_systemic_fairness():
+    global BIAS_DETECTOR
+    if not BIAS_DETECTOR:
+        from agents.bias.bias_detector import BiasDetector
+        BIAS_DETECTOR = BiasDetector()
+        
+    conn = None
+    cur = None
+    try:
+        conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
+        cur = conn.cursor()
+        
+        cur.execute("SELECT case_id, case_type, priority_score FROM cases WHERE priority_score IS NOT NULL")
+        records = cur.fetchall()
+        
+        cases_data = []
+        for r in records:
+            cases_data.append({
+                "case_id": r[0],
+                "case_type": r[1] if r[1] else "CIVIL",
+                "final_priority": float(r[2])
+            })
+            
+        report = BIAS_DETECTOR.compute_systemic_fairness(cases_data)
+        return report
+    except Exception as e:
+        print(f"Systemic fairness calculation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         if cur: cur.close()

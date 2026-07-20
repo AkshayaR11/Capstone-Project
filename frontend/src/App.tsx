@@ -14,6 +14,16 @@ interface CaseResult {
   case_type?: string;
   priority_explanation?: string;
   similar_cases?: CaseResult[];
+  bias_audit?: {
+    fairness_score: number;
+    bias_flags: { type: string; flagged: boolean; message: string }[];
+    recommendation: string;
+  };
+  shap_attributions?: { [key: string]: number };
+  opinion_audit?: {
+    bias_score: number;
+    bias_details: string;
+  };
 }
 
 function ProgressiveSummary({ summary }: { summary: string }) {
@@ -89,6 +99,22 @@ function App() {
   const [uploadResult, setUploadResult] = useState<CaseResult | null>(null)
   const [uploadLoading, setUploadLoading] = useState(false)
   const [showUploadSummary, setShowUploadSummary] = useState(false)
+
+  // Systemic Fairness Tracker State
+  const [systemicFairness, setSystemicFairness] = useState<any>(null);
+  const [showSystemic, setShowSystemic] = useState(false);
+
+  const fetchSystemicFairness = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/systemic_fairness');
+      if (response.ok) {
+        const data = await response.json();
+        setSystemicFairness(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch systemic fairness metrics", err);
+    }
+  }
 
   // Priority Helpers
   const getPriorityCategory = (score?: number) => {
@@ -177,34 +203,46 @@ function App() {
     }
     const lines = explanation.split(' | ');
 
-    let isML = false;
-    let ruleScore = "0.0";
-    let mlScore = "0.0";
+    let baseScore = "0.0";
+    let multiplier = "1.00";
+    let ageStr = "";
     let finalScore = score !== undefined ? score.toFixed(2) : "0.0";
     let severity = "LOW";
+    let urgencyBoost = "0.00";
+    let societalBoost = "0.00";
     
     lines.forEach(line => {
       const idx = line.indexOf(': ');
       if (idx !== -1) {
         const lbl = line.substring(0, idx).toLowerCase();
         const val = line.substring(idx + 2);
-        if (lbl.includes('baseline rule score')) ruleScore = val;
-        if (lbl.includes('xgboost predicted score')) {
-          mlScore = val;
-          isML = true;
-        }
-        if (lbl.includes('constrained hybrid priority') || lbl.includes('final priority')) finalScore = val;
+        
         if (lbl.includes('base priority')) {
+          baseScore = val.split(' ')[0];
           if (val.includes('CRITICAL')) severity = 'CRITICAL';
           else if (val.includes('HIGH')) severity = 'HIGH';
           else if (val.includes('MEDIUM')) severity = 'MEDIUM';
           else severity = 'LOW';
         }
+        if (lbl.includes('age adjustment')) {
+          const match = val.match(/×([\d.]+)/);
+          if (match) multiplier = match[1];
+          const ageMatch = val.match(/\(([^)]+)\)/);
+          if (ageMatch) ageStr = ageMatch[1];
+        }
+        if (lbl.includes('urgency factors')) {
+          const match = val.match(/\+([\d.]+)/);
+          if (match) urgencyBoost = match[1];
+        }
+        if (lbl.includes('societal impact factors')) {
+          const match = val.match(/\+([\d.]+)/);
+          if (match) societalBoost = match[1];
+        }
+        if (lbl.includes('final score')) {
+          finalScore = val.split(' ')[0];
+        }
       }
     });
-
-    const floorMap: {[key: string]: number} = { CRITICAL: 8.0, HIGH: 6.5, MEDIUM: 4.5, LOW: 2.0 };
-    const floor = floorMap[severity] || 2.0;
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginTop: '10px' }}>
@@ -215,9 +253,10 @@ function App() {
             const label = line.substring(0, colonIndex);
             const value = line.substring(colonIndex + 2);
             let color = '#fff';
-            if (label.toLowerCase().includes('final') || label.toLowerCase().includes('hybrid')) color = '#10b981';
+            if (label.toLowerCase().includes('final') || label.toLowerCase().includes('score')) color = '#10b981';
             if (label.toLowerCase().includes('action')) color = '#3b82f6';
             if (label.toLowerCase().includes('urgency')) color = '#f59e0b';
+            if (label.toLowerCase().includes('societal')) color = '#a855f7';
             if (label.toLowerCase().includes('category')) color = '#ec4899';
             return (
               <div key={i} className="glass" style={{ padding: '12px', borderRadius: '8px', borderLeft: `3px solid ${color === '#fff' ? '#475569' : color}`, background: 'rgba(255, 255, 255, 0.03)' }}>
@@ -229,39 +268,24 @@ function App() {
         </div>
         <div style={{ 
           padding: '12px 14px', 
-          background: 'rgba(59, 130, 246, 0.07)', 
+          background: 'rgba(99, 102, 241, 0.05)', 
           borderRadius: '6px', 
           fontSize: '0.8rem', 
-          color: '#60a5fa',
+          color: '#a5b4fc',
           fontFamily: 'monospace',
-          border: '1px solid rgba(59, 130, 246, 0.15)',
+          border: '1px solid rgba(99, 102, 241, 0.15)',
           display: 'flex',
           flexDirection: 'column',
           gap: '6px'
         }}>
-          {isML ? (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 'bold' }}>
-                <span>⚙️ Constrained Hybrid Equation:</span>
-                <span>FINAL = min(max(Safety Floor, XGBoost), Rule Score + 1.0)</span>
-              </div>
-              <div style={{ borderTop: '1px dashed rgba(59, 130, 246, 0.2)', paddingTop: '6px', display: 'flex', justifyContent: 'space-between', color: '#93c5fd', fontSize: '0.75rem' }}>
-                <span>Execution Trace:</span>
-                <span>min(max({floor} ({severity}), {mlScore}), {ruleScore} + 1.0) = {finalScore} / 10.0</span>
-              </div>
-            </>
-          ) : (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 'bold' }}>
-                <span>⚙️ Rule-Based Fallback Equation:</span>
-                <span>FINAL = min(10.0, Base × Age Multiplier + Boost)</span>
-              </div>
-              <div style={{ borderTop: '1px dashed rgba(59, 130, 246, 0.2)', paddingTop: '6px', display: 'flex', justifyContent: 'space-between', color: '#93c5fd', fontSize: '0.75rem' }}>
-                <span>Execution Trace:</span>
-                <span>{finalScore} / 10.0</span>
-              </div>
-            </>
-          )}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 'bold' }}>
+            <span>⚖️ Prioritization Mathematical Equation:</span>
+            <span>FINAL = min(10.0, (Base × Delay Factor) + Urgency Boost + Societal Boost)</span>
+          </div>
+          <div style={{ borderTop: '1px dashed rgba(99, 102, 241, 0.2)', paddingTop: '6px', display: 'flex', justifyContent: 'space-between', color: '#c7d2fe', fontSize: '0.75rem' }}>
+            <span>Execution Trace:</span>
+            <span>min(10.0, ({baseScore} × {multiplier} [{ageStr || 'recent'}]) + {urgencyBoost} + {societalBoost}) = {finalScore} / 10.0</span>
+          </div>
         </div>
       </div>
     );
@@ -366,6 +390,67 @@ function App() {
       </header>
 
       <main className="main-content">
+        <div className="systemic-parity-container glass" style={{ marginBottom: '20px', padding: '15px', borderRadius: '10px' }}>
+          <button 
+            onClick={() => {
+              const next = !showSystemic;
+              setShowSystemic(next);
+              if (next) fetchSystemicFairness();
+            }}
+            className="summary-btn"
+            style={{
+              width: '100%',
+              justifyContent: 'center',
+              background: 'rgba(99, 102, 241, 0.1)',
+              borderColor: 'rgba(99, 102, 241, 0.3)',
+              color: '#a5b4fc',
+              padding: '10px',
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              borderRadius: '6px'
+            }}
+          >
+            ⚖️ {showSystemic ? "Hide Systemic Fairness Tracker" : "Open System-Wide Fairness & Parity Tracker"}
+          </button>
+
+          {showSystemic && (
+            <div style={{ marginTop: '15px', color: '#cbd5e1' }}>
+              {systemicFairness ? (
+                <div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', marginBottom: '15px' }}>
+                    <div className="glass" style={{ padding: '12px', borderRadius: '8px', borderLeft: '3px solid #6366f1', background: 'rgba(255, 255, 255, 0.02)' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Demographic Parity Diff</div>
+                      <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#818cf8', marginTop: '4px' }}>{systemicFairness.demographic_parity_difference}%</div>
+                    </div>
+                    <div className="glass" style={{ padding: '12px', borderRadius: '8px', borderLeft: '3px solid #10b981', background: 'rgba(255, 255, 255, 0.02)' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Criminal Selection Rate (&gt;= 7.0)</div>
+                      <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#34d399', marginTop: '4px' }}>{systemicFairness.criminal_high_priority_rate}%</div>
+                    </div>
+                    <div className="glass" style={{ padding: '12px', borderRadius: '8px', borderLeft: '3px solid #3b82f6', background: 'rgba(255, 255, 255, 0.02)' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Civil Selection Rate (&gt;= 7.0)</div>
+                      <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#60a5fa', marginTop: '4px' }}>{systemicFairness.civil_high_priority_rate}%</div>
+                    </div>
+                  </div>
+                  
+                  <div style={{
+                    background: systemicFairness.systemic_skew_detected ? 'rgba(239, 68, 68, 0.08)' : 'rgba(16, 185, 129, 0.08)',
+                    border: `1px solid ${systemicFairness.systemic_skew_detected ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`,
+                    padding: '12px',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    color: systemicFairness.systemic_skew_detected ? '#f87171' : '#34d399'
+                  }}>
+                    <strong>System Status:</strong> {systemicFairness.recommendation} (Checked over {systemicFairness.total_cases_analyzed} ingested case records)
+                  </div>
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '10px', fontSize: '0.85rem', color: '#94a3b8' }}>
+                  Scanning database records... Please wait...
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         <div className="search-container glass">
           <form className="search-form" onSubmit={handleSearch}>
             <div className="input-group">
@@ -457,6 +542,68 @@ function App() {
                     </div>
                   </div>
 
+                  {uploadResult.opinion_audit && (
+                    <div className="agent-card" style={{ width: '100%', maxWidth: '100%', marginBottom: '20px' }}>
+                      <div className="agent-card-title">🤖 Bias Agent (LLM-as-a-Judge) <span className="badge-purple">Active</span></div>
+                      <div className="agent-card-content" style={{ display: 'block', width: '100%' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span><strong>Linguistic Opinion Neutrality:</strong></span>
+                          <span style={{ color: uploadResult.opinion_audit.bias_score >= 0.85 ? '#10b981' : '#f59e0b', fontWeight: 'bold' }}>
+                            {(uploadResult.opinion_audit.bias_score * 100).toFixed(0)}% Unbiased
+                          </span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#cbd5e1' }}>
+                          {uploadResult.opinion_audit.bias_details}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {uploadResult.shap_attributions && (
+                    <div className="agent-card" style={{ width: '100%', maxWidth: '100%', marginBottom: '20px' }}>
+                      <div className="agent-card-title">📊 SHAP Explainability Agent <span className="badge-purple">Active</span></div>
+                      <div className="agent-card-content" style={{ display: 'block', width: '100%' }}>
+                        <p style={{ margin: '0 0 10px 0', fontSize: '0.8rem', color: '#94a3b8' }}>
+                          Local feature attributions contributing to deviation from baseline typical case:
+                        </p>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px' }}>
+                          {Object.entries(uploadResult.shap_attributions).map(([feature, val]) => (
+                            <div key={feature} className="glass" style={{ padding: '8px 12px', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', background: 'rgba(255, 255, 255, 0.02)' }}>
+                              <span style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'capitalize' }}>
+                                {feature.replace(/_enc/g, '').replace(/_/g, ' ')}
+                              </span>
+                              <span style={{ color: val >= 0 ? '#f59e0b' : '#3b82f6', fontWeight: 'bold' }}>
+                                {val >= 0 ? `+${val.toFixed(2)}` : val.toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {uploadResult.bias_audit && uploadResult.bias_audit.bias_flags.some((f: any) => f.flagged) && (
+                    <div style={{
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      border: '1px solid rgba(239, 68, 68, 0.25)',
+                      color: '#f87171',
+                      padding: '12px',
+                      borderRadius: '6px',
+                      marginBottom: '20px',
+                      fontSize: '0.85rem'
+                    }}>
+                      <strong style={{ display: 'block', marginBottom: '4px' }}>⚠️ Bias & Fairness Scan Warning ({uploadResult.bias_audit.fairness_score}% Parity):</strong>
+                      <ul style={{ margin: '4px 0 8px 0', paddingLeft: '20px' }}>
+                        {uploadResult.bias_audit.bias_flags.filter((f: any) => f.flagged).map((flag: any, idx: number) => (
+                          <li key={idx} style={{ marginTop: '2px' }}>{flag.message}</li>
+                        ))}
+                      </ul>
+                      <p style={{ margin: 0, fontStyle: 'italic', fontSize: '0.75rem', color: '#fca5a5' }}>
+                        Recommendation: {uploadResult.bias_audit.recommendation}
+                      </p>
+                    </div>
+                  )}
+
                   {uploadResult.similar_cases && uploadResult.similar_cases.length > 0 && (
                     <div style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
                       <p style={{ marginBottom: '15px' }}><strong><span style={{ fontSize: '1.1rem', color: '#10b981'}}>🔗 Related Precedents Found (Top 3 Similar Cases)</span></strong></p>
@@ -521,12 +668,74 @@ function App() {
                     <ProgressiveSummary summary={r.summary} />
                   </div>
 
-                  <div className="agent-card" style={{ width: '100%', maxWidth: '100%' }}>
+                  <div className="agent-card" style={{ width: '100%', maxWidth: '100%', marginBottom: '15px' }}>
                     <div className="agent-card-title">🤖 Prioritization Agent <span className="badge-green">Active</span></div>
                     <div className="agent-card-content" style={{ display: 'block', width: '100%' }}>
                       {formatPriorityExplanation(r.priority_explanation, r.priority_score)}
                     </div>
                   </div>
+
+                  {r.opinion_audit && (
+                    <div className="agent-card" style={{ width: '100%', maxWidth: '100%', marginBottom: '15px' }}>
+                      <div className="agent-card-title">🤖 Bias Agent (LLM-as-a-Judge) <span className="badge-purple">Active</span></div>
+                      <div className="agent-card-content" style={{ display: 'block', width: '100%' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span><strong>Linguistic Opinion Neutrality:</strong></span>
+                          <span style={{ color: r.opinion_audit.bias_score >= 0.85 ? '#10b981' : '#f59e0b', fontWeight: 'bold' }}>
+                            {(r.opinion_audit.bias_score * 100).toFixed(0)}% Unbiased
+                          </span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#cbd5e1' }}>
+                          {r.opinion_audit.bias_details}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {r.shap_attributions && (
+                    <div className="agent-card" style={{ width: '100%', maxWidth: '100%', marginBottom: '15px' }}>
+                      <div className="agent-card-title">📊 SHAP Explainability Agent <span className="badge-purple">Active</span></div>
+                      <div className="agent-card-content" style={{ display: 'block', width: '100%' }}>
+                        <p style={{ margin: '0 0 10px 0', fontSize: '0.8rem', color: '#94a3b8' }}>
+                          Local feature attributions contributing to deviation from baseline typical case:
+                        </p>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px' }}>
+                          {Object.entries(r.shap_attributions).map(([feature, val]) => (
+                            <div key={feature} className="glass" style={{ padding: '8px 12px', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', background: 'rgba(255, 255, 255, 0.02)' }}>
+                              <span style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'capitalize' }}>
+                                {feature.replace(/_enc/g, '').replace(/_/g, ' ')}
+                              </span>
+                              <span style={{ color: val >= 0 ? '#f59e0b' : '#3b82f6', fontWeight: 'bold' }}>
+                                {val >= 0 ? `+${val.toFixed(2)}` : val.toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {r.bias_audit && r.bias_audit.bias_flags.some((f: any) => f.flagged) && (
+                    <div style={{
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      border: '1px solid rgba(239, 68, 68, 0.25)',
+                      color: '#f87171',
+                      padding: '12px',
+                      borderRadius: '6px',
+                      marginBottom: '15px',
+                      fontSize: '0.85rem'
+                    }}>
+                      <strong style={{ display: 'block', marginBottom: '4px' }}>⚠️ Bias & Fairness Scan Warning ({r.bias_audit.fairness_score}% Parity):</strong>
+                      <ul style={{ margin: '4px 0 8px 0', paddingLeft: '20px' }}>
+                        {r.bias_audit.bias_flags.filter((f: any) => f.flagged).map((flag: any, idx: number) => (
+                          <li key={idx} style={{ marginTop: '2px' }}>{flag.message}</li>
+                        ))}
+                      </ul>
+                      <p style={{ margin: 0, fontStyle: 'italic', fontSize: '0.75rem', color: '#fca5a5' }}>
+                        Recommendation: {r.bias_audit.recommendation}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
