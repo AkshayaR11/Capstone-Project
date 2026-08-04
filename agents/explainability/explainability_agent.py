@@ -2,6 +2,12 @@ import os
 import joblib
 import pandas as pd
 import math
+import psycopg2
+import sys
+
+# Ensure parent directory is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from config import DATABASE_URL
 
 class ExplainabilityAgent:
     def __init__(self):
@@ -20,8 +26,12 @@ class ExplainabilityAgent:
         else:
             print("Warning: Trained prioritizer model not found for ExplainabilityAgent.")
 
-        # Baseline reference features (median/typical values from historical cases)
-        self.baseline = {
+        # Compute or fetch baseline values from database
+        self.baseline = self._fetch_medians_from_db()
+
+    def _fetch_medians_from_db(self) -> dict:
+        """Fetch median parameters dynamically from the PostgreSQL database."""
+        medians = {
             "case_type": 0,                # civil
             "num_ipc_sections": 0,
             "num_cpc_sections": 0,
@@ -32,65 +42,107 @@ class ExplainabilityAgent:
             "immediate_threat_flag": 0,
             "societal_impact_score": 1
         }
+        try:
+            conn = psycopg2.connect(DATABASE_URL)
+            cur = conn.cursor()
+            
+            # Fetch actual median values from cases table
+            columns_to_query = [
+                "num_precedents", "total_words", "case_age_days", 
+                "max_severity_score", "immediate_threat_flag", "societal_impact_score"
+            ]
+            for col in columns_to_query:
+                cur.execute(f"SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY {col}) FROM cases")
+                val = cur.fetchone()[0]
+                if val is not None:
+                    # Map immediate threat and societal impact to integers, others to float
+                    if col in ["immediate_threat_flag", "societal_impact_score"]:
+                        medians[col] = int(val)
+                    else:
+                        medians[col] = float(val)
+            cur.close()
+            conn.close()
+            print("ExplainabilityAgent: Successfully calculated baseline medians from PostgreSQL.")
+        except Exception as e:
+            print(f"Warning: Could not fetch database medians in ExplainabilityAgent: {e}. Using defaults.")
+        return medians
 
-    def explain_priority(self, case_features: dict) -> dict:
+    def compute_marginal_attributions(self, case_features: dict) -> dict:
         """
         Calculates local feature attributions (SHAP-like contributions) for a given case.
         Compares case features against the baseline, computes marginal contributions,
         and normalizes them to sum exactly to (Predicted Score - Baseline Score).
+        Uses the SHAP package directly if installed; falls back to marginal method otherwise.
         """
         if self.model is None or self.encoder is None:
             # Fallback to rule-based estimations if model is missing
             return self._fallback_attributions(case_features)
 
+        # Get case type encoding
+        case_type = case_features.get("case_type", "civil")
         try:
-            # 1. Prepare baseline features DataFrame
+            case_type_encoded = self.encoder.transform([case_type])[0]
+        except Exception:
+            case_type_encoded = 1 if case_type == "criminal" else 0
+
+        # Construct actual case features dictionary
+        actual = {
+            "case_type": case_type_encoded,
+            "num_ipc_sections": int(case_features.get("num_ipc_sections", 0)),
+            "num_cpc_sections": int(case_features.get("num_cpc_sections", 0)),
+            "num_precedents": int(case_features.get("num_precedents", 0)),
+            "total_words": int(case_features.get("total_words", 1000)),
+            "case_age_days": float(case_features.get("case_age_days", 365.0)),
+            "max_severity_score": float(case_features.get("max_severity_score", 3.0)),
+            "immediate_threat_flag": int(case_features.get("immediate_threat_flag", 0)),
+            "societal_impact_score": int(case_features.get("societal_impact_score", 1))
+        }
+
+        # Handle NaNs in case features
+        for k in ["case_age_days", "max_severity_score"]:
+            if math.isnan(actual[k]) or math.isinf(actual[k]):
+                actual[k] = self.baseline[k]
+
+        df_actual = pd.DataFrame({k: [v] for k, v in actual.items()})
+
+        # 1. Primary path: Use native SHAP if installed
+        try:
+            import shap
+            explainer = shap.TreeExplainer(self.model)
+            shap_values = explainer.shap_values(df_actual)
+            # shap_values[0] holds the attributions array for the sample
+            attributions = dict(zip(df_actual.columns, shap_values[0]))
+            
+            # Format and round
+            formatted = {}
+            for col, val in attributions.items():
+                formatted[col] = round(float(val), 2)
+            return formatted
+        except ImportError:
+            # SHAP not installed, fall back to marginal attribution
+            pass
+        except Exception as e:
+            print(f"Warning: Primary SHAP calculation failed: {e}. Falling back to marginal attributions.")
+
+        # 2. Secondary path: Marginal attribution calculation
+        try:
             df_baseline = pd.DataFrame({k: [v] for k, v in self.baseline.items()})
             baseline_score = float(self.model.predict(df_baseline)[0])
-
-            # 2. Get case type encoding
-            case_type = case_features.get("case_type", "civil")
-            try:
-                case_type_encoded = self.encoder.transform([case_type])[0]
-            except Exception:
-                case_type_encoded = 1 if case_type == "criminal" else 0
-
-            # 3. Construct actual case features
-            actual = {
-                "case_type": case_type_encoded,
-                "num_ipc_sections": int(case_features.get("num_ipc_sections", 0)),
-                "num_cpc_sections": int(case_features.get("num_cpc_sections", 0)),
-                "num_precedents": int(case_features.get("num_precedents", 0)),
-                "total_words": int(case_features.get("total_words", 1000)),
-                "case_age_days": float(case_features.get("case_age_days", 365.0)),
-                "max_severity_score": float(case_features.get("max_severity_score", 3.0)),
-                "immediate_threat_flag": int(case_features.get("immediate_threat_flag", 0)),
-                "societal_impact_score": int(case_features.get("societal_impact_score", 1))
-            }
-
-            # Handle NaNs in case age
-            if math.isnan(actual["case_age_days"]) or math.isinf(actual["case_age_days"]):
-                actual["case_age_days"] = 365.0
-
-            df_actual = pd.DataFrame({k: [v] for k, v in actual.items()})
             predicted_score = float(self.model.predict(df_actual)[0])
 
             diff = predicted_score - baseline_score
             raw_impacts = {}
 
-            # 4. Compute marginal contributions (masking one feature at a time)
+            # Compute marginal contributions (masking one feature at a time)
             for col in self.baseline.keys():
-                # Start with baseline, replace ONLY column 'col' with actual value
                 test_features = self.baseline.copy()
                 test_features[col] = actual[col]
 
                 df_test = pd.DataFrame({k: [v] for k, v in test_features.items()})
                 test_score = float(self.model.predict(df_test)[0])
 
-                # Marginal impact of feature 'col'
                 raw_impacts[col] = test_score - baseline_score
 
-            # 5. Normalize raw impacts to sum exactly to the prediction difference
             sum_raw = sum(raw_impacts.values())
             attributions = {}
 
@@ -99,9 +151,9 @@ class ExplainabilityAgent:
                 for col, val in raw_impacts.items():
                     attributions[col] = round(val * scale, 2)
             else:
-                # If sum is zero, distribute difference evenly based on raw impacts
-                for col in self.baseline.keys():
-                    attributions[col] = 0.0
+                # Sum is near-zero; preserve raw impacts directly to protect relative ordering
+                for col, val in raw_impacts.items():
+                    attributions[col] = round(val, 2)
 
             return attributions
 
@@ -165,5 +217,5 @@ if __name__ == "__main__":
         "immediate_threat_flag": 1,
         "societal_impact_score": 3
     }
-    explanation = agent.explain_priority(sample_features)
+    explanation = agent.compute_marginal_attributions(sample_features)
     print("Test local feature attributions:", explanation)

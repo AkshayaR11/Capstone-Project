@@ -1,67 +1,61 @@
 import psycopg2
-from pgvector.psycopg2 import register_vector
-from transformers import AutoTokenizer, AutoModel
-import torch
-import torch.nn.functional as F
-import numpy as np
 import json
 import os
+import time
+import sys
+from pgvector.psycopg2 import register_vector
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Ensure parent directory is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from config import DATABASE_URL
 
 class SummarizationAgent:
     def __init__(self):
-        print("🚀 Initializing agent...")
+        print("🚀 Initializing Summarization Agent...")
 
-        # Gemini API Initialization (Replaces local offline LLMs)
-        import google.generativeai as genai
-        from dotenv import load_dotenv
-        
+        # Gemini API Initialization
         load_dotenv()
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-        # We use Flash because it natively takes 1M Tokens and is blazing fast
-        self.gemini_model = genai.GenerativeModel('gemini-2.5-flash')
-
-        # LegalBERT
-        self.tokenizer = AutoTokenizer.from_pretrained("nlpaueb/legal-bert-base-uncased")
-        self.model = AutoModel.from_pretrained("nlpaueb/legal-bert-base-uncased")
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            self.gemini_model = genai.GenerativeModel('gemini-2.5-flash')
+        else:
+            print("Warning: GEMINI_API_KEY environment variable is not set.")
+            self.gemini_model = None
 
         # DB
-        self.conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
+        self.conn = psycopg2.connect(DATABASE_URL)
         register_vector(self.conn)
 
         # Cache
         self.chunk_cache = {}
+        print("✅ Summarization Agent ready.\n")
 
-        # Precompute query embeddings (VERY IMPORTANT)
-        self.query_embeddings = {
-            "facts": self.get_embedding("background facts evidence witnesses FIR case details"),
-            "issues": self.get_embedding("legal issues questions before the court dispute law"),
-            "reasoning": self.get_embedding("court reasoning analysis interpretation held observed"),
-            "judgment": self.get_embedding("final decision verdict appeal allowed dismissed set aside")
-        }
+    def _call_gemini(self, prompt, retries=3):
+        """Generates content via Gemini model with exponential backoff on 429 quota exceptions."""
+        if not self.gemini_model:
+            return "Gemini API unavailable (missing key)."
 
-        print("✅ Agent ready.\n")
+        for attempt in range(retries):
+            try:
+                return self.gemini_model.generate_content(prompt).text.strip()
+            except Exception as e:
+                err_msg = str(e).lower()
+                if "429" in err_msg or "quota" in err_msg or "rate limit" in err_msg:
+                    sleep_time = (2 ** attempt) * 5
+                    print(f"   ⚠️ Gemini 429 Rate Limit. Retrying in {sleep_time}s...")
+                    time.sleep(sleep_time)
+                else:
+                    raise
+        return "Summary failed"
 
-    # ==========================
-    # EMBEDDING
-    # ==========================
-    def get_embedding(self, text):
-        inputs = self.tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
-        with torch.no_grad():
-            output = self.model(**inputs)
-
-        emb = output.last_hidden_state.mean(dim=1)
-        emb = F.normalize(emb, p=2, dim=1)
-        return emb[0].numpy()
-
-    # ==========================
-    # LOAD CHUNKS (CACHED)
-    # ==========================
     def load_chunks(self, case_id):
         if case_id in self.chunk_cache:
             return self.chunk_cache[case_id]
 
         filepath = os.path.join("data/chunks", f"{case_id}_chunks.json")
-
         if not os.path.exists(filepath):
             return {}
 
@@ -72,136 +66,63 @@ class SummarizationAgent:
         self.chunk_cache[case_id] = chunk_map
         return chunk_map
 
-    # ==========================
-    # RETRIEVE TOP CHUNKS
-    # ==========================
-    def get_top_chunks(self, case_id, section, k=5):
-        query_embedding = self.query_embeddings[section]
-
-        cur = self.conn.cursor()
-
-        cur.execute("""
-            SELECT chunk_id
-            FROM case_chunks
-            WHERE case_id = %s
-            ORDER BY embedding <=> %s
-            LIMIT %s;
-        """, (case_id, query_embedding, k))
-
-        results = cur.fetchall()
-
-        chunk_map = self.load_chunks(case_id)
-
-        chunks = []
-        for (chunk_id,) in results:
-            if chunk_id in chunk_map:
-                chunks.append(chunk_map[chunk_id])
-
-        # Deduplicate
-        chunks = list(set(chunks))
-
-        return chunks
-
-    # ==========================
-    # FILTER BY KEYWORDS
-    # ==========================
-    def filter_chunks(self, chunks, section):
-        keywords = {
-            "facts": [
-                "appellant", "respondent", "facts", "background",
-                "case of", "filed", "transaction", "agreement"
-            ],
-
-            "issues": [
-                "whether", "issue", "question", "point for determination"
-            ],
-
-            "reasoning": [
-                "held", "observed", "reason", "considered", "it was argued"
-            ],
-
-            "judgment": [
-                "appeal allowed", "appeal dismissed",
-                "conviction set aside", "order", "judgment"
-            ]
-        }
-
-        filtered = []
-        for chunk in chunks:
-            if any(word in chunk.lower() for word in keywords[section]):
-                filtered.append(chunk)
-
-        return filtered if filtered else chunks
-
-    # ==========================
-    # SUMMARIZE (FAST)
-    # ==========================
-    def summarize_chunks(self, chunks, section_name="legal aspect"):
-        if not chunks:
-            return "Not available"
-
-        combined = " ".join(chunks[:3])[:3000]
-
-        try:
-            import time
-            time.sleep(4) # Respect Gemini Free Tier 15 RPM
-            
-            prompt = f"Analyze this exact judicial text focusing primarily on the '{section_name}'. Provide a highly concise, incredibly accurate paragraph summarizing ONLY the facts relating to the '{section_name}':\n\n{combined}"
-            response = self.gemini_model.generate_content(prompt)
-            
-            return response.text.replace("\n", " ").strip()
-        except Exception as e:
-            print(f"Gemini API Error: {e}")
-            return "Summary failed"
-
-    # ==========================
-    # MAIN STRUCTURED SUMMARY (1-SHOT GEMINI GENERATOR)
-    # ==========================
     def generate_structured_summary(self, case_id):
         print(f"\n🧠 Processing case: {case_id}")
 
-        # Gemini digests massive contexts so we can just grab everything at once!
         chunk_map = self.load_chunks(case_id)
         if not chunk_map:
             return "Summary failed"
 
-        # Combine entirely natively
         all_text = " ".join(chunk_map.values())[:80000]
+        
+        prompt = """You are a legal assistant specializing in Indian law (IPC, BNS, CPC, CrPC).
+Analyze this Supreme Court judgment and output exactly 4 sections:
 
-        try:
-            import time
-            print("   ⏳ Respecting Gemini Rate Limits (Waiting 15s)...")
-            time.sleep(15) # Safe for Gemini 2.5 Flash (Max 4 requests per minute to stay under 5 RPM)
-            
-            prompt = "Analyze this Legal Precedent. Output exactly 4 sections formatted nicely using Markdown headers: FACTS, ISSUES, REASONING, and JUDGMENT based precisely on the text. Keep it extremely accurate.\n\n" + all_text
-            
-            response = self.gemini_model.generate_content(prompt)
-            return response.text.strip()
-        except Exception as e:
-            print(f"Gemini API Error: {e}")
-            return "Summary failed"
+## FACTS
+Parties, background, FIR details, sections invoked, timeline.
 
-    # ==========================
-    # STREAM UPLOAD PROCESSING (IN-MEMORY BYPASS)
-    # ==========================
+## ISSUES
+The specific legal questions the court had to decide.
+
+## REASONING
+Court's analysis, precedents cited (with citations), principles applied.
+
+## JUDGMENT
+Final order — allowed/dismissed/quashed, with section references and relief granted.
+
+Be precise. Use Indian legal terminology. Do not add information not present in the text.
+
+JUDGMENT TEXT:
+""" + all_text
+
+        return self._call_gemini(prompt)
+
     def summarize_upload_stream(self, text):
         print("\n🧠 Sending dynamically uploaded PDF directly to Gemini Cloud...")
-        try:
-            # We bypass the Semantic Chunking math entirely for Uploads because Gemini takes 1M Tokens natively!
-            prompt = "Analyze this Legal Precedent. Output exactly 4 sections formatted nicely using Markdown headers: FACTS, ISSUES, REASONING, and JUDGMENT based precisely on the text. Do not hallucinate.\n\n" + text[:80000]
-            
-            response = self.gemini_model.generate_content(prompt)
-            return response.text.strip()
-        except Exception as e:
-            print(f"Upload Summary Failed: {e}")
-            return "Failed to process PDF via Gemini."
+        prompt = """You are a legal assistant specializing in Indian law (IPC, BNS, CPC, CrPC).
+Analyze this Supreme Court judgment and output exactly 4 sections:
 
-    # ==========================
-    # RUN BATCH
-    # ==========================
+## FACTS
+Parties, background, FIR details, sections invoked, timeline.
+
+## ISSUES
+The specific legal questions the court had to decide.
+
+## REASONING
+Court's analysis, precedents cited (with citations), principles applied.
+
+## JUDGMENT
+Final order — allowed/dismissed/quashed, with section references and relief granted.
+
+Be precise. Use Indian legal terminology. Do not add information not present in the text.
+
+JUDGMENT TEXT:
+""" + text[:80000]
+
+        return self._call_gemini(prompt)
+
     def run_batch(self, limit=3):
         cur = self.conn.cursor()
-
         cur.execute("""
             SELECT case_id FROM cases
             WHERE case_summary IS NULL
@@ -209,10 +130,8 @@ class SummarizationAgent:
         """, (limit,))
 
         cases = cur.fetchall()
-
         for (case_id,) in cases:
             summary_text = self.generate_structured_summary(case_id)
-
             if summary_text == "Summary failed":
                 print("   ❌ Skipping Case (Error/Timeout)\n")
                 continue
@@ -226,17 +145,12 @@ class SummarizationAgent:
 
             self.conn.commit()
             update_cur.close()
-
             print("   ✅ Stored.\n")
 
         cur.close()
         self.conn.close()
         print("🏁 Done.")
-        
 
-# ==========================
-# RUN
-# ==========================
 if __name__ == "__main__":
     agent = SummarizationAgent()
     agent.run_batch(limit=3)

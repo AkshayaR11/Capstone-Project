@@ -36,13 +36,12 @@ class PrioritizationAgent:
             return False
 
     def check_immediate_threat(self, text: str) -> int:
-        """Any case involving bail, custody, restraint, or threat to life = immediate threat."""
+        """Any case involving bail, custody, or threat to life = immediate threat."""
         urgent_patterns = [
             r'\bbail petition\b', r'\banticipatory bail\b',
             r'\bhabeas corpus\b',
             r'\bdomestic violence\b',
             r'\bcustody\b',
-            r'\binjunction\b', r'\bstay order\b', r'\bex parte\b',
             r'\bthreat to life\b', r'\blife in danger\b',
             r'\bprotection order\b',
         ]
@@ -54,15 +53,15 @@ class PrioritizationAgent:
         text_lower = text.lower()
         score = 1
 
-        if re.search(r'\bpublic interest litigation\b|\bpil\b', text_lower):
+        if re.search(r'\bpublic interest litigation\b|\b(pil)\b', text_lower):
             score += 3
-        if re.search(r'\benvironmental\b|\bpollution\b|\bforest\b|\bwater\b', text_lower):
+        if re.search(r'\benvironmental impact\b|\benvironmental protection\b|\bpollution control\b|\becological damage\b', text_lower):
             score += 2
-        if re.search(r'\bconstitutional\b|\bfundamental rights?\b|\barticle\s+\d+\b', text_lower):
+        if re.search(r'\bconstitutional validity\b|\bconstitutionality\b|\bconstitutional bench\b|\bviolation of fundamental rights?\b', text_lower):
             score += 2
-        if re.search(r'\bcorruption\b|\bcbi\b|\bscam\b|\briot\b|\bterror\b', text_lower):
+        if re.search(r'\bcorruption prevention\b|\bprevention of corruption\b|\bcbi investigation\b|\bterrorist act\b|\bfinancial scam\b', text_lower):
             score += 2
-        if re.search(r'\bclass action\b|\bmass\b|\bmultiple accused\b|\bgang\b', text_lower):
+        if re.search(r'\bclass action lawsuit\b|\bmassive protest\b|\bgang rape\b|\borganized crime syndicates?\b', text_lower):
             score += 1
 
         return min(score, 5)
@@ -116,10 +115,12 @@ class PrioritizationAgent:
         if self.model is not None and self.encoder is not None:
             try:
                 # Prepare single-row DataFrame matching training features
+                # Standardize casing to match encoder classes ('civil' / 'criminal')
+                case_type_clean = case_type.strip().lower()
                 try:
-                    case_type_encoded = self.encoder.transform([case_type])[0]
+                    case_type_encoded = self.encoder.transform([case_type_clean])[0]
                 except Exception:
-                    case_type_encoded = 1 if case_type == "criminal" else 0
+                    case_type_encoded = 1 if case_type_clean == "criminal" else 0
 
                 age_days = float(case_age_days) if self.is_valid_age(case_age_days) else 365.0
 
@@ -173,7 +174,11 @@ class PrioritizationAgent:
         num_ipc_sections: int,
         num_cpc_sections: int,
         case_age_days: float | None,
-        num_precedents: int
+        num_precedents: int,
+        severity: float | None = None,
+        immediate_threat: int | None = None,
+        societal_impact: int | None = None,
+        case_date: str | None = None
     ) -> str:
         """Formulate a quick justification of priority score assignment."""
         reasons = []
@@ -188,13 +193,38 @@ class PrioritizationAgent:
 
         if self.is_valid_age(case_age_days):
             years = int(float(case_age_days) / 365)
+            
+            # Determine if it's a closed/historical case or an active/pending case.
+            is_closed = False
+            if case_date:
+                try:
+                    from scripts.extract_features import parse_date
+                    p_date = parse_date(case_date)
+                    if p_date and p_date < datetime.now():
+                        is_closed = True
+                except Exception:
+                    pass
+            
             if years > 5:
-                reasons.append(f"Pending/Active litigation for {years} years")
+                if is_closed:
+                    reasons.append(f"Total litigation duration: {years} years")
+                else:
+                    reasons.append(f"Pending/Active litigation for {years} years")
             elif years > 0:
-                reasons.append(f"Case age: {years} years")
+                if is_closed:
+                    reasons.append(f"Litigation duration: {years} years")
+                else:
+                    reasons.append(f"Case pending: {years} years")
 
         if num_precedents > 5:
             reasons.append(f"High Precedential Complexity ({num_precedents} citations)")
+
+        if immediate_threat and immediate_threat > 0:
+            reasons.append("Immediate threat to life or liberty detected")
+        if severity and severity >= 8:
+            reasons.append(f"High severity offence (score {severity}/10)")
+        if societal_impact and societal_impact >= 3:
+            reasons.append("Significant societal impact identified")
 
         if self.model is not None:
             reasons.append("Evaluated using XGBoost Machine Learning model")

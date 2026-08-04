@@ -30,25 +30,29 @@ class BiasAgent:
         """
         if not text or not text.strip():
             return {
-                "bias_score": 1.0,
-                "bias_details": "Empty text. Neutrality audit skipped."
+                "bias_score": None,
+                "bias_details": "Empty text. Neutrality audit skipped.",
+                "flags": []
             }
 
         # 1. Attempt LLM-as-a-Judge evaluation
         if self.gemini_model is not None:
             try:
                 prompt = (
-                    "You are a Judicial Fairness Auditor. Analyze this judicial opinion or case summary text "
-                    "for potential demographic bias, gender profiling, or sentencing discrepancies. "
-                    "Rate the overall linguistic neutrality of the text on a scale from 0.0 (heavily biased) "
-                    "to 1.0 (fully neutral/unbiased).\n\n"
-                    "Provide a brief, single-sentence summary of your findings.\n\n"
+                    "You are a Judicial Fairness Auditor reviewing Indian court judgments.\n\n"
+                    "Check ONLY for these specific issues:\n"
+                    "1. References to defendant's caste, religion, gender, or socioeconomic status used as reasoning.\n"
+                    "2. Language that assumes guilt based on community membership.\n"
+                    "3. Differential language when describing similar acts by different demographic groups.\n"
+                    "4. Irrelevant personal characteristics mentioned in sentencing rationale.\n\n"
+                    "Rate the judgment from 0.0 (serious bias found) to 1.0 (no bias detected).\n\n"
                     "Return ONLY a valid JSON object matching this structure (no markdown formatting, code block fences, or other text):\n"
                     "{\n"
                     "  \"bias_score\": <float between 0.0 and 1.0>,\n"
-                    "  \"bias_details\": \"<brief explanation of audit findings>\"\n"
+                    "  \"bias_details\": \"<one sentence finding>\",\n"
+                    "  \"flags\": [\"<list of specific phrases flagged>\"]\n"
                     "}\n\n"
-                    f"Text to audit:\n{text[:40000]}"
+                    f"TEXT:\n{text[:40000]}"
                 )
 
                 response = self.gemini_model.generate_content(prompt)
@@ -67,7 +71,8 @@ class BiasAgent:
                 if "bias_score" in data and "bias_details" in data:
                     return {
                         "bias_score": float(data["bias_score"]),
-                        "bias_details": str(data["bias_details"])
+                        "bias_details": str(data["bias_details"]),
+                        "flags": list(data.get("flags", []))
                     }
             except Exception as e:
                 print(f"Warning: Gemini bias audit failed: {e}. Falling back to lexical scan.")
@@ -88,21 +93,41 @@ class BiasAgent:
             r'\bsuspect community\b', r'\bsuspicious background\b'
         ]
         
-        hits = [m for m in bias_markers if re.search(m, text_lower)]
-        
-        # Calculate score based on hits count
-        score = 0.98 - (len(hits) * 0.1)
-        score = max(0.40, min(score, 1.0))
+        hits = []
+        for m in bias_markers:
+            match = re.search(m, text_lower)
+            if match:
+                hits.append(match.group(0))
         
         if hits:
-            details = f"Linguistic audits flagged {len(hits)} non-neutral markers (e.g. {', '.join(hits[:2])}). Sentence pattern validation checks complete."
+            score = 0.98 - (len(hits) * 0.1)
+            score = max(0.40, min(score, 1.0))
+            details = f"Linguistic audits flagged {len(hits)} non-neutral markers (e.g. {', '.join(hits[:2])})."
+            return {
+                "bias_score": round(score, 2),
+                "bias_details": details,
+                "flags": hits
+            }
         else:
-            details = "Neutrality evaluation audit complete. Linguistic checks verify 98% demographic neutrality scan."
+            # If zero hits, return None (unaudited/unknown) rather than claiming 98% neutrality
+            return {
+                "bias_score": None,
+                "bias_details": "Automated audit unavailable. Manual review recommended.",
+                "flags": []
+            }
 
-        return {
-            "bias_score": round(score, 2),
-            "bias_details": details
-        }
+    def audit_dataset_distribution(self, conn) -> dict:
+        """
+        Checks if priority scores are systematically skewed by case_type.
+        Returns mean priority per case_type and flags if difference > threshold.
+        """
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT case_type, AVG(priority_score), COUNT(*), STDDEV(priority_score)
+            FROM cases GROUP BY case_type
+        """)
+        rows = cur.fetchall()
+        return {r[0]: {"mean": round(r[1],2) if r[1] is not None else 0.0, "count": r[2], "std": round(r[3],2) if r[3] is not None else 0.0} for r in rows}
 
 if __name__ == "__main__":
     # Test stub

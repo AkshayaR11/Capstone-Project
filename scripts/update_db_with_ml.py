@@ -2,14 +2,19 @@ import psycopg2
 import joblib
 import pandas as pd
 import math
+import os
+import sys
 
-DB_URL = "postgresql://admin:password@localhost:5432/judicial"
+# Ensure parent directory is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import DATABASE_URL
+
 MODEL_PATH = "data/prioritization/models/prioritizer.pkl"
 ENCODER_PATH = "data/prioritization/models/encoders.pkl"
 
 def update_database_with_ml():
     print("Connecting to PostgreSQL...")
-    conn = psycopg2.connect(DB_URL)
+    conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
 
     # Load model and encoder

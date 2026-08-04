@@ -3,6 +3,7 @@ Migrate local data (CSV, PKL, NPY) into PostgreSQL database using pgvector
 """
 
 import os
+import sys
 import json
 import numpy as np
 import pandas as pd
@@ -12,25 +13,27 @@ from pgvector.psycopg2 import register_vector
 from psycopg2.extras import execute_values
 from tqdm import tqdm
 
-DB_URL = "postgresql://admin:password@localhost:5432/judicial"
+# Ensure parent directory is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import DATABASE_URL
 
 FEATURES_FILE = "data/prioritization/case_features.csv"
 INDEX_FILE = "data/embeddings/chunk_index.pkl"
 EMBEDDINGS_FILE = "data/embeddings/all_embeddings.npy"
 
 def setup_database():
-    print("🔌 Connecting to PostgreSQL...")
-    conn = psycopg2.connect(DB_URL)
+    print("Connecting to PostgreSQL...")
+    conn = psycopg2.connect(DATABASE_URL)
     conn.autocommit = True
     cur = conn.cursor()
 
     # 1. Enable pgvector
-    print("📦 Enabling pgvector extension...")
+    print("Enabling pgvector extension...")
     cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
     register_vector(conn)
 
     # 2. Create tables
-    print("🛠️ Creating tables...")
+    print("Creating tables...")
     cur.execute("""
         DROP TABLE IF EXISTS case_chunks;
         DROP TABLE IF EXISTS cases;
@@ -53,7 +56,11 @@ def setup_database():
             immediate_threat_flag INTEGER,
             societal_impact_score INTEGER,
             priority_score FLOAT,
-            case_summary TEXT
+            case_summary TEXT,
+            bias_score FLOAT DEFAULT NULL,
+            bias_details TEXT DEFAULT NULL,
+            bias_flags TEXT DEFAULT NULL,
+            content_hash VARCHAR(64) UNIQUE DEFAULT NULL
         );
         
         CREATE TABLE case_chunks (
@@ -69,7 +76,7 @@ def setup_database():
     return conn, cur
 
 def migrate_cases(conn, cur):
-    print(f"\n📄 Loading metadata from {FEATURES_FILE}...")
+    print(f"\nLoading metadata from {FEATURES_FILE}...")
     df = pd.read_csv(FEATURES_FILE)
     
     # Handle NaN values explicitly
@@ -94,16 +101,16 @@ def migrate_cases(conn, cur):
         r.get("max_severity_score"), r.get("immediate_threat_flag"), r.get("societal_impact_score"), r.get("priority_score")
     ) for r in records]
     
-    print(f"📥 Inserting {len(data)} cases into Postgres...")
+    print(f"Inserting {len(data)} cases into Postgres...")
     execute_values(cur, insert_query, data, page_size=100)
-    print("✅ Cases inserted.")
+    print("Cases inserted.")
 
 
 def migrate_embeddings(conn, cur):
-    print(f"\n🧠 Loading embeddings matrix from {EMBEDDINGS_FILE}...")
+    print(f"\nLoading embeddings matrix from {EMBEDDINGS_FILE}...")
     embeddings = np.load(EMBEDDINGS_FILE)
     
-    print(f"📦 Loading chunk indices from {INDEX_FILE}...")
+    print(f"Loading chunk indices from {INDEX_FILE}...")
     with open(INDEX_FILE, "rb") as f:
         metadata = pickle.load(f)
     
@@ -114,7 +121,7 @@ def migrate_embeddings(conn, cur):
         VALUES %s;
     """
     
-    print(f"📥 Bulk inserting {len(metadata)} embedding chunks into Postgres...")
+    print(f"Bulk inserting {len(metadata)} embedding chunks into Postgres...")
     
     # Process in batches of 1000
     batch_size = 1000
@@ -135,7 +142,7 @@ def migrate_embeddings(conn, cur):
             
         execute_values(cur, insert_query, data)
         
-    print(f"✅ Extracted {len(metadata)} chunks with 768-D Vectors inserted.")
+    print(f"Extracted {len(metadata)} chunks with 768-D Vectors inserted.")
 
 
 if __name__ == "__main__":
@@ -144,10 +151,10 @@ if __name__ == "__main__":
         migrate_cases(conn, cur)
         migrate_embeddings(conn, cur)
         
-        print("\n🎉 MIGRATION COMPLETE!")
-        print("💡 The database is now ready for semantic search using pgvector.")
+        print("\nMIGRATION COMPLETE!")
+        print("The database is now ready for semantic search using pgvector.")
         
         cur.close()
         conn.close()
     except Exception as e:
-        print(f"\n❌ Error during migration: {str(e)}")
+        print(f"\nError during migration: {str(e)}")

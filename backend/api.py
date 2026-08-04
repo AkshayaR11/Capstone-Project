@@ -8,16 +8,19 @@ import torch.nn.functional as F
 import os
 import sys
 import re
+import hashlib
+from datetime import datetime
 
-# Ensure parent directory is in sys.path for agent and script imports
+# Ensure parent directory is in sys.path for config and agent imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import DATABASE_URL, ALLOW_ORIGINS
 
 app = FastAPI(title="Judicial AI Search Engine")
 
-# React lives on 5173, so we must allow cross-origin requests
+# Configure CORS using centralized configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOW_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,21 +57,36 @@ async def process_pdf_upload(file: UploadFile = File(...)):
     cur = None
     try:
         # Standardize file string as Case UID without case-sensitive extensions
-        case_id = file.filename
-        if case_id.lower().endswith(".pdf"):
-            case_id = case_id[:-4]
-        case_id = case_id.replace(" ", "_")
+        filename_id = file.filename
+        if filename_id.lower().endswith(".pdf"):
+            filename_id = filename_id[:-4]
+        filename_id = filename_id.replace(" ", "_")
         
-        # 1. SMART CACHE LOOKUP
-        conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
+        # Read PDF Stream to extract text
+        contents = await file.read()
+        import fitz
+        doc = fitz.open(stream=contents, filetype="pdf")
+        text = ""
+        for page in doc:
+            text += page.get_text()
+            
+        if not text.strip():
+            raise HTTPException(status_code=400, detail="Could not extract text from PDF")
+
+        # Generate sha256 Content Hash
+        content_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        
+        # 1. SMART CACHE LOOKUP BY CONTENT HASH
+        conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
         cur.execute("""
-            SELECT case_summary, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type, bias_score, bias_details 
-            FROM cases WHERE case_id = %s
-        """, (case_id,))
+            SELECT case_summary, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type, bias_score, bias_details, bias_flags, case_id,
+                   num_ipc_sections, num_cpc_sections, num_precedents, case_age_days, immediate_threat_flag, societal_impact_score, total_words, case_date
+            FROM cases WHERE content_hash = %s
+        """, (content_hash,))
         result = cur.fetchone()
         
-        # Initialize Prioritization & Explainability & Bias Agents
+        # Initialize Prioritization, Explainability, & Bias Agents
         if not PRIORITIZATION_AGENT:
             print("🚀 Loading Prioritization Agent...")
             from agents.prioritization.prioritizer import PrioritizationAgent
@@ -85,37 +103,39 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             BIAS_AGENT = BiasAgent()
             
         if result and result[0]:
-            print(f"🔥 Fast Cache Hit! Returned {case_id} instantly without hitting Gemini.")
+            print(f"🔥 Fast Cache Hit! Returned {result[10]} instantly without hitting Gemini.")
             
             # Generate explanation for cache hit
-            ipc_sections_len = len(result[3].split(",")) if result[3] else 0
-            bns_sections_len = len(result[4].split(",")) if result[4] else 0
             explanation = PRIORITIZATION_AGENT.generate_explanation(
                 case_type=result[6] if result[6] else "Unknown",
-                num_ipc_sections=max(ipc_sections_len, bns_sections_len),
-                num_cpc_sections=0,
-                case_age_days=0.0,
-                num_precedents=5
+                num_ipc_sections=result[11] if result[11] is not None else 0,
+                num_cpc_sections=result[12] if result[12] is not None else 0,
+                case_age_days=result[14] if result[14] is not None else None,
+                num_precedents=result[13] if result[13] is not None else 0,
+                severity=result[1] if result[1] is not None else 3.0,
+                immediate_threat=result[15] if result[15] is not None else 0,
+                societal_impact=result[16] if result[16] is not None else 1,
+                case_date=result[18] if result[18] is not None else None
             )
 
-            # Generate dynamic contributions for cache hit
+            # Generate dynamic contributions for cache hit with correct index splits
             features_for_explain = {
                 "case_type": result[6] if result[6] else "civil",
-                "num_ipc_sections": max(ipc_sections_len, bns_sections_len) if result[6] == "criminal" else 0,
-                "num_cpc_sections": max(ipc_sections_len, bns_sections_len) if result[6] == "civil" else 0,
-                "num_precedents": 5,
-                "total_words": 1000,
-                "case_age_days": 0.0,
+                "num_ipc_sections": result[11] if result[11] is not None else 0,
+                "num_cpc_sections": result[12] if result[12] is not None else 0,
+                "num_precedents": result[13] if result[13] is not None else 0,
+                "total_words": result[17] if result[17] is not None else 1000,
+                "case_age_days": result[14] if result[14] is not None else 365.0,
                 "max_severity_score": float(result[1]) if result[1] is not None else 3.0,
-                "immediate_threat_flag": PRIORITIZATION_AGENT.check_immediate_threat(result[0]),
-                "societal_impact_score": PRIORITIZATION_AGENT.calculate_societal_impact(result[0])
+                "immediate_threat_flag": result[15] if result[15] is not None else 0,
+                "societal_impact_score": result[16] if result[16] is not None else 1
             }
-            contributions = EXPLAINABILITY_AGENT.explain_priority(features_for_explain)
+            contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
             
             # Retrieve similar cases using database case_chunks embedding
             similar_cases = []
             try:
-                cur.execute("SELECT embedding FROM case_chunks WHERE case_id = %s LIMIT 1", (case_id,))
+                cur.execute("SELECT embedding FROM case_chunks WHERE case_id = %s LIMIT 1", (result[10],))
                 emb_res = cur.fetchone()
                 if emb_res:
                     cur.execute("""
@@ -135,7 +155,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                         ) AS distinct_matches
                         ORDER BY distance ASC
                         LIMIT 3;
-                    """, (emb_res[0], case_id))
+                    """, (emb_res[0], result[10]))
                     sim_records = cur.fetchall()
                     for r in sim_records:
                         sim_score = 1 - float(r[1])
@@ -162,8 +182,9 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 "priority_explanation": explanation,
                 "similar_cases": similar_cases,
                 "contributions": contributions,
-                "bias_score": result[7] if result[7] is not None else 0.98,
-                "bias_details": result[8] if result[8] is not None else "Neutrality evaluation audit complete."
+                "bias_score": result[7],
+                "bias_details": result[8] if result[8] is not None else "Automated audit unavailable.",
+                "bias_flags": result[9].split(",") if (result[9] and result[9].strip()) else []
             }
             
         # Cache Miss -> Close DB connections immediately so they aren't held open during Gemini execution
@@ -173,18 +194,6 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             conn.close()
         conn = None
         cur = None
-
-        # No Cache Found -> Read PDF Stream
-        contents = await file.read()
-        
-        import fitz
-        doc = fitz.open(stream=contents, filetype="pdf")
-        text = ""
-        for page in doc:
-            text += page.get_text()
-            
-        if not text.strip():
-            raise HTTPException(status_code=400, detail="Could not extract text from PDF")
             
         # Instance Summarization Agent Once
         if not UPLOAD_AGENT:
@@ -198,7 +207,8 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         # EXTRACT FEATURES NATIVELY
         from scripts.extract_features import (
             extract_case_type, detect_legal_regime, extract_ipc_sections, extract_bns_sections,
-            load_mappings, calculate_severity, build_bns_severity, translate_ipc_to_bns, IPC_SEVERITY
+            load_mappings, calculate_severity, build_bns_severity, translate_ipc_to_bns, IPC_SEVERITY,
+            extract_date, parse_date, count_precedents, calculate_pending_days
         )
         
         ipc_to_bns, cpc_valid_sections = load_mappings("data/mappings.json")
@@ -228,8 +238,13 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         bns_str = ",".join(bns_sections_list)
         ipc_str = ",".join(ipc_sections_list)
         
+        # Calculate dynamic filing date and case age
+        date_str = extract_date(text)
+        parsed_date = parse_date(date_str)
+        case_age_val = calculate_pending_days(parsed_date, text)
+        
         # Calculate dynamic priority score using Prioritization Agent
-        num_precedents = len(re.findall(r'\b(?:v\.|versus|scc|scr|air|cit)\b', text.lower()))
+        num_precedents = count_precedents(text)
         immediate_threat = PRIORITIZATION_AGENT.check_immediate_threat(text)
         societal_impact = PRIORITIZATION_AGENT.calculate_societal_impact(text)
         
@@ -241,7 +256,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 num_cpc_sections=len(cpc_sections_list),
                 num_precedents=num_precedents,
                 total_words=total_words,
-                case_age_days=0.0,
+                case_age_days=case_age_val,
                 max_severity_score=float(severity),
                 immediate_threat_flag=immediate_threat,
                 societal_impact_score=societal_impact
@@ -251,7 +266,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 severity=int(severity),
                 societal_impact=societal_impact,
                 immediate_threat=immediate_threat,
-                case_age_days=0.0,
+                case_age_days=case_age_val,
                 case_type=case_type
             )
             
@@ -259,8 +274,12 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             case_type=case_type,
             num_ipc_sections=len(ipc_sections_list),
             num_cpc_sections=len(cpc_sections_list),
-            case_age_days=0.0,
-            num_precedents=num_precedents
+            case_age_days=case_age_val,
+            num_precedents=num_precedents,
+            severity=float(severity),
+            immediate_threat=immediate_threat,
+            societal_impact=societal_impact,
+            case_date=date_str
         )
 
         # Generate Explainability attributions
@@ -270,38 +289,40 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             "num_cpc_sections": len(cpc_sections_list),
             "num_precedents": num_precedents,
             "total_words": len(text.split()),
-            "case_age_days": 0.0,
+            "case_age_days": case_age_val if case_age_val is not None else 365.0,
             "max_severity_score": float(severity),
             "immediate_threat_flag": immediate_threat,
             "societal_impact_score": societal_impact
         }
-        contributions = EXPLAINABILITY_AGENT.explain_priority(features_for_explain)
+        contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
 
         # Run Bias & Fairness Audit
         bias_audit = BIAS_AGENT.audit_case_fairness(text)
         bias_score = bias_audit["bias_score"]
         bias_details = bias_audit["bias_details"]
+        bias_flags_list = bias_audit.get("flags", [])
+        bias_flags_str = ",".join(bias_flags_list)
         
         # Now re-open DB connection to persist upload results
-        conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
+        conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
         
         # 2. CACHE SAVER
-        cur.execute("SELECT 1 FROM cases WHERE case_id = %s", (case_id,))
+        cur.execute("SELECT 1 FROM cases WHERE case_id = %s", (filename_id,))
         exists = cur.fetchone()
         
         if not exists:
             cur.execute("""
-                INSERT INTO cases (case_id, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type, bias_score, bias_details) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (case_id, severity, regime, ipc_str, bns_str, priority_score, case_type, bias_score, bias_details))
+                INSERT INTO cases (case_id, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type, bias_score, bias_details, bias_flags, content_hash) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (filename_id, severity, regime, ipc_str, bns_str, priority_score, case_type, bias_score, bias_details, bias_flags_str, content_hash))
         
         cur.execute("""
             UPDATE cases 
             SET case_summary = %s, max_severity_score = %s, legal_regime = %s, ipc_sections = %s, bns_sections = %s, priority_score = %s, case_type = %s,
-                immediate_threat_flag = %s, societal_impact_score = %s, bias_score = %s, bias_details = %s
+                immediate_threat_flag = %s, societal_impact_score = %s, bias_score = %s, bias_details = %s, bias_flags = %s, content_hash = %s
             WHERE case_id = %s
-        """, (raw_summary_string, severity, regime, ipc_str, bns_str, priority_score, case_type, immediate_threat, societal_impact, bias_score, bias_details, case_id))
+        """, (raw_summary_string, severity, regime, ipc_str, bns_str, priority_score, case_type, immediate_threat, societal_impact, bias_score, bias_details, bias_flags_str, content_hash, filename_id))
         
         # Retrieve similar cases using text embedding of uploaded PDF
         similar_cases = []
@@ -330,7 +351,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 ) AS distinct_matches
                 ORDER BY distance ASC
                 LIMIT 3;
-            """, (upload_emb.tolist(), case_id))
+            """, (upload_emb.tolist(), filename_id))
             sim_records = cur.fetchall()
             for r in sim_records:
                 sim_score = 1 - float(r[1])
@@ -360,7 +381,8 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             "similar_cases": similar_cases,
             "contributions": contributions,
             "bias_score": bias_score,
-            "bias_details": bias_details
+            "bias_details": bias_details,
+            "bias_flags": bias_flags_list
         }
         
     except Exception as e:
@@ -385,7 +407,7 @@ async def search_cases(req: SearchRequest):
     query_emb = mean_pooling(model_output, encoded_input['attention_mask'])
     query_emb = F.normalize(query_emb, p=2, dim=1).numpy()[0]
     
-    # Initialize Prioritization & Explainability & Bias Agents
+    # Initialize Prioritization, Explainability, & Bias Agents
     if not PRIORITIZATION_AGENT:
         from agents.prioritization.prioritizer import PrioritizationAgent
         PRIORITIZATION_AGENT = PrioritizationAgent()
@@ -401,17 +423,16 @@ async def search_cases(req: SearchRequest):
     conn = None
     cur = None
     try:
-        conn = psycopg2.connect("postgresql://admin:password@localhost:5432/judicial")
+        conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
         
         # Deduplicate results directly via PostgreSQL using DISTINCT ON
         if req.yearFilter:
-            # Subquery necessary for distinct + distance ordering
             sql = """
                 SELECT * FROM (
                     SELECT DISTINCT ON (c.case_id) 
                         c.case_id, 
-                        CASE WHEN REPLACE(c.case_id, '_', ' ') ILIKE %s THEN 0.0 ELSE cc.embedding <=> %s::vector END AS distance, 
+                        cc.embedding <=> %s::vector AS distance, 
                         c.case_date, 
                         c.max_severity_score,
                         c.case_summary,
@@ -427,23 +448,24 @@ async def search_cases(req: SearchRequest):
                         c.societal_impact_score,
                         c.total_words,
                         c.bias_score,
-                        c.bias_details
+                        c.bias_details,
+                        c.bias_flags
                     FROM case_chunks cc
                     JOIN cases c ON cc.case_id = c.case_id
-                    WHERE c.case_date LIKE %s
+                    WHERE c.case_date LIKE %s OR c.case_id LIKE %s
                     ORDER BY c.case_id, distance ASC
                 ) AS distinct_matches
                 ORDER BY distance ASC
                 LIMIT %s;
             """
-            search_param = f"%{req.query}%"
-            cur.execute(sql, (search_param, query_emb.tolist(), f"%{req.yearFilter}%", req.topK))
+            year_param = f"%{req.yearFilter}%"
+            cur.execute(sql, (query_emb.tolist(), year_param, year_param, req.topK))
         else:
             sql = """
                 SELECT * FROM (
                     SELECT DISTINCT ON (c.case_id) 
                         c.case_id, 
-                        CASE WHEN REPLACE(c.case_id, '_', ' ') ILIKE %s THEN 0.0 ELSE cc.embedding <=> %s::vector END AS distance, 
+                        cc.embedding <=> %s::vector AS distance, 
                         c.case_date, 
                         c.max_severity_score,
                         c.case_summary,
@@ -459,7 +481,8 @@ async def search_cases(req: SearchRequest):
                         c.societal_impact_score,
                         c.total_words,
                         c.bias_score,
-                        c.bias_details
+                        c.bias_details,
+                        c.bias_flags
                     FROM case_chunks cc
                     JOIN cases c ON cc.case_id = c.case_id
                     ORDER BY c.case_id, distance ASC
@@ -467,8 +490,7 @@ async def search_cases(req: SearchRequest):
                 ORDER BY distance ASC
                 LIMIT %s;
             """
-            search_param = f"%{req.query}%"
-            cur.execute(sql, (search_param, query_emb.tolist(), req.topK))
+            cur.execute(sql, (query_emb.tolist(), req.topK))
             
         records = cur.fetchall()
         
@@ -482,10 +504,14 @@ async def search_cases(req: SearchRequest):
                 num_ipc_sections=r[9] if r[9] is not None else 0,
                 num_cpc_sections=r[10] if r[10] is not None else 0,
                 case_age_days=r[12] if r[12] is not None else None,
-                num_precedents=r[11] if r[11] is not None else 0
+                num_precedents=r[11] if r[11] is not None else 0,
+                severity=float(r[3]) if r[3] is not None else 3.0,
+                immediate_threat=r[13] if r[13] is not None else 0,
+                societal_impact=r[14] if r[14] is not None else 1,
+                case_date=r[2] if r[2] else None
             )
 
-            # Generate Explainability contributions
+            # Generate Explainability attributions
             features_for_explain = {
                 "case_type": r[8] if r[8] else "civil",
                 "num_ipc_sections": r[9] if r[9] is not None else 0,
@@ -497,7 +523,7 @@ async def search_cases(req: SearchRequest):
                 "immediate_threat_flag": r[13] if r[13] is not None else 0,
                 "societal_impact_score": r[14] if r[14] is not None else 1
             }
-            contributions = EXPLAINABILITY_AGENT.explain_priority(features_for_explain)
+            contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
             
             results.append({
                 "case_id": r[0],
@@ -511,8 +537,9 @@ async def search_cases(req: SearchRequest):
                 "case_type": r[8] if r[8] else "Unknown",
                 "priority_explanation": exp,
                 "contributions": contributions,
-                "bias_score": r[16] if r[16] is not None else 0.98,
-                "bias_details": r[17] if r[17] is not None else "Neutrality evaluation audit complete."
+                "bias_score": r[16],
+                "bias_details": r[17] if r[17] is not None else "Automated audit unavailable.",
+                "bias_flags": r[18].split(",") if (r[18] and r[18].strip()) else []
             })
             
         return {"results": results}

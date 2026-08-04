@@ -10,40 +10,12 @@ from pathlib import Path
 
 # Ensure parent directory is in sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from scripts.extract_features import compute_priority_score
+from scripts.extract_features import compute_priority_score, check_immediate_threat, calculate_societal_impact
 
 INPUT_FILE = "data/prioritization/case_features.csv"
 OUTPUT_FILE = "data/prioritization/labeled_cases.csv"
 
 Path("data/prioritization").mkdir(exist_ok=True)
-
-
-# ==============================
-# PRIORITY SCORING
-# ==============================
-def assign_priority_score(row):
-    severity = row.get('max_severity_score', 3)
-    societal_impact = row.get('societal_impact_score', 1)
-    immediate_threat = row.get('immediate_threat_flag', 0)
-    case_age_days = row.get('case_age_days')
-    case_type = row.get('case_type', 'civil')
-
-    # Handle NaNs or None
-    if pd.isna(severity): severity = 3
-    if pd.isna(societal_impact): societal_impact = 1
-    if pd.isna(immediate_threat): immediate_threat = 0
-    if pd.isna(case_age_days) or math.isnan(case_age_days):
-        case_age_days = None
-    else:
-        case_age_days = float(case_age_days)
-
-    return compute_priority_score(
-        severity=int(severity),
-        societal_impact=int(societal_impact),
-        immediate_threat=int(immediate_threat),
-        case_age_days=case_age_days,
-        case_type=case_type
-    )
 
 
 # ==============================
@@ -104,7 +76,16 @@ def create_priority_labels():
     print(f"Loaded {len(df)} cases")
 
     print("\nAssigning scores...")
-    df['priority_score'] = df.apply(assign_priority_score, axis=1)
+    df['priority_score'] = df.apply(
+        lambda r: compute_priority_score(
+            severity=int(r.get('max_severity_score', 3)) if pd.notna(r.get('max_severity_score')) else 3,
+            societal_impact=int(r.get('societal_impact_score', 1)) if pd.notna(r.get('societal_impact_score')) else 1,
+            immediate_threat=int(r.get('immediate_threat_flag', 0)) if pd.notna(r.get('immediate_threat_flag')) else 0,
+            case_age_days=float(r['case_age_days']) if pd.notna(r.get('case_age_days')) and not math.isnan(float(r['case_age_days'])) else None,
+            case_type=r.get('case_type', 'civil')
+        ),
+        axis=1
+    )
 
     print("\nAssigning categories...")
     df['priority_category'] = df['priority_score'].apply(assign_category)

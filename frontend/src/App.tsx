@@ -15,8 +15,9 @@ interface CaseResult {
   priority_explanation?: string;
   similar_cases?: CaseResult[];
   contributions?: Record<string, number>;
-  bias_score?: number;
+  bias_score?: number | null;
   bias_details?: string;
+  bias_flags?: string[];
 }
 
 const renderContributions = (contribs: Record<string, number> | undefined) => {
@@ -177,7 +178,8 @@ function App() {
         similar_cases: data.similar_cases,
         contributions: data.contributions,
         bias_score: data.bias_score,
-        bias_details: data.bias_details
+        bias_details: data.bias_details,
+        bias_flags: data.bias_flags
       });
       setShowUploadSummary(true);
     } catch (err: unknown) {
@@ -325,26 +327,42 @@ function App() {
                     <div className="agent-card" style={{ gridColumn: 'span 2' }}>
                       <div className="agent-card-title">
                         ⚖️ Bias & Fairness Scan 
-                        <span className={`badge-${(uploadResult.bias_score ?? 0.98) >= 0.85 ? 'green' : 'red'}`} style={{ marginLeft: '8px' }}>
-                          {(uploadResult.bias_score ?? 0.98) >= 0.85 ? 'Neutral' : 'Profiling Alert'}
-                        </span>
+                        {uploadResult.bias_score === null || uploadResult.bias_score === undefined ? (
+                          <span className="badge-orange" style={{ marginLeft: '8px' }}>Pending Audit</span>
+                        ) : (
+                          <span className={`badge-${uploadResult.bias_score >= 0.85 ? 'green' : 'red'}`} style={{ marginLeft: '8px' }}>
+                            {uploadResult.bias_score >= 0.85 ? 'Neutral' : 'Profiling Alert'}
+                          </span>
+                        )}
                       </div>
                       <div className="agent-card-content">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                           <strong>Demographic Neutrality Index:</strong>
-                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: (uploadResult.bias_score ?? 0.98) >= 0.85 ? '#86efac' : '#fca5a5' }}>
-                            {((uploadResult.bias_score ?? 0.98) * 100).toFixed(0)}%
+                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: uploadResult.bias_score === null || uploadResult.bias_score === undefined ? '#94a3b8' : (uploadResult.bias_score >= 0.85 ? '#86efac' : '#fca5a5') }}>
+                            {uploadResult.bias_score === null || uploadResult.bias_score === undefined ? 'N/A' : `${(uploadResult.bias_score * 100).toFixed(0)}%`}
                           </span>
                         </div>
                         <div style={{ height: '8px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
                           <div style={{ 
-                            width: `${(uploadResult.bias_score ?? 0.98) * 100}%`, 
+                            width: uploadResult.bias_score === null || uploadResult.bias_score === undefined ? '0%' : `${uploadResult.bias_score * 100}%`, 
                             height: '100%', 
-                            background: (uploadResult.bias_score ?? 0.98) >= 0.85 ? '#10b981' : '#ef4444', 
+                            background: uploadResult.bias_score === null || uploadResult.bias_score === undefined ? '#475569' : (uploadResult.bias_score >= 0.85 ? '#10b981' : '#ef4444'), 
                             borderRadius: '4px' 
                           }} />
                         </div>
-                        <strong>Audit Log:</strong> {uploadResult.bias_details || "Neutrality evaluation trace complete. No demographic anomalies detected."}
+                        <strong>Audit Log:</strong> {uploadResult.bias_details || "Automated audit unavailable. Manual review recommended."}
+                        {uploadResult.bias_flags && uploadResult.bias_flags.length > 0 && (
+                          <div style={{ marginTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                            <strong style={{ color: '#fca5a5', fontSize: '0.8rem' }}>Flagged Contexts:</strong>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                              {uploadResult.bias_flags.map((flag, idx) => (
+                                <span key={idx} style={{ fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '2px 6px', borderRadius: '4px', color: '#fca5a5' }}>
+                                  "{flag}"
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -452,26 +470,42 @@ function App() {
                     <div className="agent-card" style={{ gridColumn: 'span 2' }}>
                       <div className="agent-card-title">
                         ⚖️ Bias & Fairness Scan 
-                        <span className={`badge-${(r.bias_score ?? 0.98) >= 0.85 ? 'green' : 'red'}`} style={{ marginLeft: '8px' }}>
-                          {(r.bias_score ?? 0.98) >= 0.85 ? 'Neutral' : 'Profiling Alert'}
-                        </span>
+                        {r.bias_score === null || r.bias_score === undefined ? (
+                          <span className="badge-orange" style={{ marginLeft: '8px' }}>Pending Audit</span>
+                        ) : (
+                          <span className={`badge-${r.bias_score >= 0.85 ? 'green' : 'red'}`} style={{ marginLeft: '8px' }}>
+                            {r.bias_score >= 0.85 ? 'Neutral' : 'Profiling Alert'}
+                          </span>
+                        )}
                       </div>
                       <div className="agent-card-content">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                           <strong>Demographic Neutrality Index:</strong>
-                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: (r.bias_score ?? 0.98) >= 0.85 ? '#86efac' : '#fca5a5' }}>
-                            {((r.bias_score ?? 0.98) * 100).toFixed(0)}%
+                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: r.bias_score === null || r.bias_score === undefined ? '#94a3b8' : (r.bias_score >= 0.85 ? '#86efac' : '#fca5a5') }}>
+                            {r.bias_score === null || r.bias_score === undefined ? 'N/A' : `${(r.bias_score * 100).toFixed(0)}%`}
                           </span>
                         </div>
                         <div style={{ height: '8px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
                           <div style={{ 
-                            width: `${(r.bias_score ?? 0.98) * 100}%`, 
+                            width: r.bias_score === null || r.bias_score === undefined ? '0%' : `${r.bias_score * 100}%`, 
                             height: '100%', 
-                            background: (r.bias_score ?? 0.98) >= 0.85 ? '#10b981' : '#ef4444', 
+                            background: r.bias_score === null || r.bias_score === undefined ? '#475569' : (r.bias_score >= 0.85 ? '#10b981' : '#ef4444'), 
                             borderRadius: '4px' 
                           }} />
                         </div>
-                        <strong>Audit Log:</strong> {r.bias_details || "Neutrality evaluation trace complete. No demographic anomalies detected."}
+                        <strong>Audit Log:</strong> {r.bias_details || "Automated audit unavailable. Manual review recommended."}
+                        {r.bias_flags && r.bias_flags.length > 0 && (
+                          <div style={{ marginTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                            <strong style={{ color: '#fca5a5', fontSize: '0.8rem' }}>Flagged Contexts:</strong>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                              {r.bias_flags.map((flag, idx) => (
+                                <span key={idx} style={{ fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '2px 6px', borderRadius: '4px', color: '#fca5a5' }}>
+                                  "{flag}"
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
