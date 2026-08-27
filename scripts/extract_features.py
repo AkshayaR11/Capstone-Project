@@ -1,0 +1,568 @@
+"""
+extract_features.py
+Extract structured features from chunked legal cases.
+Handles Indian Supreme Court dataset (criminal + civil only).
+Supports both IPC (pre-July 2024) and BNS (post-July 2024) regimes.
+
+Run after chunk_text.py, before migrate_to_pg.py.
+"""
+
+import json
+import re
+import pandas as pd
+from pathlib import Path
+from datetime import datetime
+from tqdm import tqdm
+import sys
+import os
+
+# Ensure parent directory is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import MAPPINGS_FILE_PATH
+
+# ==============================
+# CONFIG
+# ==============================
+CHUNKS_DIR   = "data/chunks"
+OUTPUT_DIR   = "data/prioritization"
+OUTPUT_FILE  = "data/prioritization/case_features.csv"
+MAPPINGS_FILE = MAPPINGS_FILE_PATH        # Centralized in config
+
+Path(OUTPUT_DIR).mkdir(exist_ok=True)
+
+# BNS cutoff date
+BNS_CUTOFF = datetime(2024, 7, 1)
+
+
+# ==============================
+# LOAD MAPPINGS
+# ==============================
+def load_mappings(path: str) -> tuple[dict, list]:
+    """
+    Load IPC->BNS mapping and CPC section list from mappings.json.
+    Returns (ipc_to_bns dict, cpc_sections list).
+    Falls back to empty structures if file is missing.
+    """
+    if not Path(path).exists():
+        print(f"WARNING: {path} not found. Running without BNS mapping.")
+        return {}, []
+
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    ipc_to_bns = data.get("IPC_TO_BNS", {})
+    cpc_sections = data.get("CPC_SECTIONS", [])
+
+    # Normalise all keys/values to lowercase stripped strings
+    ipc_to_bns = {k.strip().lower(): v.strip() for k, v in ipc_to_bns.items()}
+
+    print(f"Loaded {len(ipc_to_bns)} IPC->BNS mappings, {len(cpc_sections)} CPC section refs")
+    return ipc_to_bns, cpc_sections
+
+
+# ==============================
+# CASE TYPE DETECTION
+# (Strictly criminal or civil only, per legal expert guidance)
+# ==============================
+def extract_case_type(text: str) -> str:
+    text_lower = text.lower()
+
+    # 1. Authoritative check on the Supreme Court Jurisdiction Header in first 3000 chars
+    header_area = text_lower[:3000]
+    if "civil appellate jurisdiction" in header_area or "civil appeal" in header_area or "civil writ" in header_area or "civil original jurisdiction" in header_area:
+        return "civil"
+    if "criminal appellate jurisdiction" in header_area or "criminal appeal" in header_area or "criminal writ" in header_area or "criminal original jurisdiction" in header_area:
+        return "criminal"
+
+    # 2. Keyword-based signals fallback
+    criminal_signals = [
+        r'\bipc\b', r'indian penal code', r'\bbns\b', r'bharatiya nyaya sanhita',
+        r'\bcrpc\b', r'\bbnss\b', r'\bfir\b', r'\bcriminal\b',
+        r'\bmurder\b', r'\brape\b', r'\btheft\b', r'\bassault\b',
+        r'\baccused\b', r'\bprosecution\b', r'\bsessions court\b'
+    ]
+    civil_signals = [
+        r'\bcpc\b', r'civil procedure', r'\binjunction\b',
+        r'\bproperty\b', r'\bcontract\b', r'\bdivorce\b',
+        r'\bplaintiff\b', r'\bdefendant\b', r'\bsuit\b', r'\bdecree\b',
+        r'\barbitration\b', r'\btenancy\b'
+    ]
+
+    criminal_hits = sum(1 for pat in criminal_signals if re.search(pat, text_lower))
+    civil_hits    = sum(1 for pat in civil_signals    if re.search(pat, text_lower))
+
+    return "criminal" if criminal_hits >= civil_hits else "civil"
+
+
+# ==============================
+# LEGAL REGIME DETECTION
+# ==============================
+def detect_legal_regime(case_date: datetime | None, text: str) -> str:
+    """
+    Returns 'BNS' or 'IPC'.
+    BNS (Bharatiya Nyaya Sanhita) replaced IPC on July 1 2024.
+    """
+    if re.search(r'\bbns\b|bharatiya nyaya sanhita|bharatiya nagarik suraksha', text.lower()):
+        return "BNS"
+    if case_date and case_date >= BNS_CUTOFF:
+        return "BNS"
+    return "IPC"
+
+
+# ==============================
+# IPC SECTION EXTRACTION  (fixed regex)
+# ==============================
+def extract_ipc_sections(text: str) -> list[str]:
+    """
+    Handles real-world Indian judgment patterns:
+      - u/s 302 IPC
+      - Section 302/34 IPC
+      - Sections 302, 307 read with 34 IPC
+      - S. 376 IPC
+      - under the Indian Penal Code, 1860 Sections 302 and 307
+    """
+    text_lower = text.lower()
+
+    patterns = [
+        # u/s 302 ipc  |  u/s 302/34 ipc
+        r'u/s\s+([\d]+[a-z]?(?:[/,\s]+[\d]+[a-z]?)*)\s+ipc',
+        # section(s) 302, 307 ipc  |  section 302 ipc
+        r'sections?\s+([\d]+[a-z]?(?:[,/\s]+(?:and\s+)?[\d]+[a-z]?)*)\s+(?:read\s+with\s+[\d]+[a-z]?\s+)?ipc',
+        # s. 376 ipc
+        r's\.\s*([\d]+[a-z]?)\s+ipc',
+        # under ipc section 302
+        r'(?:under|u/?s\.?)\s+(?:ipc|indian penal code)[,\s]+sections?\s+([\d]+[a-z]?)',
+        # ...of the indian penal code, 1860 section 302
+        r'indian penal code.*?section\s+([\d]+[a-z]?)',
+    ]
+
+    found = set()
+    for pat in patterns:
+        for match in re.findall(pat, text_lower):
+            # match may be "302/34" or "302, 307" — split all of them
+            parts = re.split(r'[,/\s]+', match)
+            for p in parts:
+                p = p.strip().rstrip('.')
+                if p and re.fullmatch(r'\d{1,3}[a-z]?', p):
+                    found.add(p)
+
+    return sorted(found)
+
+
+# ==============================
+# BNS SECTION EXTRACTION
+# ==============================
+def extract_bns_sections(text: str) -> list[str]:
+    """
+    Extract BNS section numbers from post-July 2024 judgments.
+    Patterns mirror the IPC ones but reference BNS / BNSS.
+    """
+    text_lower = text.lower()
+
+    patterns = [
+        r'u/s\s+([\d]+[a-z]?(?:[/,\s]+[\d]+[a-z]?)*)\s+bns',
+        r'sections?\s+([\d]+[a-z]?(?:[,/\s]+(?:and\s+)?[\d]+[a-z]?)*)\s+(?:read\s+with\s+[\d]+[a-z]?\s+)?bns',
+        r'bharatiya nyaya sanhita.*?section\s+([\d]+[a-z]?)',
+        r'section\s+([\d]+[a-z]?)\s+(?:of\s+)?(?:the\s+)?bns\b',
+    ]
+
+    found = set()
+    for pat in patterns:
+        for match in re.findall(pat, text_lower):
+            parts = re.split(r'[,/\s]+', match)
+            for p in parts:
+                p = p.strip().rstrip('.')
+                if p and re.fullmatch(r'\d{1,3}[a-z]?', p):
+                    found.add(p)
+
+    return sorted(found)
+
+
+# ==============================
+# IPC -> BNS TRANSLATION
+# ==============================
+def translate_ipc_to_bns(ipc_sections: list[str], ipc_to_bns: dict) -> list[str]:
+    """
+    Given a list of IPC section numbers, return the equivalent BNS numbers.
+    Sections not found in the mapping are returned as-is with a '?' suffix
+    so the gap is visible.
+    """
+    translated = []
+    for sec in ipc_sections:
+        bns = ipc_to_bns.get(sec.lower())
+        translated.append(bns if bns else f"{sec}?")
+    return translated
+
+
+# ==============================
+# CPC SECTION EXTRACTION
+# ==============================
+def extract_cpc_sections(text: str, valid_cpc: list) -> list[str]:
+    """
+    Extract CPC sections referenced in civil case text.
+    Only returns sections that exist in the validated CPC list.
+    """
+    text_lower = text.lower()
+    valid_set  = set(str(s).lower() for s in valid_cpc)
+
+    patterns = [
+        r'order\s+(\d{1,2})\s+rule\s+\d+\s+cpc',
+        r'u/s\s+([\d]+[a-z]?(?:[/,\s]+[\d]+[a-z]?)*)\s+cpc',
+        r'sections?\s+([\d]+[a-z]?(?:[,/\s]+(?:and\s+)?[\d]+[a-z]?)*)\s+(?:read\s+with\s+[\d]+[a-z]?\s+)?cpc',
+        r'section\s+([\d]+[a-z]?)\s+(?:of\s+)?(?:the\s+)?civil procedure',
+        r'section\s+([\d]+[a-z]?)\s+cpc',
+    ]
+
+    found = set()
+    for pat in patterns:
+        for match in re.findall(pat, text_lower):
+            parts = re.split(r'[,/\s]+', match)
+            for p in parts:
+                p = p.strip().rstrip('.')
+                if p and re.fullmatch(r'\d{1,3}[a-z]?', p):
+                    if p in valid_set or not valid_set:  # if no CPC list, accept all
+                        found.add(p)
+
+    return sorted(found)
+
+
+# ==============================
+# SEVERITY SCORING
+# Based on IPC/BNS sections — higher punishment = higher severity.
+# Scores 1-10.  Source: IPC punishment provisions.
+# This should be updated with the lawyer's full mapping PDF once available.
+# ==============================
+
+# Criminal: IPC section -> severity score
+IPC_SEVERITY = {
+    # 10 — Death penalty / life imprisonment crimes
+    "302": 10,   # Murder
+    "376": 10,   # Rape
+    "376a": 10,  # Rape causing death
+    "396": 10,   # Dacoity with murder
+    "364a": 10,  # Kidnapping for ransom
+    # 9 — Near-capital offences
+    "304": 9,    # Culpable homicide not amounting to murder
+    "304b": 9,   # Dowry death
+    "366a": 9,   # Procuration of minor girl
+    "376b": 9,   # Sexual assault
+    # 8 — Serious violence
+    "307": 8,    # Attempt to murder
+    "395": 8,    # Dacoity
+    "120b": 8,   # Criminal conspiracy
+    "201": 8,    # Causing disappearance of evidence of an offence
+    # 6 — Medium severity
+    "326": 6,    # Grievous hurt with dangerous weapons
+    "392": 6,    # Robbery
+    "354": 6,    # Assault on woman with intent to outrage modesty
+    "498a": 6,   # Cruelty by husband/relatives
+    # 5 — Moderate
+    "420": 5,    # Cheating
+    "406": 5,    # Criminal breach of trust
+    "409": 5,    # Criminal breach of trust by public servant
+    # 3 — Lower severity
+    "379": 3,    # Theft
+    "323": 2,    # Voluntarily causing hurt
+    "427": 2,    # Mischief causing damage
+    "504": 2,    # Intentional insult to provoke breach of peace
+}
+
+# BNS equivalents (key BNS sections -> severity)
+# This will be auto-derived from IPC_SEVERITY + mappings.json at runtime
+BNS_SEVERITY: dict = {}
+
+
+def build_bns_severity(ipc_to_bns: dict) -> dict:
+    """Derive BNS severity scores from IPC scores + the mapping."""
+    bns_sev = {}
+    for ipc_sec, score in IPC_SEVERITY.items():
+        bns_sec = ipc_to_bns.get(ipc_sec.lower())
+        if bns_sec:
+            # Take the max in case multiple IPC sections map to same BNS
+            bns_sev[bns_sec] = max(bns_sev.get(bns_sec, 0), score)
+    return bns_sev
+
+
+def calculate_severity(sections: list[str], severity_map: dict) -> int:
+    """
+    Return max severity score across all sections found.
+    Falls back to 4 (moderate) for unmapped sections.
+    """
+    if not sections:
+        return 3   # Low default when no sections identified
+
+    max_score = 1
+    for sec in sections:
+        score = severity_map.get(sec.lower(), 4)   # 4 = unknown but present
+        max_score = max(max_score, score)
+
+    return max_score
+
+
+# ==============================
+# IMMEDIATE THREAT FLAG
+# Any case involving bail/custody/restraint = needs urgent attention
+# ==============================
+def check_immediate_threat(text: str) -> int:
+    urgent_patterns = [
+        r'\bbail petition\b', r'\banticipatory bail\b',
+        r'\bhabeas corpus\b',
+        r'\bdomestic violence\b',
+        r'\bcustody\b',
+        r'\bthreat to life\b', r'\blife in danger\b',
+        r'\bprotection order\b',
+    ]
+    text_lower = text.lower()
+    return int(any(re.search(p, text_lower) for p in urgent_patterns))
+
+
+# ==============================
+# SOCIETAL IMPACT SCORE (1-5)
+# Per legal experts: severity IS largely societal impact.
+# High-impact = affects many people or public interest.
+# ==============================
+def calculate_societal_impact(text: str) -> int:
+    text_lower = text.lower()
+    score = 1
+
+    if re.search(r'\bpublic interest litigation\b|\b(pil)\b', text_lower):
+        score += 3
+    if re.search(r'\benvironmental impact\b|\benvironmental protection\b|\bpollution control\b|\becological damage\b', text_lower):
+        score += 2
+    if re.search(r'\bconstitutional validity\b|\bconstitutionality\b|\bconstitutional bench\b|\bviolation of fundamental rights?\b', text_lower):
+        score += 2
+    if re.search(r'\bcorruption prevention\b|\bprevention of corruption\b|\bcbi investigation\b|\bterrorist act\b|\bfinancial scam\b', text_lower):
+        score += 2
+    if re.search(r'\bclass action lawsuit\b|\bmassive protest\b|\bgang rape\b|\borganized crime syndicates?\b', text_lower):
+        score += 1
+
+    return min(score, 5)
+
+
+# ==============================
+# COMPOSITE PRIORITY SCORE (0-10)
+# Weights decided in consultation with legal expert guidance:
+#   - Severity of sections: 35%  (what crime was committed)
+#   - Societal impact:      25%  (how many affected)
+#   - Immediate threat:     30%  (someone at risk right now)
+#   - Recency:              10%  (recent = more relevant precedent)
+# ==============================
+def compute_priority_score(
+    severity: int,
+    societal_impact: int,
+    immediate_threat: int,
+    case_age_days: float | None,
+    case_type: str
+) -> float:
+    # Normalise each to 0-1 range
+    sev_norm    = severity / 10.0
+    impact_norm = societal_impact / 5.0
+    threat_norm = float(immediate_threat)          # already 0 or 1
+
+    # Recency: cases < 1 year old score 1.0, scaling down over 10 years
+    if case_age_days is not None:
+        recency = max(0.0, 1.0 - (case_age_days / 3650))
+    else:
+        recency = 0.5  # unknown age = neutral
+
+    # Civil cases cap severity contribution (no IPC sections)
+    if case_type == "civil":
+        sev_norm = min(sev_norm, 0.4)
+
+    raw = (sev_norm * 3.5) + (impact_norm * 2.5) + (threat_norm * 3.0) + (recency * 1.0)
+    return round(min(raw, 10.0), 2)
+
+
+# ==============================
+# PRECEDENT COUNT
+# ==============================
+def count_precedents(text: str) -> int:
+    pattern = r'\b(?:air|scr|scc)\s+\d{4}'
+    return len(re.findall(pattern, text.lower()))
+
+
+# ==============================
+# DATE EXTRACTION
+# ==============================
+def extract_date(text: str) -> str | None:
+    patterns = [
+        r'\d{1,2}/\d{1,2}/\d{4}',
+        r'\d{1,2}-\d{1,2}-\d{4}',
+        r'(?i)\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*,?\s*\d{4}',
+        r'(?i)(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}\s*,?\s*\d{4}',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if match:
+            return match.group(0)
+    return None
+
+
+def parse_date(date_str: str | None) -> datetime | None:
+    if not date_str:
+        return None
+    # Normalize string: remove commas, dots, standardize spaces, strip whitespace
+    clean_str = date_str.replace(",", "").replace(".", "").replace("\n", " ").strip()
+    clean_str = re.sub(r'\s+', ' ', clean_str)
+    
+    # Try common formats
+    for fmt in [
+        "%d %B %Y", "%d %b %Y", "%B %d %Y", "%b %d %Y",
+        "%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d"
+    ]:
+        try:
+            return datetime.strptime(clean_str, fmt)
+        except ValueError:
+            continue
+            
+    # As a final fallback, try to extract just the 4-digit year and map to January 1st of that year
+    year_match = re.search(r'\b(19\d{2}|20\d{2})\b', clean_str)
+    if year_match:
+        try:
+            return datetime(int(year_match.group(1)), 1, 1)
+        except ValueError:
+            pass
+def extract_filing_year(text: str) -> int | None:
+    text_lower = text.lower()
+    patterns = [
+        r'(?:appeal|petition|wp|no\.?)\s+\d+\s+of\s+(\d{4})',
+        r'no\.\s+\d+\s+of\s+(\d{4})',
+        r'of\s+(19\d{2}|20\d{2})\b'
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text_lower)
+        if match:
+            return int(match.group(1))
+    return None
+
+
+def calculate_pending_days(judgment_date: datetime | None, text: str) -> float | None:
+    filing_year = extract_filing_year(text)
+    if not filing_year:
+        return None
+    
+    filing_date = datetime(filing_year, 1, 1)
+    ref_date = judgment_date if (judgment_date and judgment_date < datetime.now()) else datetime.now()
+    
+    pending_days = (ref_date - filing_date).days
+    if pending_days < 0:
+        return None
+    return float(pending_days)
+
+
+# ==============================
+# MAIN FEATURE EXTRACTION
+# ==============================
+def extract_all_features():
+    # Load mappings once
+    ipc_to_bns, cpc_valid_sections = load_mappings(MAPPINGS_FILE)
+    bns_severity_map = build_bns_severity(ipc_to_bns)
+
+    chunk_files = list(Path(CHUNKS_DIR).glob("*_chunks.json"))
+    print(f"\nProcessing {len(chunk_files)} cases...\n")
+
+    all_features = []
+
+    for chunk_file in tqdm(chunk_files):
+        with open(chunk_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        case_id = data["case_id"]
+        chunks  = data["chunks"]
+        full_text = " ".join(c["text"] for c in chunks)
+
+        # ── Case type ──────────────────────────────────────────────
+        case_type = extract_case_type(full_text)
+
+        # ── Date & regime ──────────────────────────────────────────
+        date_str    = extract_date(full_text)
+        parsed_date = parse_date(date_str)
+        case_age    = calculate_pending_days(parsed_date, full_text)
+        regime      = detect_legal_regime(parsed_date, full_text)
+
+        # ── Section extraction ────────────────────────────────────
+        ipc_sections = []
+        bns_sections = []
+        cpc_sections = []
+        severity     = 3   # civil baseline
+
+        if case_type == "criminal":
+            if regime == "IPC":
+                ipc_sections = extract_ipc_sections(full_text)
+                # Translate IPC -> BNS equivalent for reference
+                bns_equivalent = translate_ipc_to_bns(ipc_sections, ipc_to_bns)
+                bns_sections   = [b for b in bns_equivalent if not b.endswith("?")]
+                severity = calculate_severity(ipc_sections, IPC_SEVERITY)
+            else:  # BNS regime
+                bns_sections = extract_bns_sections(full_text)
+                # Also try extracting any residual IPC references (older citation in judgment)
+                ipc_sections = extract_ipc_sections(full_text)
+                severity = calculate_severity(bns_sections, bns_severity_map)
+        else:
+            # Civil case — CPC only
+            cpc_sections = extract_cpc_sections(full_text, cpc_valid_sections)
+
+        # ── Priority signals ──────────────────────────────────────
+        immediate_threat  = check_immediate_threat(full_text)
+        societal_impact   = calculate_societal_impact(full_text)
+        priority_score    = compute_priority_score(
+            severity, societal_impact, immediate_threat, case_age, case_type
+        )
+
+        # ── Misc stats ────────────────────────────────────────────
+        num_precedents = count_precedents(full_text)
+        total_words    = sum(c["word_count"] for c in chunks)
+
+        all_features.append({
+            "case_id":              case_id,
+            "case_type":            case_type,
+            "legal_regime":         regime,           # "IPC" or "BNS"
+
+            # Criminal sections
+            "ipc_sections":         ",".join(ipc_sections),
+            "num_ipc_sections":     len(ipc_sections),
+            "bns_sections":         ",".join(bns_sections),
+            "num_bns_sections":     len(bns_sections),
+
+            # Civil sections
+            "cpc_sections":         ",".join(cpc_sections),
+            "num_cpc_sections":     len(cpc_sections),
+
+            # Priority signals
+            "max_severity_score":       severity,         # 1-10
+            "immediate_threat_flag":    immediate_threat, # 0 or 1
+            "societal_impact_score":    societal_impact,  # 1-5
+            "priority_score":           priority_score,   # 0-10 composite
+
+            # Temporal
+            "case_date":            date_str,
+            "case_age_days":        case_age,
+
+            # Misc
+            "num_precedents":       num_precedents,
+            "total_words":          total_words,
+        })
+
+    # ── Save ──────────────────────────────────────────────────────
+    df = pd.DataFrame(all_features)
+    df.to_csv(OUTPUT_FILE, index=False)
+
+    print(f"\nFeatures extracted for {len(df)} cases")
+    print(f"Saved to: {OUTPUT_FILE}")
+    print(f"\nCase type breakdown:\n{df['case_type'].value_counts()}")
+    print(f"\nLegal regime breakdown:\n{df['legal_regime'].value_counts()}")
+    print(f"\nPriority score distribution:")
+    print(df["priority_score"].describe().round(2))
+
+    return df
+
+
+if __name__ == "__main__":
+    df = extract_all_features()
+    print("\nSample output:")
+    print(df[[
+        "case_id", "case_type", "legal_regime",
+        "ipc_sections", "bns_sections",
+        "max_severity_score", "immediate_threat_flag",
+        "societal_impact_score", "priority_score"
+    ]].head(10).to_string())
