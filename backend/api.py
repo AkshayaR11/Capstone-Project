@@ -172,6 +172,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 print(f"⚠️ Warning: Cache hit semantic similarity lookup failed: {sim_err}")
             
             return {
+                "case_id": result[10] if (len(result) > 10 and result[10]) else filename_id,
                 "summary": result[0],
                 "severity": result[1],
                 "regime": result[2],
@@ -370,6 +371,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         conn.commit()
         
         return {
+            "case_id": filename_id,
             "summary": raw_summary_string,
             "severity": severity,
             "regime": regime,
@@ -426,77 +428,78 @@ async def search_cases(req: SearchRequest):
         conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
         
-        # Deduplicate results directly via PostgreSQL using DISTINCT ON
+        # Extract query keywords for lexical title & section matching
+        query_words = [w.lower() for w in req.query.replace("_", " ").split() if len(w) > 2]
+
         if req.yearFilter:
             sql = """
-                SELECT * FROM (
-                    SELECT DISTINCT ON (c.case_id) 
-                        c.case_id, 
-                        cc.embedding <=> %s::vector AS distance, 
-                        c.case_date, 
-                        c.max_severity_score,
-                        c.case_summary,
-                        c.bns_sections,
-                        c.ipc_sections,
-                        c.priority_score,
-                        c.case_type,
-                        c.num_ipc_sections,
-                        c.num_cpc_sections,
-                        c.num_precedents,
-                        c.case_age_days,
-                        c.immediate_threat_flag,
-                        c.societal_impact_score,
-                        c.total_words,
-                        c.bias_score,
-                        c.bias_details,
-                        c.bias_flags
-                    FROM case_chunks cc
-                    JOIN cases c ON cc.case_id = c.case_id
-                    WHERE c.case_date LIKE %s OR c.case_id LIKE %s
-                    ORDER BY c.case_id, distance ASC
-                ) AS distinct_matches
-                ORDER BY distance ASC
-                LIMIT %s;
+                SELECT 
+                    c.case_id, 
+                    MIN(cc.embedding <=> %s::vector) AS min_dist,
+                    c.case_date, c.max_severity_score, c.case_summary,
+                    c.bns_sections, c.ipc_sections, c.priority_score, c.case_type,
+                    c.num_ipc_sections, c.num_cpc_sections, c.num_precedents,
+                    c.case_age_days, c.immediate_threat_flag, c.societal_impact_score,
+                    c.total_words, c.bias_score, c.bias_details, c.bias_flags
+                FROM case_chunks cc
+                JOIN cases c ON cc.case_id = c.case_id
+                WHERE c.case_date LIKE %s OR c.case_id LIKE %s
+                GROUP BY c.case_id, c.case_date, c.max_severity_score, c.case_summary, c.bns_sections, c.ipc_sections, c.priority_score, c.case_type, c.num_ipc_sections, c.num_cpc_sections, c.num_precedents, c.case_age_days, c.immediate_threat_flag, c.societal_impact_score, c.total_words, c.bias_score, c.bias_details, c.bias_flags;
             """
             year_param = f"%{req.yearFilter}%"
-            cur.execute(sql, (query_emb.tolist(), year_param, year_param, req.topK))
+            cur.execute(sql, (query_emb.tolist(), year_param, year_param))
         else:
             sql = """
-                SELECT * FROM (
-                    SELECT DISTINCT ON (c.case_id) 
-                        c.case_id, 
-                        cc.embedding <=> %s::vector AS distance, 
-                        c.case_date, 
-                        c.max_severity_score,
-                        c.case_summary,
-                        c.bns_sections,
-                        c.ipc_sections,
-                        c.priority_score,
-                        c.case_type,
-                        c.num_ipc_sections,
-                        c.num_cpc_sections,
-                        c.num_precedents,
-                        c.case_age_days,
-                        c.immediate_threat_flag,
-                        c.societal_impact_score,
-                        c.total_words,
-                        c.bias_score,
-                        c.bias_details,
-                        c.bias_flags
-                    FROM case_chunks cc
-                    JOIN cases c ON cc.case_id = c.case_id
-                    ORDER BY c.case_id, distance ASC
-                ) AS distinct_matches
-                ORDER BY distance ASC
-                LIMIT %s;
+                SELECT 
+                    c.case_id, 
+                    MIN(cc.embedding <=> %s::vector) AS min_dist,
+                    c.case_date, c.max_severity_score, c.case_summary,
+                    c.bns_sections, c.ipc_sections, c.priority_score, c.case_type,
+                    c.num_ipc_sections, c.num_cpc_sections, c.num_precedents,
+                    c.case_age_days, c.immediate_threat_flag, c.societal_impact_score,
+                    c.total_words, c.bias_score, c.bias_details, c.bias_flags
+                FROM case_chunks cc
+                JOIN cases c ON cc.case_id = c.case_id
+                GROUP BY c.case_id, c.case_date, c.max_severity_score, c.case_summary, c.bns_sections, c.ipc_sections, c.priority_score, c.case_type, c.num_ipc_sections, c.num_cpc_sections, c.num_precedents, c.case_age_days, c.immediate_threat_flag, c.societal_impact_score, c.total_words, c.bias_score, c.bias_details, c.bias_flags;
             """
-            cur.execute(sql, (query_emb.tolist(), req.topK))
-            
+            cur.execute(sql, (query_emb.tolist(),))
+
         records = cur.fetchall()
-        
-        results = []
+
+        # Perform Hybrid Fusion Scoring (Vector Cosine Similarity + Lexical Title/Section Boost)
+        scored_records = []
         for r in records:
-            sim_score = 1 - float(r[1])
+            case_id = r[0]
+            min_dist = float(r[1])
+            vec_sim = 1.0 - min_dist
+
+            case_id_lower = case_id.lower().replace("_", " ")
+            ipc_lower = (r[6] or "").lower()
+            bns_lower = (r[5] or "").lower()
+
+            title_matches = sum(1 for w in query_words if w in case_id_lower)
+            lexical_boost = 0.0
+
+            if len(query_words) > 0:
+                if title_matches == len(query_words):
+                    lexical_boost = 0.50  # Exact title match -> guaranteed top rank
+                elif title_matches > 0:
+                    lexical_boost = 0.25 * (title_matches / len(query_words))
+
+            if any(w in ipc_lower or w in bns_lower for w in query_words):
+                lexical_boost += 0.15
+
+            final_score = vec_sim + lexical_boost
+            scored_records.append((final_score, r))
+
+        # Sort descending by hybrid score & slice topK
+        scored_records.sort(key=lambda x: x[0], reverse=True)
+        top_records = scored_records[:req.topK]
+
+        results = []
+        for score, r in top_records:
+            sim_score = min(score, 1.0)  # Cap match score display at 100%
+
             
             # Generate dynamic explanation trace
             exp = PRIORITIZATION_AGENT.generate_explanation(
@@ -552,6 +555,171 @@ async def search_cases(req: SearchRequest):
         if conn:
             conn.close()
 
+@app.get("/cases/pending")
+async def get_pending_priority_queue(
+    limit: int = 50,
+    offset: int = 0,
+    case_type: str = None,
+    legal_regime: str = None
+):
+    """
+    Returns pending cases ordered by AI Priority Score (highest priority first).
+    Includes summary statistics and agent explanation traces.
+    """
+    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT
+    if not PRIORITIZATION_AGENT:
+        from agents.prioritization.prioritizer import PrioritizationAgent
+        PRIORITIZATION_AGENT = PrioritizationAgent()
+    if not EXPLAINABILITY_AGENT:
+        from agents.explainability.explainability_agent import ExplainabilityAgent
+        EXPLAINABILITY_AGENT = ExplainabilityAgent()
+
+    conn = None
+    cur = None
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        cur = conn.cursor()
+
+        # Build dynamic WHERE clause
+        where_clauses = []
+        params = []
+        if case_type and case_type.lower() != "all":
+            where_clauses.append("LOWER(case_type) = %s")
+            params.append(case_type.lower())
+        if legal_regime and legal_regime.lower() != "all":
+            where_clauses.append("LOWER(legal_regime) = %s")
+            params.append(legal_regime.lower())
+
+        where_sql = " WHERE " + " AND ".join(where_clauses) if where_clauses else ""
+
+        # Query stats
+        stats_sql = f"""
+            SELECT 
+                COUNT(*) as total_count,
+                COUNT(*) FILTER (WHERE priority_score >= 8.0) as critical_count,
+                COUNT(*) FILTER (WHERE priority_score >= 6.0 AND priority_score < 8.0) as high_count,
+                AVG(priority_score) as avg_priority
+            FROM cases {where_sql};
+        """
+        cur.execute(stats_sql, params)
+        stats_row = cur.fetchone()
+        total_count = stats_row[0] or 0
+        critical_count = stats_row[1] or 0
+        high_count = stats_row[2] or 0
+        avg_priority = round(float(stats_row[3]), 2) if stats_row[3] is not None else 0.0
+
+        # Query ordered cases
+        query_sql = f"""
+            SELECT 
+                case_id, priority_score, case_type, legal_regime, case_date,
+                max_severity_score, case_summary, bns_sections, ipc_sections,
+                num_ipc_sections, num_cpc_sections, num_precedents, case_age_days,
+                immediate_threat_flag, societal_impact_score, total_words,
+                bias_score, bias_details, bias_flags
+            FROM cases
+            {where_sql}
+            ORDER BY priority_score DESC NULLS LAST, case_age_days DESC NULLS LAST
+            LIMIT %s OFFSET %s;
+        """
+        cur.execute(query_sql, params + [limit, offset])
+        records = cur.fetchall()
+
+        results = []
+        for idx, r in enumerate(records):
+            rank = offset + idx + 1
+            
+            exp = PRIORITIZATION_AGENT.generate_explanation(
+                case_type=r[2] if r[2] else "Unknown",
+                num_ipc_sections=r[9] if r[9] is not None else 0,
+                num_cpc_sections=r[10] if r[10] is not None else 0,
+                case_age_days=r[12] if r[12] is not None else None,
+                num_precedents=r[11] if r[11] is not None else 0,
+                severity=float(r[5]) if r[5] is not None else 3.0,
+                immediate_threat=r[13] if r[13] is not None else 0,
+                societal_impact=r[14] if r[14] is not None else 1,
+                case_date=r[4] if r[4] else None
+            )
+
+            features_for_explain = {
+                "case_type": r[2] if r[2] else "civil",
+                "num_ipc_sections": r[9] if r[9] is not None else 0,
+                "num_cpc_sections": r[10] if r[10] is not None else 0,
+                "num_precedents": r[11] if r[11] is not None else 0,
+                "total_words": r[15] if r[15] is not None else 1000,
+                "case_age_days": r[12] if r[12] is not None else 365.0,
+                "max_severity_score": float(r[5]) if r[5] is not None else 3.0,
+                "immediate_threat_flag": r[13] if r[13] is not None else 0,
+                "societal_impact_score": r[14] if r[14] is not None else 1
+            }
+            contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
+
+            results.append({
+                "rank": rank,
+                "case_id": r[0],
+                "priority_score": round(float(r[1]), 2) if r[1] is not None else 0.0,
+                "case_type": r[2] if r[2] else "Unknown",
+                "legal_regime": r[3] if r[3] else "Unknown",
+                "date": r[4] if r[4] else "Unknown",
+                "severity": r[5] if r[5] is not None else 3.0,
+                "summary": r[6] if r[6] else "AI Synopsis Pending Processing.",
+                "bns_sections": r[7] if r[7] else "",
+                "ipc_sections": r[8] if r[8] else "",
+                "priority_explanation": exp,
+                "contributions": contributions,
+                "bias_score": r[16],
+                "bias_details": r[17] if r[17] is not None else "Automated audit unavailable.",
+                "bias_flags": r[18].split(",") if (r[18] and r[18].strip()) else []
+            })
+
+        return {
+            "total_count": total_count,
+            "critical_count": critical_count,
+            "high_count": high_count,
+            "avg_priority": avg_priority,
+            "results": results
+        }
+    except Exception as e:
+        print(f"Error fetching pending priority queue: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch pending priority queue")
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+from typing import List
+
+@app.post("/batch_summarize_upload")
+async def process_batch_pdf_upload(files: List[UploadFile] = File(...)):
+    """
+    Accepts multiple PDF files, runs full agent pipeline on each,
+    and returns all cases ordered by priority score descending.
+    """
+    if not files:
+        raise HTTPException(status_code=400, detail="No files provided for batch processing")
+
+    processed_results = []
+
+    for file in files:
+        try:
+            res = await process_pdf_upload(file=file)
+            processed_results.append(res)
+        except Exception as err:
+            print(f"Failed processing file {file.filename}: {err}")
+
+    # Sort results by priority_score descending
+    processed_results.sort(key=lambda x: x.get("priority_score", 0.0) or 0.0, reverse=True)
+
+    # Assign priority rank
+    for idx, item in enumerate(processed_results):
+        item["rank"] = idx + 1
+
+    return {
+        "count": len(processed_results),
+        "results": processed_results
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
+

@@ -1,21 +1,33 @@
 case_id,case_type,legal_regime,ipc_sections,num_ipc_sections,bns_sections,num_bns_sections,cpc_sections,num_cpc_sections,max_severity_score,immediate_threat_flag,societal_impact_score,priority_score,case_date,case_age_days,num_precedents,total_words
 Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.43,"14 March, 1950",437.0,0,14379
+Abdul_Nassar_vs_The_State_Of_Kerala_on_7_January_2025_1,criminal,IPC,"201,302,376",3,"238,103,65",3,,0,10,1,1,7.5,4/4/2012,,5,8429
 Abdul_Rehman_Anr_vs_Mohd_Ruldu_Ors_on_27_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"27 September,
 2012",270.0,1,3139
+Abdul_Wahid_vs_The_State_Of_Rajasthan_on_28_February_2025_1,criminal,BNS,"147,148,149,302,307",5,,0,,0,3,0,1,1.55,"28 February, 2025",4807.0,0,8423
 Abuzar_Hossain_Gulam_Hossain_vs_State_Of_West_Bengal_on_10_October_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,0,1,4.5,24-6-1960,,1,13709
 Accountant_General_M_P_vs_S_K_Dubey_Anr_on_29_February_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.83,"29 February,
 2012",2615.0,7,13588
 Acg_Associated_Capsules_P_Ltd_vs_C_I_T_Central_Iv_Mumbai_on_8_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.54,"8
 February, 2012",38.0,0,4326
+Ac_Chokshi_Share_Broker_Private_Limited_vs_Jatin_Pratap_Desai_on_10_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.14,"10 February, 2025",1501.0,0,9607
 Adarsh_Shiksha_Mahavidyalaya_Ors_vs_Subhash_Rahangdale_Ors_on_6_January_2012_1,civil,IPC,,0,,0,,0,3,0,4,3.55,11-01-2008,,1,29537
 Ahmedsaheb_D_By_Lrs_Ors_vs_Sayed_Ismail_on_19_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.5,"19 July, 2012",200.0,1,4233
+Airports_Authority_Of_India_vs_Pradip_Kumar_Banerjee_on_4_February_2025_1,civil,BNS,,0,,0,,0,3,0,3,2.55,"4
+February, 2025",5148.0,0,7077
+Ajai_Kumar_Chauhan_vs_The_State_Of_Uttar_Pradesh_on_29_January_2025_1,criminal,BNS,304,1,,0,,0,3,0,1,1.84,"29
+January, 2025",2585.0,0,1359
 Ajay_Kumar_Parmar_vs_State_Of_Rajasthan_on_27_September_2012_1,criminal,IPC,"342,376",2,"127,65",2,,0,10,0,1,4.93,"27 September,
 2012",270.0,29,5474
 Ajay_Maken_vs_Adesh_Kumar_Gupta_Anr_on_11_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,30-05-2011,,2,11821
+Ajay_Malik_vs_State_Of_Uttarakhand_on_29_January_2025_1,criminal,BNS,370,1,,0,,0,3,0,1,1.84,"29 January, 2025",2585.0,1,10136
 Ajay_Pandit_Jagdish_Dayabhai_vs_State_Of_Maharashtra_on_17_July_2012_1,criminal,IPC,420,1,318,1,,0,5,1,1,5.6,"17 July, 2012",2389.0,4,7715
+Ajay_Singh_vs_Khacheru_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.55,"2 January, 2025",1.0,0,2767
 Akhilesh_Yadav_vs_Vishwanath_Chaturvedi_Ors_on_13_December_2012_1,civil,IPC,,0,,0,47,1,3,0,5,3.95,"13
 December, 2012",2173.0,1,6432
 Akil_Javed_vs_State_Of_Nct_Of_Delhi_on_6_December_2012_1,criminal,IPC,"302,34,354,392,411",5,"103,3,74,309,317",5,,0,10,1,1,7.61,06/12/2012,1435.0,5,12451
+Akshay_Gupta_vs_Icici_Bank_Limited_on_25_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"25 March, 2025",814.0,0,3063
+Akula_Raghuram_vs_The_State_Of_Andhra_Pradesh_on_11_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.05,"11
+February, 2025",,0,2591
 Alagupandi_Alagupandian_vs_State_Of_Tamil_Nadu_on_8_May_2012_1,criminal,IPC,"302,448",2,"103,329",2,,0,10,1,1,7.46,"8 May,
 2012",1954.0,1,6147
 Alister_Anthony_Pareira_vs_State_Of_Maharashtra_on_12_January_2012_1,criminal,IPC,"279,299,300,302,304,304a,307,320,336,337,338,376,427",13,"281,100,101,103,105,106,109,116,125,125,125,65,324",13,,0,10,1,1,7.5,"12 January,
@@ -25,15 +37,21 @@ Alok_Kumar_Pandit_vs_State_Of_Assam_Ors_on_26_November_2012_1,civil,IPC,,0,,0,,0
 Amar_Pal_Singh_vs_State_Of_U_P_Anr_on_17_May_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.21,"17 May, 2012",1232.0,10,5061
 Amar_Singh_Jatav_Anr_vs_State_Of_M_P_on_26_September_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.08,"26 September, 2012",1730.0,0,690
 Amit_Kapoor_vs_Ramesh_Chander_Anr_on_13_September_2012_1,criminal,IPC,"107,109,306,448",4,"45,49,108,329",4,,0,4,0,1,2.83,"13 September, 2012",256.0,17,12504
+Amit_Kumar_vs_Union_Of_India_on_24_March_2025_1,criminal,IPC,,0,,0,,0,3,1,3,6.48,11/09/2023,253.0,1,25676
 Amit_vs_State_Of_U_P_on_23_February_2012_1,criminal,IPC,"201,302,364,376,377",5,"238,103,140,65",4,,0,10,0,1,4.89,"23 February, 2012",418.0,2,3541
+Amresh_Shrivastava_vs_The_State_Of_Madhya_Pradesh_on_1_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"1 April, 2025",456.0,0,2672
 Amrit_Bhanu_Shali_Ors_vs_National_Insurance_Co_Ltd_Ors_on_4_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.52,"4 April, 2012",94.0,1,3396
+Amrit_Yadav_vs_The_State_Of_Jharkhand_on_10_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,21/8/2010,,2,8125
 Anand_Mohan_vs_State_Of_Bihar_on_10_July_2012_1,criminal,IPC,"109,114,147,149,302,307,427",7,"49,54,191,190,103,109,324",7,,0,10,1,1,7.65,"10 July, 2012",1286.0,5,11764
 Aneeta_Hada_vs_M_S_Godfather_Travels_Tours_Pvt_Ltd_on_27_April_2012_1,criminal,IPC,67,1,8,1,,0,4,0,3,3.47,"27
 April, 2012",1578.0,14,13116
 Anju_Chaudhary_vs_State_Of_U_P_Anr_on_13_December_2012_1,criminal,IPC,"147,156,302,410,427,436,506",7,"191,193,103,317,324,326,351",7,,0,10,1,3,8.5,20-5-1995,,3,15237
+Anmol_vs_Union_Of_India_on_21_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.44,"21 February, 2025",417.0,0,9858
+Anraj_Devi_vs_Deepak_Kumar_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.95,"8 January, 2025",2199.0,0,641
 Archaeological_Survey_Of_India_vs_Narender_Anand_And_Ors_on_16_January_2012_1,civil,IPC,,0,,0,,0,3,0,4,4.05,24/22/2006,0.0,0,9841
 Arjuna_Lal_Misra_vs_The_State_on_30_November_1950_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,17-11-1946,,0,2507
 Arumugam_vs_State_Rep_By_Insp_Of_Police_on_24_July_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.29,"24 July, 2012",935.0,0,3615
+Arun_vs_State_Of_Madhya_Pradesh_on_27_March_2025_1,criminal,BNS,"302,34",2,,0,,0,3,1,1,5.43,"27 March, 2025",451.0,0,3166
 Arup_Das_Ors_vs_State_Of_Assam_Ors_on_27_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,2-11-1991,,0,3606
 Asha_vs_B_D_Sharma_University_Of_Health_on_10_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.5,"10 July, 2012",191.0,3,8346
 Ashok_Kumar_Ratilal_Patel_vs_Uoi_And_Anr_on_16_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.5,"16 July, 2012",197.0,1,2902
@@ -41,37 +59,60 @@ Ashok_Kumar_vs_State_Of_Uttarakhand_Ors_on_13_December_2012_1,criminal,IPC,,0,,0
 2012",347.0,0,2396
 Ashok_Sadarangani_Anr_vs_Union_Of_India_Ors_on_14_March_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.33,"14 March,
 2012",803.0,0,4418
+Ashok_Saxena_vs_The_State_Of_Uttarakhand_on_30_January_2025_1,criminal,IPC,"302,307,34",3,"103,109,3",3,,0,10,0,1,4.0,20-01-2015,7689.0,3,5763
+Ashok_Singh_vs_State_Of_U_P_on_2_April_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.42,"2 April, 2025",457.0,0,5975
 Ashrafkhan_Babu_Munnekhan_Pathan_Anr_vs_State_Of_Gujarat_on_26_September_2012_1,criminal,IPC,3,1,,0,,0,4,0,1,2.4,19-3-1995,,1,10958
 Ashutosh_Lahiry_vs_The_State_Of_Delhi_And_Anr_on_19_May_1950_1,criminal,IPC,,0,,0,,0,3,1,1,5.53,5-3-1950,63.0,0,2878
 Ashwani_Kumar_Saxena_vs_State_Of_M_P_on_13_September_2012_1,criminal,IPC,"302,307,324,326,34",5,"103,109,118,118,3",5,,0,10,1,1,7.93,"13 September, 2012",256.0,1,8894
 Ash_Mohammad_vs_Shiv_Raj_Singh_Lalla_Babu_Anr_on_20_September_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.48,"20
 September, 2012",263.0,4,5938
+Aslam_Alias_Imran_vs_The_State_Of_Madhya_Pradesh_on_27_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.43,"27
+March, 2025",451.0,0,3182
 Assam_Urban_Water_Supply_Sew_Board_vs_M_S_Subash_Projects_Marketing_Ltd_on_19_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.94,"19 January, 2012",2209.0,1,2125
 Atmaram_Ors_vs_State_Of_M_P_on_10_May_2012_1,criminal,IPC,"149,300,302,326",4,"190,101,103,118",4,,0,10,1,1,7.5,16-5-1988,,2,6964
 Attar_Singh_vs_State_Of_Maharashtra_on_14_December_2012_1,criminal,IPC,302,1,103,1,,0,10,0,1,4.5,"14 December, 2012",,4,5218
+Atul_Tiwari_vs_Regional_Manager_Oriental_Insurance_on_6_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.55,"6
+January, 2025",5.0,0,5633
 Avinash_Sadashiv_Bhosale_D_Thr_Lrs_vs_U_O_I_Ors_on_25_September_2012_1,civil,IPC,,0,,0,,0,3,1,3,6.48,"25
 September, 2012",268.0,3,11616
 Avishek_Goenka_vs_Union_Of_India_Anr_on_27_April_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.42,"27 April, 2012",482.0,1,4812
 Ayaaubkhan_Noorkhan_Pathan_vs_State_Of_Maharashtra_Ors_on_8_November_2012_1,civil,IPC,,0,,0,,0,3,1,4,6.96,"8 November, 2012",312.0,46,9558
+Ayyub_vs_State_Of_Uttar_Pradesh_on_7_February_2025_1,criminal,BNS,"107,302,304,306",4,,0,,0,3,1,1,5.54,"7 February, 2025",37.0,0,2874
 Azija_Begum_vs_State_Of_Maharashtra_Anr_on_12_January_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.55,"12 January, 2012",11.0,0,1327
 Azim_Ahmad_Kazmi_And_Ors_vs_State_Of_U_P_And_Anr_on_16_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.6,"16
 July, 2012",3484.0,3,4825
+A_John_Kennedy_vs_The_State_Of_Tamil_Nadu_on_24_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"24 March, 2025",4100.0,0,3874
 A_K_Gopalan_vs_The_State_Of_Madras_Union_Of_India__on_19_May_1950_1,criminal,IPC,,0,,0,,0,3,1,3,6.51,"19 May, 1950",138.0,0,106162
 A_M_Mair_Co_vs_Gordhandass_Sagarmull_on_30_November_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,"30 November, 1950",,0,2354
 A_Nawab_John_Ors_vs_V_N_Subramaniyam_on_3_July_2012_1,civil,IPC,,0,,0,149,1,3,0,1,2.05,22-03-1995,,6,9374
+A_Rajendra_vs_Gonugunta_Madhusudhan_Rao_on_4_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.42,"4 April, 2025",459.0,0,5101
+A_Shankar_Savukku_Shankar_vs_State_Of_Tamil_Nadu_on_24_February_2025_1,criminal,BNS,4,1,,0,,0,3,0,1,2.43,"24
+February, 2025",420.0,0,638
 A_Shanmugam_vs_Ariya_K_R_K_M_N_P_Sangam_Tr_Pres_Etc_on_27_April_2012_1,civil,IPC,,0,,0,30,1,3,0,1,1.55,"27
 April, 2012",3769.0,1,12230
 A_V_M_Sales_Corporation_vs_M_S_Anuradha_Chemicals_Pvt_Ltd_on_17_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.15,"17 January, 2012",1477.0,3,3135
 A_V_Padma_Ors_vs_R_Venugopal_Ors_on_27_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.54,"27 January, 2012",26.0,1,2143
+Baban_Shankar_Daphal_vs_The_State_Of_Maharashtra_on_22_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"22
+January, 2025",11344.0,0,5161
 Badami_D_Tr_Her_Lr_vs_Bhali_on_22_May_2012_1,civil,IPC,,0,,0,"10,15",2,3,0,1,2.05,26-4-2003,,18,6363
+Badrinarayana_Jaganathan_vs_The_State_Of_Karnataka_on_24_January_2025_1,criminal,IPC,"354,504",2,"74,352",2,,0,6,0,1,3.1,25-10-2013,,3,5405
+Balbir_Singh_vs_Baldev_Singh_D_Through_His_Lrs_on_17_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,24-10-2018,,4,8507
 Baliya_Bal_Kishan_vs_State_Of_M_P_on_5_October_2012_1,criminal,IPC,"120b,302",2,"61,103",2,,0,10,1,1,7.52,"5 October, 2012",1739.0,0,3994
+Bani_Alam_Mazid_Dhan_vs_The_State_Of_Assam_on_24_February_2025_1,criminal,BNS,"201,302,34",3,,0,,0,3,1,1,4.55,"24
+February, 2025",5168.0,1,11128
+Bank_Of_Baroda_vs_Farooq_Ali_Khan_on_20_February_2025_1,civil,BNS,,0,,0,,0,3,0,3,3.44,"20 February, 2025",416.0,1,2453
+Bank_Of_India_vs_Muthyala_Saibaba_Suryanarayana_Murthy_on_18_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"18
+March, 2025",442.0,0,2546
 Bar_Council_Of_India_vs_Union_Of_India_on_3_August_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,"3 August, 2012",3867.0,2,8867
 Bavo_Manubhai_Ambalal_Thakore_vs_State_Of_Gujarat_on_3_February_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.54,"3
 February, 2012",33.0,1,1767
 Benarsi_Krishna_Commit_Ors_vs_Karmyogi_Shelters_P_Ltd_on_21_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.28,"21 September, 2012",994.0,2,3197
+Bernard_Francis_Joseph_Vaz_vs_Government_Of_Karnataka_on_2_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,29/01/2003,,3,15570
 Bhajju_Karan_Singh_vs_State_Of_M_P_on_15_March_2012_1,criminal,IPC,"302,307",2,"103,109",2,,0,10,0,1,4.58,"15 March, 2012",1535.0,1,6565
+Bharat_Aambale_vs_The_State_Of_Chhattisgarh_on_6_January_2025_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,10-5-2007,,0,21957
 Bharat_Aluminium_Co_vs_Kaiser_Aluminium_Technical_on_6_September_2012_1,civil,IPC,,0,,0,151,1,3,0,1,2.05,27-6-2006,,3,46832
 Bharat_Heavy_Electricals_Ltd_vs_R_S_Avtar_Singh_Co_on_5_October_2012_1,civil,IPC,,0,,0,34,1,3,0,1,2.05,6-1-1981,,0,9003
+Bharat_Petroleum_Corporation_Ltd_vs_Commissioner_Of_Central_Excise_Nashik_on_20_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"20 January, 2025",5863.0,0,7352
 Bhartiya_Seva_Samaj_Trust_Tr_Pres_Anr_vs_Yogeshbhai_Ambalal_Patel_Anr_on_14_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"14 September, 2012",257.0,18,3904
 Bhaskar_Laxman_Jadhav_Ors_vs_Karamveer_Kakasaheb_Wagh_Edu_Sty_Ors_on_11_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.16,"11 December, 2012",1440.0,2,6517
 Bhau_Ram_vs_Janak_Singh_Ors_on_20_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.49,"20 July, 2012",201.0,1,2261
@@ -79,36 +120,51 @@ Bhawanipore_Banking_Corpora_Tion_Ltd_vs_Gouri_Shankar_Sharma_on_14_March_1950_1,
 Bhimanna_vs_State_Of_Karnataka_on_4_September_2012_1,criminal,IPC,"149,302,323,324,325,326,327,34,447,504",10,"190,103,115,118,117,118,119,3,329,352",10,,0,10,1,1,7.23,"4 September, 2012",2803.0,21,6139
 Bhopal_Gas_Peedith_Mahila_vs_U_O_I_Ors_on_9_August_2012_1,civil,IPC,,0,,0,,0,3,0,4,3.05,"9 August, 2012",5334.0,1,9572
 Bhubaneswar_Development_Authority_vs_Adikanda_Biswal_Ors_on_1_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.04,01/02/2012,1857.0,0,3654
+Bhudev_Mallick_Alias_Bhudeb_Mallick_vs_Ranajit_Ghoshal_on_17_January_2025_1,civil,IPC,,0,,0,21,1,3,0,1,2.05,26/06/1976,,24,15689
+Bhupal_Singh_vs_State_Of_Uttarakhand_on_9_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"9 January, 2025",23384.0,0,1665
 Bhupendra_Nath_Hazarika_Anr_vs_State_Of_Assam_Ors_on_30_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.26,"30
 November, 2012",1064.0,3,12738
+Bhupinderpal_Singh_Gill_vs_The_State_Of_Punjab_on_20_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,27-1-2017,,0,8100
 Bhushan_Kumar_Anr_vs_State_Nct_Of_Delhi_Anr_on_4_April_2012_1,criminal,IPC,"174,420",2,"208,318",2,,0,5,1,3,7.22,"4 April,
 2012",94.0,1,2955
 Bihar_Public_Service_Commn_vs_Saiyed_Hussain_Abbas_Rizwi_Anr_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.45,"13 December, 2012",347.0,1,7361
 Bimal_Kumar_Anr_vs_Shakuntala_Debi_Ors_on_27_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.23,"27 February,
 2012",1152.0,8,6497
 Bipromasz_Bipron_Trading_Sa_vs_Bharat_Electronics_Limited_Bel_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,7-1-2002,,2,8496
+Bishwajit_Dey_vs_The_State_Of_Assam_on_7_January_2025_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,10/04/2023,,0,9783
+Biswajit_Das_vs_Central_Bureau_Of_Investigation_on_16_January_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.05,16-01-2025,,0,3943
 Brajendrasingh_vs_State_Of_M_P_on_28_February_2012_1,criminal,IPC,"302,309",2,103,1,,0,10,1,1,7.78,"28 February, 2012",788.0,1,8031
 Brijesh_Mavi_vs_State_Of_Nct_Of_Delhi_on_3_July_2012_1,criminal,IPC,"34,460",2,"3,331",2,,0,4,1,1,5.75,"3 July, 2012",549.0,1,5635
 Brij_Bhushan_And_Another_vs_The_State_Of_Delhi_on_26_May_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.51,"26 May, 1950",145.0,0,5702
 Brij_Bhushan_And_Anr_vs_The_State_Of_Delhi_on_2_March_1950_1,criminal,IPC,,0,,0,,0,3,0,3,3.53,"2 March, 1950",60.0,0,5507
 Burdwan_Central_Co_Op_Bank_Ltd_Anr_vs_Asim_Chatterjee_Ors_on_18_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.55,"18 January, 2012",17.0,0,3478
+B_N_John_vs_The_State_Of_Uttar_Pradesh_on_2_January_2025_1,criminal,IPC,350,1,129,1,,0,4,0,1,2.4,03/06/2013,,2,10505
+B_V_Ram_Kumar_vs_State_Of_Telangana_on_10_February_2025_1,criminal,BNS,504,1,,0,,0,3,0,1,2.24,"10 February, 2025",1136.0,0,6104
+Canara_Bank_vs_Ajithkumar_G_K_on_11_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,8-5-1993,,0,11662
 Catholic_Syrian_Bank_Ltd_vs_Commissioner_Of_Income_Tax_Thrissur_on_17_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.44,"17 February, 2012",412.0,0,11187
 Cbi_Hyderabad_vs_K_Narayana_Rao_on_21_September_2012_1,criminal,IPC,"109,420",2,"49,318",2,,0,5,0,3,4.18,"21 September, 2012",264.0,0,8881
+Central_Bank_Of_India_vs_Smt_Prabha_Jain_on_9_January_2025_1,civil,IPC,,0,,0,"6,9",2,3,0,1,2.05,14/9/1999,,4,19467
 Central_Bureau_Of_Investigation_vs_Amitbhai_Anil_Chandra_Shah_And_Anr_on_27_September_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.48,"27 September, 2012",270.0,0,7116
 Chairman_Lic_Of_India_Ors_vs_A_Masilamani_on_23_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.46,"23 November,
 2012",327.0,9,3022
 Chandi_Prasad_Uniyal_And_Ors_vs_State_Of_Uttarakhand_And_Ors_on_17_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.49,"17 August, 2012",229.0,1,3194
+Chandrabhan_Sudam_Sanap_vs_The_State_Of_Maharashtra_on_28_January_2025_1,criminal,IPC,"201,302,364,366,376a,392",6,"238,103,140,87,66,309",6,,0,10,1,1,7.5,18/01/2014,,0,28336
 Chandrakala_Trivedi_vs_State_Of_Rajasthan_Ors_on_12_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.55,"12 January,
 2012",11.0,0,856
 Chandralekha_vs_State_Of_Rajasthan_Anr_on_14_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,14/9/2011,,1,1657
 Chandra_Kumar_Chopra_vs_Union_Of_India_Ors_on_11_May_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,"11 May, 2012",3783.0,4,6900
+Chandra_Shekhar_Singh_vs_The_State_Of_Jharkhand_on_20_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"20 March,
+2025",7018.0,0,5014
 Chief_Controlling_Revenue_vs_Maharashtra_Sugar_Mills_Ltd_on_27_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.11,"27 May, 1950",1607.0,0,4891
+Chief_Manager_Of_Rajasthan_State_Road_vs_Haneef_Khan_on_13_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,12-02-2019,,0,1176
+Chief_Revenue_Controlling_Officer_Cum_vs_P_Babu_on_3_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,2-9-2015,,1,5304
 Chintaman_Rao_vs_The_State_Of_Madhya_Pradeshram_on_8_November_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.46,"8 November, 1950",311.0,0,2319
 Chiranjit_Lal_Chowdhuri_vs_The_Union_Of_India_And_Others_on_4_December_1950_1,civil,IPC,,0,,0,,0,3,1,3,6.46,"4 December, 1950",337.0,0,28123
 Chittaranjan_Mukherji_vs_Barhoo_Mahto_on_5_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,14-12-1944,,0,2134
 Chloro_Controls_I_P_Ltd_vs_Severn_Trent_Water_Purification_Inc_on_28_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"28 September, 2012",271.0,3,34472
 Church_Of_Christ_Charitable_Trust_Edu_vs_M_S_Ponniamman_Educationa_Trust_Rep_on_3_July_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.5,"3 July, 2012",184.0,0,5938
 Cicily_Kallarackal_vs_Vehicle_Factory_on_6_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.99,"6 August, 2012",2044.0,1,1285
+Cmj_Foundation_vs_The_State_Of_Meghalaya_on_13_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,17/10/2010,,8,14249
 Columbia_Sportswear_Company_vs_Director_Of_I_T_Bangalore_on_30_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.39,"30 July, 2012",576.0,5,5391
 Commissioner_Of_Income_Tax_Bombay_vs_Ahmedbhai_Umarbhai_Co_Bombay_on_4_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.42,"4 May, 1950",488.0,0,24501
 Commissioner_Of_Income_Tax_U_P_vs_Gappumal_Kanhaiya_Lal_on_26_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"26 May, 1950",3798.0,0,707
@@ -118,23 +174,42 @@ Commnr_Of_Central_Excise_Mumbai_vs_M_S_Fiat_India_P_Ltd_Anr_on_29_August_2012_1,
 Commnr_Of_Central_Excise_New_Delhi_vs_M_S_Connaught_Plaza_Rest_P_Ltd_N_D_on_27_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.66,27/11/2012,3253.0,0,10608
 Commnr_Of_Central_Excise_Surat_I_vs_M_S_Favourite_Industries_on_29_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,1-3-1997,,0,7241
 Commnr_Of_Central_Excise_vs_M_S_Wockhardt_Life_Science_Ltd_on_22_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.74,"22 February, 2012",2974.0,0,8008
+Constable_907_Surendra_Singh_vs_State_Of_Uttarakhand_on_28_January_2025_1,criminal,BNS,"27,302,34",3,,0,,0,3,0,1,1.55,"28
+January, 2025",4410.0,0,4031
 Court_On_Its_Own_Motion_vs_Union_Of_India_Ors_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,0,5,4.45,"13
 December, 2012",347.0,0,16777
 Co_Operative_Society_Of_Debts_vs_Nandlal_on_12_October_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,"12 October, 1950",,0,2214
+Cuddalore_Powergen_Corporation_Ltd_vs_M_S_Chemplast_Cuddalore_Vinyls_Limited_on_15_January_2025_1,civil,IPC,,0,,0,"100,151,2,7",4,3,0,5,4.05,27-7-2005,,6,26390
 C_I_T_Ii_vs_M_S_Krishi_Utpadan_Mandi_Samiti_on_27_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"27 September,
 2012",270.0,0,3037
+C_Kamalakkannan_vs_The_State_Of_Tamil_Nadu_on_3_March_2025_1,criminal,BNS,"120b,468,471",3,,0,,0,3,0,1,1.55,"3 March, 2025",5175.0,0,2774
 C_K_Jaffer_Sharief_vs_State_Thr_C_B_I_on_9_November_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.46,"9 November, 2012",313.0,1,3208
 C_N_Ramappa_Gowda_vs_C_C_Chaqndergowda_D_By_Lrs_Anr_on_23_April_2012_1,civil,IPC,,0,,0,8,1,3,0,1,2.52,"23 April, 2012",113.0,1,4455
+C_Prabhakar_Rao_And_Anr_vs_Sama_Mahipal_Reddy_And_Anr_on_4_March_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,30-11-2016,,0,2767
+C_S_Umesh_vs_T_V_Gangaraju_on_11_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"11 February, 2025",7712.0,0,2528
 Dahari_Ors_vs_State_Of_U_P_on_11_October_2012_1,criminal,IPC,"141,148,149,302,34",5,"189,191,190,103,3",5,,0,10,0,1,4.52,"11 October, 2012",1745.0,15,3524
+Dalip_Ram_vs_State_Of_Punjab_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"2 January, 2025",4750.0,3,10415
+Daljit_Singh_vs_The_State_Of_Haryana_on_2_January_2025_1,criminal,BNS,174a,1,,0,,0,3,0,1,2.45,"2 January, 2025",367.0,2,4075
 Darbara_Singh_vs_State_Of_Punjab_on_12_September_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,0,1,4.73,"12 September, 2012",985.0,11,4122
 Darshan_Lal_Nagpal_Ors_vs_Govt_Of_Nct_Of_Delhi_Ors_on_3_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,24-3-2008,,2,13494
 Dayal_Singh_Ors_vs_State_Of_Uttaranchal_on_3_August_2012_1,criminal,IPC,"302,304,34",3,"103,105,3",3,,0,10,1,1,7.74,"3 August, 2012",945.0,5,12069
+Deen_Dayal_Tiwari_vs_State_Of_Uttar_Pradesh_on_16_January_2025_1,criminal,BNS,302,1,,0,,0,3,1,1,4.55,"16 January, 2025",4033.0,0,6243
 Deepak_Kumar_Etc_vs_State_Of_Haryana_Ors_Etc_on_27_February_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,96/7/2000,,1,6514
+Deepak_Kumar_Tala_vs_State_Of_Andhra_Pradesh_on_25_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.05,18-11-2024,,0,1195
+Deepak_Singh_Alias_Deepak_Chauhan_vs_Mukesh_Kumar_on_10_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"10
+February, 2025",40.0,0,1109
+Delhi_Agricultural_Marketing_Board_vs_Bhagwan_Devi_D_Thr_Lr_on_20_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.73,"20 March, 2025",3000.0,0,3203
+Delhi_Dev_Authority_vs_S_G_G_Towers_P_Ltd_on_7_March_2025_1,civil,BNS,,0,,0,,0,3,1,1,4.55,"7 March, 2025",5179.0,0,3011
 Delhi_Race_Club_Ltd_vs_Union_Of_India_Ors_on_13_July_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.6,"13 July, 2012",3481.0,7,9434
 Deoki_Panjhiyara_vs_Shahshi_Bhushan_Narayan_Azad_Anr_on_12_December_2012_1,criminal,IPC,"494,495",2,"82,82",2,,0,4,1,1,5.81,"12 December, 2012",346.0,3,3976
 Desiya_Murpokku_Dravida_Kazhagam_Anr_vs_Election_Commission_Of_India_on_18_April_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,24-01-2006,,4,20835
+Devinder_Kumar_Bansal_vs_The_State_Of_Punjab_on_3_March_2025_1,criminal,BNS,,0,,0,,0,3,1,3,6.53,"3 March,
+2025",61.0,2,5382
 Devinder_Singh_Narula_vs_Meenakshi_Nangia_on_22_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.49,"22 August, 2012",234.0,1,2255
+Dhirendra_Kumar_vs_Deepak_Kumar_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.05,"8 January, 2025",1834.0,0,1343
+Dhirubhai_Bhailalbhai_Chauhan_vs_The_State_Of_Gujarat_on_21_March_2025_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,19/3/2002,,1,3627
 Dhiyan_Singh_And_Another_vs_Jugal_Kishore_And_Another_on_22_February_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,21-5-1940,,0,4843
+Dileepbhai_Nanubhai_Sanghani_vs_State_Of_Gujarat_on_27_February_2025_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,30/06/2008,,0,6494
 Dimpey_Gujral_Ors_vs_U_T_Chandigarh_Ors_on_6_December_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,26/10/2006,,1,1552
 Dipak_Kumar_Mukherjee_vs_Kolkata_Mun_Corp_Ors_on_8_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.47,"8
 October, 2012",281.0,1,9669
@@ -142,22 +217,42 @@ Dipak_Subhashchandra_Mehta_vs_C_B_I_Anr_on_10_February_2012_1,criminal,IPC,,0,,0
 2012",40.0,0,4545
 Dirctor_General_Of_Posts_Ors_vs_K_Chandrashekar_Rao_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.45,"13
 December, 2012",347.0,0,6374
+Directorate_Of_Enforcement_vs_Subhash_Sharma_on_21_January_2025_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,21-09-2022,,0,1159
+Disortho_S_A_S_vs_Meril_Life_Sciences_Pvt_Ltd_on_18_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"18 March, 2025",807.0,0,8550
 Dropti_Devi_Anr_vs_Union_Of_India_Ors_on_2_July_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,73/02/2009,,0,15695
+Dr_Amaragouda_L_Patil_vs_Union_Of_India_on_12_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,11/12/2020,,1,9522
 Dr_Babu_Ram_Saksena_vs_The_State_on_5_May_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.42,"5 May, 1950",489.0,0,8319
 Dr_Mehmood_Nayyar_Azam_vs_State_Of_Chattisgarh_And_Ors_on_3_August_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.29,"3
 August, 2012",945.0,10,8852
 Dr_Mrs_Nupur_Talwar_vs_Cbi_Delhi_And_Anr_on_6_January_2012_1,criminal,IPC,"201,302,34",3,"238,103,3",3,,0,10,1,1,8.0,06-01-2012,5.0,2,3653
 Dr_N_B_Khare_vs_The_State_Of_Delhi_on_26_May_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.51,"26 May, 1950",145.0,0,6176
+Dr_Poornima_Advani_vs_Government_Of_Nct_on_18_February_2025_1,civil,BNS,,0,,0,,0,3,1,1,5.54,"18 February, 2025",48.0,4,10229
+Dr_Sharmad_vs_The_State_Of_Kerala_on_10_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.45,"10 January, 2025",375.0,0,5140
 Dr_Subramanian_Swamy_vs_Dr_Manmohan_Singh_And_Anr_on_31_January_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.54,"31
 January, 2012",30.0,4,17163
+Dr_Yugeshwar_Yadav_vs_Sanjay_Kumar_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.25,"8 January, 2025",1103.0,0,1189
 Dy_Inspector_Gen_Of_Police_Anr_vs_S_Samuthiram_on_30_November_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.46,"30
 November, 2012",334.0,1,6215
+Edakkandi_Dineshan_P_Dineshan_vs_State_Of_Kerala_on_6_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"6
+January, 2025",4388.0,2,5369
 Executors_Of_The_Estate_Of_J_K_Dubash_vs_Commissioner_Of_Income_Tax_Bombaycity_on_21_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.15,"21 December, 1950",1450.0,0,4015
 Faiza_Choudhary_vs_State_Of_J_K_Anr_on_6_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"6 September, 2012",249.0,1,2751
+Firoz_Khan_Akbarkhan_vs_The_State_Of_Maharashtra_on_24_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"24
+March, 2025",4465.0,4,7103
+Frank_Vitus_vs_Narcotics_Control_Bureau_on_6_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.45,"6 January, 2025",371.0,0,1571
+Gajendra_Singh_vs_Reena_Balmiki_on_26_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.33,"26 March, 2025",815.0,0,1981
 Gajoo_vs_State_Of_Uttarakhand_on_13_September_2012_1,criminal,IPC,302,1,103,1,,0,10,0,1,4.63,"13 September, 2012",1351.0,2,5863
+Gambhir_Singh_vs_The_State_Of_Uttar_Pradesh_on_28_January_2025_1,criminal,BNS,"302,404",2,,0,,0,3,1,1,4.55,"28 January, 2025",4776.0,0,6144
+Ganesan_vs_The_State_Of_Tamilnadu_Rep_By_Inspector_on_7_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.34,"7
+February, 2025",768.0,0,1095
+Gangubai_Raghunath_Ayare_vs_Gangaram_Sakharam_Dhuri_D_Thr_His_on_17_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"17 March, 2025",5919.0,0,4333
+Garden_Reach_Shipbuilders_And_vs_Grse_Limited_Workmens_Union_on_25_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.05,04-09-2024,,2,2386
+Gastrade_International_vs_Commissioner_Of_Customs_Kandla_on_28_March_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,02/07/2018,,2,19184
 Gaytri_Bajaj_vs_Jiten_Bhalla_on_5_October_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.47,"5 October, 2012",278.0,1,3067
+Geddam_Jhansi_vs_The_State_Of_Telangana_on_7_February_2025_1,criminal,IPC,"498a,506",2,"86,351",2,,0,6,1,1,6.1,27-11-2021,,0,9161
 Geeta_Mehrotra_Anr_vs_State_Of_U_P_Anr_on_17_October_2012_1,criminal,IPC,"323,498a,504,506",4,"115,86,352,351",4,,0,6,0,1,3.52,"17 October,
 2012",290.0,3,6143
+Geetha_V_M_vs_Rethnasenan_K_on_3_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,25/10/2008,,0,10232
 General_Officer_Commanding_vs_Cbi_Anr_on_1_May_2012_1,criminal,IPC,"166,167,6",3,"198,201,3",3,,0,4,0,3,3.77,"1 May, 2012",486.0,58,15553
 Ghanshyam_Das_Gupta_vs_Makhan_Lal_on_21_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.59,"21 August, 2012",3520.0,0,1411
 Gian_Singh_vs_State_Of_Punjab_Anr_on_24_September_2012_1,criminal,IPC,"120b,302,307,326,34,354,394,420,467,468,469,506",12,"61,103,109,118,3,74,309,318,338,336,336,351",12,,0,10,1,3,8.5,11-1-2004,,4,19206
@@ -165,36 +260,81 @@ Girish_Ramchandra_Deshpande_vs_Cen_Information_Commr_Ors_on_3_October_2012_1,civ
 Gnanambal_Ammal_vs_T_Raju_Ayyar_And_Ors_on_21_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.75,"21 December,
 1950",2911.0,0,4345
 Gnanambal_Ammal_vs_T_Raju_Ayyar_And_Others_on_21_October_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.57,"21 October, 1950",3580.0,0,4520
+Godrej_Projects_Development_Limited_vs_Anil_Karlekar_on_3_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,8-5-2012,,0,6949
+Gopal_Krishan_vs_Daulat_Ram_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"2 January, 2025",3654.0,0,3964
+Gopal_Sharan_Singh_vs_Deepak_Kumar_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.95,"8 January, 2025",2199.0,0,1222
+Gopal_Singh_vs_State_Of_Uttarakhand_on_6_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.05,06-02-2025,,0,1433
 Gorakhram_Sadhuram_vs_Laxmibai_Wife_Of_Inderlal_Nandlal_on_14_March_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,26-5-1943,,0,4422
+Goverdhan_vs_The_State_Of_Chhattisgarh_on_9_January_2025_1,criminal,BNS,"302,304,307",3,,0,,0,3,0,1,1.55,"9 January, 2025",5122.0,12,24792
 Govindaraju_Govinda_vs_State_By_Sriramapuram_P_S_Anr_on_15_March_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,1,1,7.56,16-5-2011,1596.0,3,13381
+Gudivada_Seshagiri_Rao_vs_Gudiavada_Ashalatha_on_7_February_2025_1,civil,BNS,,0,,0,,0,3,0,3,3.44,"7 February, 2025",403.0,0,1835
+Gulshan_Kumar_vs_Institute_Of_Banking_Personnel_on_3_February_2025_1,civil,IPC,,0,,0,,0,3,0,4,3.96,26/11/2022,329.0,0,9292
 Gurcharan_Singh_vs_Surjit_Singh_Anr_on_2_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.27,"2 November, 2012",1036.0,11,1802
 Gurgaon_Gramin_Bank_vs_Khazani_Anr_on_4_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"4 September, 2012",247.0,0,2144
 Gurpal_Singh_vs_High_Court_Of_Judicature_For_Rajasthan_on_27_November_2012_1,civil,IPC,,0,,0,,0,3,1,1,4.86,"27
 November, 2012",2522.0,1,10043
 Guru_Basavaraj_Benne_Settappa_vs_State_Of_Karnataka_on_29_August_2012_1,criminal,IPC,304a,1,106,1,,0,4,1,1,5.83,"29
 August, 2012",241.0,3,5459
+Gyanendra_Singh_Raja_Singh_vs_The_State_Of_Uttar_Pradesh_on_7_March_2025_1,criminal,IPC,67b,1,,0,,0,4,1,1,5.4,21-4-2018,,0,4154
+G_C_Manjunath_vs_Seetaram_on_3_April_2025_1,criminal,BNS,,0,,0,,0,3,1,1,4.55,"3 April, 2025",5571.0,3,7514
+Haldhar_Prasad_Gupta_vs_Deepak_Kumar_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.45,"8 January, 2025",373.0,0,1090
+Hansraj_vs_The_State_Of_Chhattisgarh_on_10_February_2025_1,criminal,BNS,302,1,,0,,0,3,0,1,1.55,"10 February, 2025",4789.0,0,2293
 Haradhan_Das_vs_State_Of_West_Bengal_on_13_December_2012_1,criminal,IPC,"149,302,460",3,"190,103,331",3,,0,10,0,1,4.4,"13 December, 2012",2173.0,1,7063
+Hare_Krushna_Mahanta_vs_Himadri_Sahu_on_7_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"7 February, 2025",37.0,0,1065
+Hari_Nandan_Singh_vs_The_State_Of_Jharkhand_on_11_February_2025_1,criminal,BNS,"298,323,353,406,504",5,,0,,0,3,0,1,2.04,"11 February, 2025",1868.0,0,3128
+Harshit_Harish_Jain_vs_The_State_Of_Maharashtra_on_24_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,23-5-2003,,1,4499
 Haryana_State_Indusl_Devt_Corp_Ltd_vs_Mawasi_Ors_Etc_Etc_on_2_July_2012_1,civil,IPC,,0,,0,47,1,3,0,1,2.2,"2 July, 2012",1278.0,10,11987
 Head_Master_Lawrence_School_Lovedale_vs_Jayanthi_Raghu_Anr_on_16_March_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.53,"16 March, 2012",75.0,11,5873
 Hem_Raj_Ors_vs_Kartar_Singh_D_By_Lrs_Ors_on_29_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,11-12-1974,,0,3386
+Hiralal_Babulal_Soni_vs_The_State_Of_Maharashtra_on_25_February_2025_1,criminal,BNS,"120b,411",2,,0,,0,3,1,3,5.55,"25
+February, 2025",6995.0,1,7068
 Horil_vs_Keshav_Anr_on_20_January_2012_1,civil,IPC,,0,,0,9,1,3,0,1,2.54,"20 January, 2012",19.0,1,2532
 Huidrom_Konungjao_Singh_vs_State_Of_Manipur_Ors_on_17_May_2012_1,criminal,IPC,302,1,103,1,,0,10,1,1,7.96,"17 May,
 2012",137.0,16,2872
+H_Anjanappa_vs_A_Prabhakar_on_29_January_2025_1,civil,BNS,,0,,0,146,1,3,0,1,1.84,"29 January, 2025",2585.0,9,10472
+H_Guruswamy_vs_A_Krishnaiah_Since_Deceased_By_Lrs_on_8_January_2025_1,civil,BNS,,0,,0,9,1,3,0,1,2.55,"8
+January, 2025",7.0,0,2683
+H_N_Pandakumar_vs_The_State_Of_Karnataka_on_7_January_2025_1,criminal,BNS,"326,34",2,,0,,0,3,0,1,2.45,"7 January, 2025",372.0,0,961
 H_P_Housing_Urban_Devt_Auth_Anr_vs_Ranjit_Singh_Rana_on_12_March_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.53,"12 March, 2012",71.0,1,1634
 H_P_Singh_vs_Thakur_Prasad_Tewari_And_Anr_on_21_December_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,19-2-1948,,0,1560
+Icici_Lombard_General_Insurance_Co_Ltd_vs_Rajani_Sahoo_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.95,"2
+January, 2025",2193.0,0,1835
+Imran_Pratapgadhi_vs_State_Of_Gujarat_on_28_March_2025_1,criminal,BNS,,0,"196,299,302,57,75",5,,0,4,0,1,2.4,5-8-2019,,0,14219
 Imtiyaz_Ahmad_vs_State_Of_U_P_Ors_on_1_February_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.54,"1 February, 2012",31.0,0,8447
+Independent_Sugar_Corporation_Limited_vs_Girish_Sriram_Juneja_on_29_January_2025_1,civil,BNS,,0,,0,,0,3,0,3,3.34,"29 January, 2025",759.0,2,47281
+Inder_Singh_vs_The_State_Of_Madhya_Pradesh_on_21_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.93,"21 March, 2025",2271.0,0,3941
+Indian_Council_Of_Social_Science_vs_Neetu_Gaur_on_20_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"20 March,
+2025",444.0,0,5693
+Indian_Evangelical_Lutheran_Church_vs_Sri_Bala_And_Co_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"8
+January, 2025",12426.0,2,13053
 Indra_Kumar_Patodia_Anr_vs_Reliance_Inds_Ltd_Ors_on_22_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,32/9/1999,,2,5440
+Inox_Air_Products_Limited_Inox_Air_vs_The_State_Of_Andhra_Pradesh_on_30_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.44,"30 January, 2025",395.0,0,7113
+Inspector_Railway_Protection_Force_vs_Mathew_K_Cherian_on_9_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.05,"9 January, 2025",,2,5675
+In_Re_Recruitment_Of_Visually_Impaired_vs_The_Registrar_General_The_High_Court_Of_on_3_March_2025_1,civil,IPC,,0,,0,,0,3,0,3,3.05,35/02/2017,,6,37477
 In_The_Supreme_Court_Of_India_vs_Kadar_Unnisa_Begum_And_Others_on_12_October_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.47,"12 October, 1950",284.0,0,2864
 In_The_Supreme_Court_Of_India_vs_Nandlal_on_12_October_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,"12 October, 1950",,0,2262
 In_The_Supreme_Court_Of_India_vs_Shankar_And_Others_on_13_October_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"13 October, 1950",220891.0,0,1514
+Irfan_Bhayu_Mevati_vs_The_State_Of_Madhya_Pradesh_on_16_January_2025_1,criminal,IPC,"363,376",2,"137,65",2,,0,10,1,1,7.5,14-2-2012,,0,9714
+Ivan_Rathinam_vs_Milan_Joseph_on_28_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.54,"28 January, 2025",27.0,0,11074
+I_K_Merchants_Pvt_Ltd_vs_The_State_Of_Rajasthan_on_1_April_2025_1,civil,BNS,,0,,0,34,1,3,0,3,3.53,"1 April,
+2025",90.0,0,13402
 I_T_C_Ltd_vs_Adarsh_Coop_Housing_Soc_Ltd_on_27_August_2012_1,civil,IPC,,0,,0,145,1,3,0,1,2.48,"27 August, 2012",239.0,0,3468
 Jagroop_Singh_vs_State_Of_Punjab_on_20_July_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.09,"20 July, 2012",1662.0,15,6683
+Jagwant_Kaur_vs_Union_Of_India_on_27_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"27 January, 2025",26.0,0,2113
+Jaideep_Bose_vs_M_S_Bid_And_Hammer_Auctioneers_Private_on_18_February_2025_1,criminal,IPC,"499,500",2,"356,356",2,,0,4,1,1,5.4,23-6-2006,,0,9878
 Jainendra_Singh_vs_State_Of_U_P_Tr_Prinl_Sec_Home_Ors_on_30_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,20-11-1995,,0,6863
+Jai_Krishna_Prasad_Yadav_vs_Deepak_Kumar_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.85,"8 January, 2025",2564.0,0,1542
 Jai_Prakash_Singh_vs_State_Of_Bihar_Anr_Etc_on_14_March_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.43,"14 March, 2012",438.0,8,3705
+Jai_Ram_vs_Som_Prakash_on_3_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,1.55,10-10-2022,9413.0,0,2115
+Jamin_vs_State_Of_Uttar_Pradesh_on_6_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.53,"6 March, 2025",64.0,3,29761
 Janardan_Reddy_And_Others_vs_The_State_on_14_December_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.45,"14 December, 1950",347.0,0,3317
 Jasarvinder_Singh_Ors_vs_President_Land_Acquisition_Ors_on_9_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.46,"9 November, 2012",313.0,0,989
+Jasminbhai_Bharatbhai_Kothari_vs_The_State_Of_Gujarat_on_30_January_2025_1,criminal,BNS,34,1,,0,,0,3,1,1,5.34,"30
+January, 2025",760.0,0,1277
 Jayrajsingh_Digvijaysingh_Rana_vs_State_Of_Gujarat_Anr_on_20_July_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.49,"20
 July, 2012",201.0,1,2734
+Jayshree_Kanabar_vs_State_Of_Maharashtra_on_2_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.35,"2 January, 2025",732.0,0,3246
+Jay_Kishan_vs_The_State_Of_Uttar_Pradesh_on_12_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.54,"12 February, 2025",42.0,0,4880
 Jeetu_Jitendera_Ors_vs_State_Of_Chhattisgarh_on_4_December_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.46,"4
 December, 2012",338.0,5,3436
 Jeevantha_And_Ors_vs_Hanumantha_And_Ors_on_20_November_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,30-1-1913,,0,1233
@@ -202,134 +342,256 @@ Jeevan_Chandrabhan_Idnani_Anr_vs_Divisional_Commr_Konkan_Bhavan_Ors_on_31_Januar
 Jegannathan_vs_Raju_Sigamani_Anr_on_2_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"2 April, 2012",13241.0,1,1820
 Jik_Industries_Ltd_Ors_vs_Amarlal_V_Jumani_Anr_on_1_February_2012_1,criminal,IPC,4,1,,0,,0,4,0,1,2.19,"1
 February, 2012",2587.0,5,9713
+Jitender_Kalla_vs_State_Govt_Of_Nct_Of_Delhi_on_20_February_2025_1,criminal,IPC,,0,,0,,0,3,0,4,3.55,3-3-2005,,0,13347
 Jitender_Kumar_vs_State_Of_Haryana_on_8_May_2012_1,criminal,IPC,"109,120,120b,149,302,34,342",7,"49,60,61,190,103,3,127",7,,0,10,1,1,7.56,"8 May, 2012",1589.0,2,11099
 Jitendra_Nath_Singh_vs_Official_Liquidator_Ors_on_21_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,12-10-1993,,0,18715
+Jitendra_vs_Sadiya_on_7_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"7 February, 2025",37.0,0,1267
 Jitu_Patnaik_vs_Sanatan_Mohakud_Ors_on_2_March_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.53,"2 March, 2012",61.0,2,8433
+Jit_Vinayak_Arolkar_vs_State_Of_Goa_And_Ors_on_6_January_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.45,"6 January, 2025",371.0,0,2730
+Jogeswar_Sahoo_vs_The_District_Judge_Cuttack_on_4_April_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,7-6-1999,,0,3345
+Jomon_K_K_vs_Shajimon_P_on_2_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.92,"2 April, 2025",2283.0,0,6354
+Jothiragawan_vs_The_State_Rep_By_The_Inspector_Of_Police_on_24_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.23,"24 March, 2025",1178.0,0,1931
+Joyi_Kitty_Joseph_vs_Union_Of_India_on_6_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.53,"6 March, 2025",64.0,1,4489
 Jugendra_Singh_vs_State_Of_U_P_on_29_May_2012_1,criminal,IPC,302,1,103,1,,0,10,1,1,7.56,"29 May, 2012",1610.0,14,6434
+Justice_V_Eswaraiah_Retd_vs_Union_Of_India_on_25_February_2025_1,civil,BNS,,0,,0,,0,3,0,4,3.55,"25 February, 2025",,0,2189
+Jyostnamayee_Mishra_vs_The_State_Of_Odisha_on_20_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.34,"20 January,
+2025",750.0,1,8851
+J_Ganapatha_vs_M_S_N_Selvarajalou_Chetty_Trust_on_25_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"25 March,
+2025",6658.0,0,5127
 J_Samuel_Ors_vs_Gattu_Mhesh_Ors_on_16_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.55,"16 January, 2012",15.0,1,3659
 Kalu_Amit_vs_State_Of_Haryana_on_17_August_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,11/7/2006,,1,4476
+Kamalkishor_Shrigopal_Taparia_vs_India_Ener_Gen_Private_Limited_on_13_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.54,"13 February, 2025",43.0,0,2357
+Kanahaiya_Lal_Arya_vs_Md_Ehshan_on_25_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.23,"25 February, 2025",1151.0,0,1974
+Kanishk_Sinha_vs_The_State_Of_West_Bengal_on_27_February_2025_1,criminal,BNS,66a,1,,0,,0,3,0,1,2.53,"27 February, 2025",57.0,0,1407
 Kanwar_Singh_Meena_vs_State_Of_Rajasthan_Anr_on_16_October_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,20/5/2009,,1,4927
 Kapildeo_Singh_vs_The_King_on_24_January_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,"24 January, 1950",,0,2876
+Karan_Singh_vs_The_State_Of_Haryana_Home_Department_on_31_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"31
+January, 2025",4048.0,0,3316
+Karuppudayar_vs_State_Rep_By_The_Deputy_Superintendent_on_31_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.24,"31 January, 2025",1126.0,0,3332
 Kashmir_Kaur_Anr_vs_State_Of_Punjab_on_12_December_2012_1,criminal,IPC,"304b,498a",2,"80,86",2,,0,9,1,1,7.15,"12 December, 2012",1807.0,1,5492
 Kathi_Bharat_Vajsur_Anr_vs_State_Of_Gujarat_on_8_May_2012_1,criminal,IPC,,0,,0,,0,3,1,1,4.55,"8 May, 2012",3780.0,1,6298
 Kavita_Solunke_vs_State_Of_Maharashtra_Ors_on_9_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,20-7-1962,,1,5309
 Kavita_vs_Deepak_And_Ors_on_22_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,26/06/2004,,1,5672
 Khoday_Distilleries_Ltd_Ors_vs_Mahadeshwara_S_S_K_Ltd_on_19_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.47,"19
 October, 2012",292.0,0,2341
+Kim_Wansoo_vs_State_Of_Uttar_Pradesh_on_2_January_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.55,"2 January, 2025",1.0,4,3463
+Kiran_Raju_Penumacha_vs_Tejuswini_Chowdhury_on_17_March_2025_1,civil,BNS,,0,,0,,0,3,1,1,5.33,"17 March, 2025",806.0,0,3221
 Kishan_Chand_vs_State_Of_Haryana_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,"13 December, 2012",1808.0,1,6629
+Kishore_Chhabra_vs_The_State_Of_Haryana_on_1_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"1 April, 2025",4473.0,0,2628
 Kishore_Samrite_vs_State_Of_U_P_Ors_on_18_October_2012_1,criminal,IPC,,0,,0,,0,3,1,4,6.67,18/10/2012,1386.0,5,17145
 Kotak_Mahindra_Bank_Ltd_vs_Hindustan_National_Glass_Ind_Ltd_on_11_December_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.46,"11 December, 2012",345.0,0,14387
+Kousik_Das_vs_The_State_Of_West_Bengal_on_4_April_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,29-08-2019,,0,6876
 Krishan_Lal_vs_Food_Corpn_Of_India_And_Ors_on_24_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"24 February,
 2012",3706.0,1,3297
+Krishnadatt_Awasthy_vs_State_Of_M_P_on_29_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"29 January, 2025",5142.0,11,13291
 Krishnappa_Ors_vs_State_Of_Karnataka_By_Babaleshwara_P_S_on_31_July_2012_1,criminal,IPC,"149,302",2,"190,103",2,,0,10,0,1,4.74,"31 July, 2012",942.0,3,3318
+Krishna_Devi_Sabitri_Devi_Rani_M_S_vs_Union_Of_India_on_3_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.55,"3
+January, 2025",2.0,0,4138
 Krushnakant_B_Parmar_vs_Union_Of_India_Anr_on_15_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.74,"15 February,
 2012",2967.0,0,2795
+Kuldeep_Singh_vs_The_State_Of_Punjab_on_31_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.34,"31 January, 2025",761.0,0,1563
 Kuria_Anr_vs_State_Of_Rajasthan_on_13_September_2012_1,criminal,IPC,"302,34,364",3,"103,3,140",3,,0,10,1,1,7.63,"13 September, 2012",1351.0,1,8970
 K_B_Nagur_M_D_Ayu_vs_Union_Of_India_on_24_February_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.24,"24 February, 2012",1149.0,1,5927
+K_Krishnamurthy_vs_The_Deputy_Commissioner_Of_Income_Tax_on_13_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,26-09-2009,,0,5564
+K_Samba_Moorthy_vs_Sanjiv_Chadha_on_27_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.44,"27 January, 2025",392.0,0,3718
 K_Suresh_vs_New_India_Assurance_Co_Ltd_Anr_on_19_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.37,"19 October,
 2012",657.0,2,6010
+K_S_Mehta_vs_M_S_Morgan_Securities_And_Credits_Pvt_on_4_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.43,"4
+March, 2025",428.0,0,3153
 K_Venkateshwarlu_vs_State_Of_A_P_on_17_August_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,20/10/2009,,3,3083
 Lahu_Kamlakar_Patil_Anr_vs_State_Of_Maharashtra_on_14_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,"14
 December, 2012",1809.0,0,4960
 Lakhi_Narayan_Das_And_Ors_vs_The_Province_Of_Bihar_on_30_March_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.43,"30
 March, 1950",453.0,0,7792
 Lalita_Kumari_vs_Govt_Of_U_P_Ors_on_27_February_2012_1,criminal,IPC,"120b,363,366,506",4,"61,137,87,351",4,,0,8,1,3,7.88,"27 February, 2012",1518.0,8,17358
+Lalita_vs_Vishwanath_on_30_January_2025_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,21/11/2009,,5,5546
+Lavanya_C_vs_Vittal_Gurudas_Pai_Since_Deceased_By_Lrs_on_5_March_2025_1,civil,BNS,,0,,0,21,1,3,0,1,2.43,"5
+March, 2025",429.0,5,6580
 Lavesh_vs_State_Nct_Of_Delhi_on_31_August_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.48,"31 August, 2012",243.0,0,2116
+Laxmi_Das_vs_The_State_Of_West_Bengal_on_21_January_2025_1,criminal,BNS,"107,306",2,,0,,0,3,0,1,1.74,"21 January, 2025",2942.0,0,2720
+Leela_vs_Muruganantham_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.35,"2 January, 2025",732.0,0,4818
 Lee_Kun_Hee_Ors_vs_State_Of_U_P_Ors_on_1_February_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.54,"1 February, 2012",31.0,0,16620
+Lifecare_Innovations_Pvt_Ltd_vs_Union_Of_India_on_25_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,1.98,91-11-2306,2064.0,0,9576
+Lilian_Coelho_vs_Myra_Philomena_Coalho_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"2 January, 2025",5845.0,0,2833
 Lokesh_Shivakumar_vs_State_Of_Karnataka_on_10_February_2012_1,criminal,IPC,,0,,0,,0,3,1,1,4.84,"10 February, 2012",2596.0,1,3333
+Lok_Mal_Loku_vs_The_State_Of_Uttar_Pradesh_on_7_March_2025_1,criminal,BNS,"323,376,506",3,,0,,0,3,0,1,1.55,"7 March, 2025",5179.0,0,2298
+Maatr_Sparsh_An_Initiative_By_Avyaan_vs_Union_Of_India_on_19_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,1.92,02/4/2024,2283.0,0,3555
 Maa_Vaishno_Devi_Mahila_Mahavidyalaya_vs_State_Of_U_P_Ors_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,29-9-1993,,3,21631
+Madan_Lal_vs_State_Of_Rajasthan_on_7_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.53,"7 March, 2025",65.0,0,2321
 Madhu_vs_State_Of_Kerala_on_13_January_2012_1,criminal,IPC,"302,304b",2,"103,80",2,,0,10,1,1,7.4,"13 January, 2012",2203.0,1,14935
+Madhya_Pradesh_Road_Development_vs_Vincent_Daniel_on_27_March_2025_1,civil,BNS,,0,,0,,0,3,0,3,3.43,"27
+March, 2025",451.0,2,11528
+Madivalappa_vs_Maharashtra_State_Road_Transport_on_17_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"17
+March, 2025",441.0,0,1400
+Mahabir_vs_The_State_Of_Haryana_on_29_January_2025_1,criminal,BNS,34,1,,0,,0,3,1,1,5.44,"29 January, 2025",394.0,12,15458
+Maharashtra_State_Road_Transport_vs_Mahadeo_Krishna_Naik_on_14_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.84,"14 February, 2025",2601.0,0,9814
+Maharashtra_State_Road_Transport_vs_Subhash_S_O_Laxmanrao_Bramhe_on_27_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"27 February, 2025",423.0,0,5554
 Mahasay_Ganesh_Prasad_Ray_And_Anr_vs_Narendra_Nath_Sen_And_Ors_on_1_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,30-7-1896,,0,2160
+Mahaveer_Sharma_vs_Exide_Life_Insurance_Company_Limited_on_25_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,02/01/2014,,0,4825
+Mahendra_Awase_vs_The_State_Of_Madhya_Pradesh_on_17_January_2025_1,criminal,BNS,"107,306",2,,0,,0,3,0,1,2.55,"17
+January, 2025",16.0,0,3492
 Mahesh_Chandra_Verma_Ors_vs_State_Of_Jharkhand_Ors_on_19_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,07/03/2011,,2,14933
 Mahesh_Kumar_D_By_Lrs_vs_Vinod_Kumar_Ors_on_13_March_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.73,"13 March,
 2012",2994.0,2,9295
-Mangal_Amusement_Park_P_Ltd_Anr_vs_State_Of_M_P_Ors_on_28_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,3-47-0000,5329.0,5,6599
+Mahesh_vs_Sangram_on_2_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,13/12/2007,,0,7346
+Mangal_Amusement_Park_P_Ltd_Anr_vs_State_Of_M_P_Ors_on_28_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,3-47-0000,5352.0,5,6599
 Mangani_Lal_Mandal_vs_Bishnu_Deo_Bhandari_on_1_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.44,"1 February,
 2012",396.0,1,1742
 Mangan_Lal_Deoshi_vs_Mohammad_Moinul_Haoque_Others_on_1_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.06,"1 December, 1950",1795.0,0,2871
 Manharibhai_Muljibhai_Kakadia_Anr_vs_Shaileshbhai_Mohanbhai_Patel_Ors_on_1_October_2012_1,criminal,IPC,420,1,318,1,,0,5,1,1,6.17,"1 October, 2012",274.0,2,13168
+Manilal_Shamalbhai_Patel_Deceased_vs_Officer_On_Special_Duty_Land_on_25_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"25 March, 2025",3736.0,0,2114
+Manish_vs_The_State_Of_Maharashtra_on_2_April_2025_1,criminal,BNS,"415,420",2,,0,,0,3,0,1,2.22,"2 April, 2025",1187.0,0,2573
+Manish_Yadav_vs_State_Of_Uttar_Pradesh_on_22_January_2025_1,criminal,BNS,"313,90",2,,0,,0,3,0,1,2.34,"22 January, 2025",752.0,0,3436
 Manohar_vs_State_Of_Maharashtra_Anr_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.45,"13 December, 2012",347.0,2,8268
+Manoj_Rameshlal_Chhabriya_vs_Mahesh_Prakash_Ahuja_on_27_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"27
+February, 2025",4440.0,0,4143
 Mano_Dutt_Anr_vs_State_Of_U_P_on_29_February_2012_1,criminal,IPC,"149,302,323,34,38",5,"190,103,115,3,3",5,,0,10,0,1,4.48,"29 February, 2012",1885.0,2,8555
+Mansoor_Ali_Farida_Irshad_Ali_vs_The_Tahsildar_I_Special_Cell_on_27_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.53,"27 February, 2025",57.0,0,3007
 Manubhai_Ratilal_Patel_Tr_Ushaben_vs_State_Of_Gujarat_Ors_on_28_September_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.5,16/07/2012,197.0,22,5525
 Maria_Margadia_Sequeria_Fernandes_Ors_vs_Erasmo_Jack_De_Sequeria_D_Tr_Lrs_Ors_on_21_March_2012_1,civil,IPC,,0,,0,30,1,3,1,1,5.53,"21 March, 2012",80.0,1,11164
+Marippan_vs_State_Represented_By_The_Inspector_Of_on_24_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.54,24-01-2025,23.0,0,3293
 Markio_Tado_vs_Takam_Sorang_Ors_on_2_February_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.54,"2 February, 2012",32.0,4,6379
 Maruti_Nivrutti_Navale_vs_State_Of_Maharashtra_Anr_on_7_September_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.48,"7
 September, 2012",250.0,0,2418
+Maukam_Singh_vs_The_State_Of_Madhya_Pradesh_on_2_April_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.53,"2 April, 2025",91.0,0,2604
 Maulana_Mohd_Amir_Rashadi_vs_State_Of_U_P_Anr_on_16_January_2012_1,criminal,IPC,"302,307,325",3,"103,109,117",3,,0,10,0,1,5.0,"16
 January, 2012",15.0,1,1456
 Mayawati_vs_Union_Of_India_Ors_on_6_July_2012_1,criminal,IPC,"420,467,468,471",4,"318,338,336,340",4,,0,5,0,5,4.8,"6 July, 2012",1648.0,1,8173
-Md_Ajmal_Md_Amir_Kasab_Abu_Majahid_vs_State_Of_Maharashtra_on_29_August_2012_1,criminal,IPC,"120b,121,302",3,"61,147,103",3,,0,10,1,5,9.0,84-00-0541,6424.0,2,107124
+Maya_Singh_vs_The_Oriental_Insurance_Co_Ltd_on_7_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"7 February, 2025",3690.0,0,2839
+Md_Ajmal_Md_Amir_Kasab_Abu_Majahid_vs_State_Of_Maharashtra_on_29_August_2012_1,criminal,IPC,"120b,121,302",3,"61,147,103",3,,0,10,1,5,9.0,84-00-0541,6447.0,2,107124
 Medha_Kotwal_Lele_Ors_vs_U_O_I_Ors_on_19_October_2012_1,civil,IPC,,0,,0,,0,3,1,4,6.05,"19 October, 2012",4309.0,0,5193
+Meera_Singh_vs_Deepak_Kumar_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.05,"8 January, 2025",1834.0,0,1262
+Mehatar_vs_The_State_Of_Maharashtra_on_11_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"11 February, 2025",4059.0,0,4223
 Mehrawal_Khewaji_Trust_Regd_vs_State_Of_Punjab_Ors_on_27_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.52,"27
 April, 2012",117.0,3,2754
 Messrs_Khimji_Poonja_And_Company_vs_Shri_Baldev_Das_C_Parikh_on_14_March_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.13,"14 March, 1950",1533.0,0,4347
 Mohammad_Khalil_Chisti_vs_State_Of_Rajasthan_Ors_on_12_December_2012_1,criminal,IPC,"148,149,307,324,326,34,452",7,"191,190,109,118,118,3,333",7,,0,8,1,1,7.21,"12
 December, 2012",346.0,1,10751
+Mohammed_Enterprises_Tanzania_Ltd_vs_Farooq_Ali_Khan_on_3_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.45,"3
+January, 2025",368.0,0,2212
 Mohan_Soni_vs_Ram_Avtar_Tomar_Ors_on_10_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.55,"10 January, 2012",9.0,1,2854
 Mohd_Ayub_Anr_vs_Mukesh_Chand_on_5_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.95,"5 January, 2012",2195.0,1,3174
 Mohd_Hussain_Julfikar_Ali_vs_The_State_Govt_Of_Nct_Delhi_on_11_January_2012_1,criminal,IPC,"3,302,307",3,"103,109",2,,0,10,1,1,7.5,27/7/2000,,4,17326
 Mohd_Sahabuddin_Anr_vs_State_Of_Assam_on_5_October_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.47,"5 October, 2012",278.0,0,2355
+Mohd_Tahir_Hussain_vs_State_Of_Nct_Of_Delhi_on_22_January_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.04,"22 January,
+2025",1848.0,3,10026
 Mohinder_Singh_vs_The_State_on_17_October_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.47,"17 October, 1950",289.0,0,4864
 Monnet_Ispat_And_Energy_Ltd_vs_Union_Of_India_And_Ors_on_26_July_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,5/40/2004,,16,74756
+Mortuza_Hussain_Choudhury_vs_The_State_Of_Nagaland_on_5_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.43,"5
+March, 2025",429.0,1,3994
 Mp_Rural_Road_Dev_Authority_And_Anr_vs_M_S_L_G_Chaudhary_Engineers_And_Cont_on_24_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.54,24-01-2012,23.0,2,7979
 Msr_Leathers_vs_S_Palaniappan_And_Anr_on_26_September_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,"26 September, 2012",3921.0,7,8318
 Mst_Param_Pal_Singh_Tr_Father_vs_M_S_National_Insurance_Co_Anr_on_14_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,15/2/1999,,3,6899
+Mukesh_Prasad_Singh_vs_The_Then_Rajendra_Agricultural_on_4_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"4
+March, 2025",793.0,0,2381
 Mukut_Bihari_Anr_vs_State_Of_Rajasthan_on_25_May_2012_1,criminal,IPC,120b,1,61,1,,0,8,0,3,5.26,"25 May, 2012",145.0,12,2838
 Munagala_Yadamma_vs_State_Of_A_P_Ors_on_5_January_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.55,"5 January, 2012",4.0,1,1379
+Municipal_Corporation_Of_Delhi_vs_Gagan_Narang_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,3,3.35,"2 January, 2025",732.0,3,9154
 Munish_Mubar_vs_State_Of_Haryana_on_4_October_2012_1,criminal,IPC,"201,404",2,"238,315",2,,0,8,0,1,4.02,"4 October, 2012",1007.0,4,5454
 Munna_Kumar_Upadhyaya_M_Upadhyaya_vs_State_Of_A_P_Tr_Pub_Prosecutor_on_8_May_2012_1,criminal,IPC,"201,302,411",3,"238,103,317",3,,0,10,1,1,7.5,18-03-2003,,1,13521
+Munshi_Lal_Mahto_vs_Sudhir_Tripathy_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.95,"8 January, 2025",2199.0,0,920
+Murugan_vs_The_State_Rep_By_The_Inspector_Of_Police_on_4_April_2025_1,criminal,BNS,"147,149,302",3,,0,,0,3,1,1,5.32,"4
+April, 2025",824.0,0,3474
 Murugesan_16_Ors_vs_State_Tr_Insp_Of_Police_on_12_October_2012_1,criminal,IPC,"120b,149,302,34",4,"61,190,103,3",4,,0,10,1,1,7.5,04-09-2008,,5,8653
 Mustafa_Shahadal_Shaikh_vs_State_Of_Maharashtra_on_14_September_2012_1,criminal,IPC,"304b,498a",2,"80,86",2,,0,9,0,1,4.18,"14
 September, 2012",1718.0,2,3724
 Myla_Venkateswarlu_vs_State_Of_A_P_on_4_April_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,5/1/2001,,1,3430
+Mypreferred_Transformation_And_vs_M_S_Faridabad_Implements_Pvt_Ltd_on_10_January_2025_1,civil,BNS,,0,,0,,0,3,1,1,5.05,"10 January, 2025",1836.0,0,12568
 M_R_Prabhakar_Ors_vs_Canara_Bank_Ors_on_3_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,27-05-1970,,1,4677
+M_S_Abci_Infrastructures_Pvt_Ltd_vs_Union_Of_India_on_14_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.34,"14
+February, 2025",775.0,0,2734
+M_S_Ananthamurthy_vs_J_Manjula_Etc_Etc_on_27_February_2025_1,civil,IPC,,0,,0,,0,3,0,3,2.55,4-4-1986,8494.0,1,17108
+M_S_A_P_Electrical_Equipment_vs_The_Tahsildar_on_27_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,18-3-1999,,7,29134
 M_S_Best_Sellers_Retail_I_P_Ltd_vs_M_S_Aditya_Birla_Nuvo_Ltd_Ors_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.51,"8 May, 2012",128.0,1,4097
+M_S_B_N_Padmanabhaiah_And_Sons_vs_R_N_Nadigar_on_14_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"14
+February, 2025",44.0,0,5068
+M_S_Citicorp_Finance_India_Limited_vs_Snehasis_Nanda_on_20_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"20
+March, 2025",444.0,0,8810
+M_S_C_And_C_Constructions_Ltd_vs_Ircon_International_Ltd_on_31_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.34,"31
+January, 2025",761.0,0,4969
 M_S_Dsr_Steel_P_Ltd_vs_State_Of_Rajasthan_Ors_on_1_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.02,"1 May,
 2012",1947.0,8,4406
+M_S_Faime_Makers_Pvt_Ltd_vs_District_Deputy_Registrar_on_1_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"1
+April, 2025",456.0,0,3024
+M_S_Ferro_Concrete_Construction_vs_The_State_Of_Rajasthan_on_2_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.32,"2 April, 2025",822.0,0,4668
 M_S_Heinz_India_Pvt_Ltd_Anr_vs_State_Of_U_P_Ors_on_23_March_2012_1,civil,IPC,,0,,0,,0,3,1,3,5.93,"23
 March, 2012",2273.0,12,15128
 M_S_Ifb_Industries_Ltd_vs_State_Of_Kerala_on_27_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.53,"27 February, 2012",57.0,0,5582
+M_S_Jm_Laboratories_vs_State_Of_Andhra_Pradesh_on_30_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.44,"30
+January, 2025",395.0,0,2504
+M_S_Jsw_Ispat_Special_Products_Limited_vs_Pratishtha_Thakur_Haritwal_on_27_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"27 March, 2025",816.0,0,5442
 M_S_Laxmi_Dyechem_vs_State_Of_Gujarat_Ors_on_27_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.46,"27 November,
 2012",331.0,2,9716
+M_S_Maxim_India_Integrated_Circuit_vs_Andappa_D_By_Lrs_And_Ors_Etc_Etc_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.85,"2 January, 2025",2558.0,0,4150
 M_S_Michigan_Rubber_I_Ltd_vs_State_Of_Karnataka_Ors_on_17_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.49,"17
 August, 2012",229.0,1,7141
+M_S_Nagabhushan_vs_D_S_Nagaraja_on_4_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.83,"4 March, 2025",2619.0,0,4127
+M_S_Naresh_Potteries_vs_M_S_Aarti_Industries_on_2_January_2025_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,31-1-2000,,0,8446
 M_S_Narne_Construction_P_Ltd_Etc_Etc_vs_Union_Of_India_Ors_Etc_on_10_May_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,"10 May, 2012",,2,211
 M_S_National_Seeds_Corpn_Ltd_vs_M_Madhusudhan_Reddy_Anr_on_16_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,4-1-1996,,1,17768
 M_S_Patel_Enginnering_Ltd_vs_Union_Of_India_Anr_on_11_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.55,17-01-2011,16.0,1,5508
 M_S_Purbanchal_Cables_Conductors_vs_Assam_State_Electricity_Board_Anr_on_10_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,23-9-1992,,1,18108
 M_S_Real_Estate_Agencies_vs_Govt_Of_Goa_Ors_on_10_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"10
 September, 2012",253.0,1,4672
+M_S_R_K_Transport_Company_vs_M_S_Bharat_Aluminum_Company_Limited_on_3_April_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,30-6-2022,,0,2500
+M_S_Sanjay_vs_Indian_Bank_on_29_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,1.55,15-6-2019,4183.0,0,3351
+M_S_Shri_Sendhuragro_And_Oil_Industries_vs_Kotak_Mahindra_Bank_Ltd_on_6_March_2025_1,criminal,BNS,"193,494,495",3,,0,,0,3,1,5,7.46,6-12-2024,340.0,7,25493
 M_S_Sundaram_Fin_Ltd_vs_Asst_Commissioner_Of_Income_on_11_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.08,11/09/2012,1715.0,0,1462
+M_S_S_R_S_Travels_By_Its_Proprietor_K_T_vs_The_Karnataka_State_Road_Transport_on_6_February_2025_1,civil,IPC,,0,,0,,0,3,0,3,3.05,1-4-1937,,4,9290
+M_S_Tamil_Nadu_Cements_Corporation_Ltd_vs_Micro_And_Small_Enterprises_on_22_January_2025_1,civil,BNS,,0,,0,,0,3,0,3,3.54,"22 January, 2025",21.0,0,8403
+M_S_Techno_Prints_vs_Chhattisgarh_Textbook_Corporation_on_12_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,14/12/2022,,1,9117
+M_S_Tommorrowland_Limited_vs_Housing_And_Urban_Development_on_13_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.64,"13 February, 2025",3331.0,0,8114
 M_S_Topman_Exports_vs_Commr_Of_Income_Tax_Mumbai_on_8_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.54,"8
 February, 2012",38.0,0,11219
+M_S_Vidyawati_Construction_Company_vs_Union_Of_India_on_7_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.55,"7
+January, 2025",6.0,0,2534
 M_S_Virgo_Industries_Eng_P_Ltd_vs_M_S_Venturetech_Solutions_P_Ltd_on_7_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"7 September, 2012",250.0,3,4204
 M_S_Zunaid_Enterprises_Ors_vs_State_Of_M_P_Ors_on_22_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.54,"22
 February, 2012",52.0,0,1239
 M_T_Enrica_Lexie_Anr_vs_Doramma_Ors_on_2_May_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.52,"2 May, 2012",122.0,2,4673
+M_Venkateswaran_vs_The_State_Rep_By_The_Inspector_Of_Police_on_24_January_2025_1,criminal,BNS,"4,406,498a",3,,0,,0,3,1,1,5.34,"24 January, 2025",754.0,0,2664
+Naganna_Dead_By_Lrs___Smt_Devamma_vs_Siddaramegowda_Since_Deceased_By_Lrs_on_19_March_2025_1,civil,BNS,,0,,0,100,1,3,0,1,1.55,"19 March, 2025",5191.0,0,3224
 Nagesh_vs_State_Of_Karnataka_on_8_May_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,0,1,4.26,"8 May, 2012",2684.0,11,6204
 Naguba_Appa_vs_Namdev_on_20_November_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,"20 November, 1950",,0,533
 Namit_Sharma_vs_Union_Of_India_on_13_September_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.48,"13 September, 2012",256.0,16,25445
 Nanalal_Zaver_And_Another_vs_Bombay_Life_Assurance_Co_Ltd_And_on_4_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.22,"4 May, 1950",1219.0,0,18637
 Nand_Kumar_Verma_vs_State_Of_Jharkhand_Ors_on_1_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,29-11-1996,,1,6453
+Narcotic_Control_Bureau_vs_Lakhwinder_Singh_on_29_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.54,"29 January,
+2025",28.0,0,2009
 Narender_Kumar_vs_State_N_C_T_Of_Delhi_on_25_May_2012_1,criminal,IPC,376,1,65,1,,0,10,0,1,4.0,"25 May, 2012",4528.0,9,4317
 Narendra_Champaklal_Trivedi_vs_State_Of_Gujarat_on_29_May_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.51,"29 May,
 2012",149.0,5,4886
+Naresh_Aneja_Naresh_Kumar_Aneja_vs_The_State_Of_Uttar_Pradesh_on_2_January_2025_1,criminal,BNS,"350,354,506",3,,0,,0,3,0,1,2.05,"2 January, 2025",1828.0,2,7464
 Narinderjit_Singh_vs_North_Star_Estate_Promoters_Ltd_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.51,"8 May,
 2012",128.0,1,5788
 National_Bank_Of_Oman_vs_Barakara_Abdul_Aziz_Anr_on_3_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,03/10/2012,,0,2062
 National_Council_For_Teacher_Edn_Anr_vs_Venus_Public_Education_Society_Ors_on_1_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.47,"1 November, 2012",305.0,2,8685
 National_Ins_Co_Ltd_vs_Balakrishnan_Anr_on_20_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,73/11/2009,,2,6898
+Naushey_Ali_vs_State_Of_U_P_on_11_February_2025_1,criminal,BNS,"149,307,326",3,,0,,0,3,0,3,3.54,"11 February, 2025",41.0,0,4859
+Nbcc_India_Ltd_vs_The_State_Of_West_Bengal_on_10_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,23-9-1992,,0,13994
 Neel_Kumar_Anil_Kumar_vs_State_Of_Haryana_on_7_May_2012_1,criminal,IPC,"201,302",2,"238,103",2,,0,10,1,1,7.77,"7 May, 2012",857.0,13,4431
 New_India_Assurance_Co_Ltd_vs_Gopali_Ors_on_5_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.5,"5 July, 2012",186.0,1,5078
+New_India_Assurance_Co_Ltd_vs_Sonigra_Juhi_Uttamchand_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.85,"2
+January, 2025",2558.0,0,3446
 New_India_Assurance_Co_Ltd_vs_Yogesh_Devi_Ors_on_10_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,10-12-2002,,1,2973
+New_Mangalore_Port_Trust_vs_Clifford_D_Souza_Etc_Etc_on_3_April_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,30/44/2015,,1,5480
+Nirmiti_Developers_Through_Its_vs_The_State_Of_Maharashtra_on_25_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,09-02-2017,,0,13953
 Nupur_Talwar_vs_Cbi_Anr_on_7_June_2012_1,criminal,IPC,"201,302,34",3,"238,103,3",3,,0,10,1,3,8.5,16/05/2008,,9,22197
+Nur_Ahamad_Abdulsab_Kanavi_vs_Abdul_Munaf_on_11_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"11 February, 2025",41.0,0,1019
 N_K_Bajpai_vs_Union_Of_India_Anr_on_15_March_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.53,"15 March, 2012",74.0,4,12951
+N_P_Saseendran_vs_N_P_Ponnamma_on_24_March_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,15-5-1965,,14,19587
 N_V_Subba_Rao_vs_State_Insp_Of_Police_C_B_I__S_P_E_on_3_December_2012_1,criminal,IPC,"420,468",2,"318,336",2,,0,5,0,3,3.76,"3
 December, 2012",1798.0,0,7632
 Office_Of_The_Chief_Post_Master_Ors_vs_Living_Media_India_Ltd_Anr_on_24_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.93,"24 February, 2012",2245.0,1,5565
 Oma_Omprakash_Anr_vs_State_Of_Tamilnadu_on_11_December_2012_1,criminal,IPC,"302,34,395,396,397",5,"103,3,310,310,311",5,,0,10,0,3,5.41,"11
 December, 2012",2171.0,1,10453
+Omi_Omkar_Rathore_vs_The_State_Of_Madhya_Pradesh_on_3_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.47,23-10-2024,296.0,0,5270
 Om_Kr_Dhankar_vs_State_Of_Haryana_Anr_on_28_February_2012_1,criminal,IPC,"161,406,409,420,427",5,"316,316,318,324",4,,0,5,0,3,4.23,"28 February, 2012",58.0,0,1890
+Om_Prakash_Ambadkar_vs_The_State_Of_Maharashtra_on_16_January_2025_1,criminal,BNS,294,1,,0,,0,3,0,1,2.05,"16
+January, 2025",,1,8146
+Om_Prakash_Gupta_Alias_Lalloowa_Now_vs_Satish_Chandra_Now_Deceased_on_11_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.44,"11 February, 2025",407.0,2,8908
+Om_Prakash_Israel_Raju_Raju_Das_vs_Union_Of_India_on_8_January_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.45,"8
+January, 2025",373.0,6,13565
 Om_Prakash_Ors_vs_State_Of_Jharkhand_Anr_on_26_September_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,1/5/2006,,2,11313
 Om_Prakash_vs_State_Of_Rajasthan_Anr_on_13_April_2012_1,criminal,IPC,"323,365,376",3,"115,140,65",3,,0,10,1,2,8.47,"13 April, 2012",103.0,1,6656
 Oriental_Insurance_Co_Ltd_vs_Siby_George_Ors_on_31_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,15-9-1995,,4,3041
@@ -337,61 +599,109 @@ Oriental_Insurance_Co_Ltd_vs_Surendra_Nath_Loomba_And_Ors_on_20_November_2012_1,
 O_M_Baby_Dead_By_Legal_vs_State_Of_Kerala_on_3_July_2012_1,criminal,IPC,"342,376",2,"127,65",2,,0,10,0,1,4.45,"3 July, 2012",2010.0,1,3679
 Padmakar_Tukaram_Bhavnagare_Anr_vs_State_Of_Maharashtra_Anr_on_26_November_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.53,27/03/2012,86.0,0,2209
 Pannalal_Jankidas_vs_Mohanlal_And_Another_on_21_December_1950_1,civil,IPC,,0,,0,,0,3,1,1,5.35,"21 December, 1950",719.0,0,11618
+Pappammal_Died_Through_Lr_R_Krsna_vs_Jothi_on_27_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"27
+February, 2025",788.0,0,1548
 Paramjeet_Batra_vs_State_Of_Uttarakhand_Ors_on_14_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,22/3/2005,,0,1761
 Paras_Nath_Rai_Ors_vs_State_Of_Bihar_Ors_on_5_October_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.37,"5 October, 2012",643.0,8,7334
+Parimal_Kumar_vs_The_State_Of_Jharkhand_on_30_January_2025_1,civil,IPC,,0,,0,,0,3,0,4,3.55,03/20/2010,,0,12737
+Parminder_Singh_vs_Honey_Goyal_on_18_March_2025_1,civil,BNS,,0,,0,,0,3,1,1,5.03,"18 March, 2025",1903.0,0,4206
 Parshavanath_Charitable_Trust_Ors_vs_All_India_Council_For_Tech_Edu_Ors_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.45,"13 December, 2012",347.0,0,10959
 Patasi_Devi_vs_State_Of_Haryana_Ors_on_29_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"29 August, 2012",241.0,1,4433
+Patel_Babubhai_Manohardas_vs_The_State_Of_Gujarat_on_5_March_2025_1,criminal,BNS,"107,114,306,309",4,,0,,0,3,0,1,1.55,"5 March, 2025",4081.0,1,6702
 Pathan_Hussain_Basha_vs_State_Of_A_P_on_16_August_2012_1,criminal,IPC,"304b,498a",2,"80,86",2,,0,9,0,1,4.15,19-11-1986,,1,5388
 Payal_Vision_Ltd_vs_Radhika_Choudhary_on_20_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"20 September, 2012",263.0,1,4083
+Periyammal_Dead_Thr_Lrs_vs_V_Rajamani_And_Anr_Etc_on_6_March_2025_1,civil,IPC,,0,,0,"151,40,47,60",4,3,0,1,2.05,25-5-1979,,2,22546
+Piramal_Capital_And_Housing_Finance_vs_63_Moons_Technologies_Limited_on_1_April_2025_1,civil,BNS,,0,,0,,0,3,1,3,6.23,"1 April, 2025",1186.0,0,34755
 Ponnala_Lakshmaiah_vs_Kommuri_Pratap_Reddy_Ors_on_6_July_2012_1,civil,IPC,,0,,0,7,1,3,0,1,2.5,"6 July,
 2012",187.0,3,7039
+Prabhavathi_vs_The_Managing_Director_Bangalore_on_28_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.53,"28
+February, 2025",58.0,0,1823
 Pradeep_Kumar_Sharma_vs_U_P_F_C_Rajpur_Road_Dehradun_Ors_on_19_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.47,"19 October, 2012",292.0,0,2499
+Pradeep_Nirankarnath_Sharma_vs_Directorate_Of_Enforcement_on_17_March_2025_1,criminal,IPC,"420,467",2,"318,338",2,,0,5,1,3,7.09,31-7-2019,576.0,0,8037
+Pradeep_Nirankarnath_Sharma_vs_The_State_Of_Gujarat_on_17_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.43,"17
+March, 2025",441.0,0,2657
+Pradip_N_Sharma_vs_The_State_Of_Gujarat_on_28_February_2025_1,criminal,BNS,"219,409",2,,0,,0,3,1,1,4.55,"28 February, 2025",5172.0,0,3403
 Prakash_Chandra_vs_Narayan_on_23_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.42,"23 April, 2012",478.0,1,2304
+Prakash_Chand_Sharma_vs_Rambabu_Saini_on_10_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"10 February, 2025",40.0,0,2066
 Prandas_vs_The_State_on_14_March_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,15-8-1948,,0,3214
+Prashant_Bandyopadhyay_vs_Sudhir_Tripathi_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.95,"8 January, 2025",2199.0,0,1291
 Pratapbhai_Hamirbhai_Solanki_vs_State_Of_Gujarat_Anr_on_12_October_2012_1,criminal,IPC,,0,,0,,0,3,1,4,6.97,"12
 October, 2012",285.0,0,5791
 Praveen_Pradhan_vs_State_Of_Uttranchal_Anr_on_4_October_2012_1,criminal,IPC,"107,306",2,"45,108",2,,0,4,0,1,2.82,"4 October,
 2012",277.0,8,3562
 Premji_Nathu_vs_State_Of_Gujarat_Anr_on_9_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.52,"9 April, 2012",99.0,4,4356
+Premshila_Kuer_vs_Dr_Amrendra_Narayan_Yadav_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.75,"8 January,
+2025",2929.0,0,1190
+Principal_Commissioner_Income_Tax_4_vs_M_S_Jupiter_Capital_Private_Limited_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.55,"2 January, 2025",1.0,0,5128
 Pritam_Singh_vs_The_State_on_5_May_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.42,"5 May, 1950",489.0,0,2500
 Priya_Gupta_vs_State_Of_Chhattisgarh_Ors_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,11/1/2006,,1,14258
 Province_Of_Bombay_vs_Kusaldas_S_Advani_And_Others_on_15_September_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"15 September, 1950",27285.0,0,49617
 Pudhu_Raja_Anr_vs_State_Tr_Insp_Of_Police_on_19_September_2012_1,criminal,IPC,302,1,103,1,,0,10,1,1,7.53,"19 September,
 2012",1723.0,2,4188
+Puja_Ferro_Alloys_P_Ltd_vs_State_Of_Goa_And_Ors_on_14_February_2025_1,civil,IPC,,0,,0,,0,3,0,3,3.05,29-10-1982,,0,6434
 Pushpanjali_Sahu_vs_State_Of_Orissa_Anr_on_18_September_2012_1,criminal,IPC,"324,452",2,"118,333",2,,0,4,1,2,6.33,"18 September,
 2012",261.0,1,4235
+Pushpa_Jagannath_Shetty_vs_Sahaj_Ankur_Realtors_on_28_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,12/10/2018,,0,2501
 P_A_Mohammed_Riyas_vs_M_K_Raghavan_Ors_on_27_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,14-4-2009,,3,5579
+P_M_Lokanath_vs_State_Of_Karnataka_on_6_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"6 February, 2025",4054.0,0,2474
+P_Rammohan_Rao_vs_K_Srinivas_on_13_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,1.55,17-06-2006,4550.0,0,11497
 P_Sanjeeva_Rao_vs_State_Of_A_P_on_2_July_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.5,"2 July, 2012",183.0,0,3942
+Rabindranath_Panigrahi_vs_Surendra_Sahu_on_6_March_2025_1,civil,BNS,,0,,0,100,1,3,0,1,1.55,"6 March, 2025",5543.0,2,3622
 Rachpal_Mahraj_vs_Bhagwandas_Darukaand_Others_on_5_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.92,"5 May, 1950",2316.0,0,1746
+Racing_Promotion_Private_Limited_vs_Dr_Harish_on_20_February_2025_1,civil,BNS,,0,,0,,0,3,0,5,4.44,"20 February, 2025",416.0,2,5216
 Radhakrishna_Nagesh_vs_State_Of_A_P_on_13_December_2012_1,criminal,IPC,"375,376",2,"63,65",2,,0,10,1,1,7.6,"13 December, 2012",1442.0,2,10849
+Radhika_Agarwal_vs_Union_Of_India_on_27_February_2025_1,civil,IPC,,0,,0,,0,3,1,5,7.05,94/68/2013,,6,23990
 Raheja_Universal_Limited_vs_Nrc_Limited_And_Ors_on_7_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,12/12/2007,,8,21094
+Rahul_Verma_vs_Rampat_Lal_Verma_on_21_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"21 February, 2025",51.0,0,2452
 Rai_Sandeep_Deepu_vs_State_Of_Nct_Of_Delhi_on_7_August_2012_1,criminal,IPC,,0,,0,,0,3,0,2,2.69,"7 August,
 2012",1314.0,2,7287
 Rajan_Purohit_Ors_vs_Raj_Univ_Of_Health_Science_Ors_on_30_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.38,"30
 August, 2012",607.0,0,17866
 Raja_Kamala_Ranjan_Roy_vs_Baijnath_Bajoria_on_1_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.46,"1 December, 1950",334.0,0,4238
+Raja_Khan_vs_State_Of_Chhattisgarh_on_7_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.54,"7 February, 2025",37.0,1,5169
+Rajeeb_Kalita_vs_Union_Of_India_on_15_January_2025_1,civil,BNS,,0,,0,,0,3,0,4,3.85,"15 January, 2025",745.0,2,11186
 Rajendra_Pralhadrao_Wasnik_vs_The_State_Of_Mahrashtra_on_29_February_2012_1,criminal,IPC,"302,377",2,103,1,,0,10,1,1,7.88,"29
 February, 2012",424.0,4,6961
 Rajesh_Awasthi_vs_Nand_Lal_Jaiswal_Ors_on_19_October_2012_1,civil,IPC,,0,,0,,0,3,0,4,3.97,"19 October, 2012",292.0,9,9349
 Rajesh_Talwar_vs_C_B_I_Ors_on_2_March_2012_1,criminal,IPC,"193,201,307",3,"229,238,109",3,,0,8,1,3,7.8,24-11-2004,,1,14522
+Rajnish_Singh_Soni_vs_State_Of_U_P_on_3_March_2025_1,criminal,BNS,"313,323,376,384,504,506,90",7,,0,,0,3,0,1,2.23,"3 March, 2025",1157.0,0,5046
 Rajoo_Ramakant_vs_State_Of_M_P_on_9_August_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.09,"9 August, 2012",1682.0,1,2597
 Raju_Balachandran_Ors_vs_State_Of_Tamil_Nadu_on_27_November_2012_1,criminal,IPC,326,1,118,1,,0,6,1,1,6.21,"27
 November, 2012",1426.0,2,4638
+Raju_Naidu_vs_Chenmouga_Sundra_on_19_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"19 March, 2025",4095.0,0,3219
+Raju_Nirpendra_Singh_vs_The_State_Of_Madhya_Pradesh_on_27_February_2025_1,criminal,BNS,,0,,0,,0,3,0,2,2.05,"27
+February, 2025",4075.0,1,3318
+Rakesh_Bhanot_vs_M_S_Gurdas_Agro_Pvt_Ltd_on_1_April_2025_1,civil,BNS,,0,,0,,0,3,0,3,3.53,"1 April, 2025",90.0,0,10593
 Rakesh_Kapoor_vs_State_Of_H_P_on_22_November_2012_1,criminal,IPC,"109,149,161,272,302,328",6,"49,190,274,103,123",5,,0,10,1,3,8.91,"22 November, 2012",326.0,0,3770
+Rakesh_Kumar_Charmakar_vs_The_State_Of_Madhya_Pradesh_on_31_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"31 January, 2025",30.0,0,3479
+Rakesh_Kumar_Raghuvanshi_vs_The_State_Of_Madhya_Pradesh_on_16_January_2025_1,criminal,BNS,,0,,0,,0,3,1,1,4.55,"16 January, 2025",4033.0,0,4502
+Ramayana_Ispat_Pvt_Ltd_And_Anr_vs_State_Of_Rajasthan_And_Ors_on_1_April_2025_1,civil,BNS,,0,,0,,0,3,0,3,2.92,"1 April, 2025",2282.0,0,17337
 Rameshbhai_Dabhai_Naika_vs_State_Of_Gujarat_Ors_on_18_January_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.05,23/6/1961,,8,12133
 Rameshkumar_Agarwal_vs_Rajmala_Exports_P_Ltd_Ors_on_30_March_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.53,"30
 March, 2012",89.0,0,2674
 Ramesh_Ahluwalia_vs_State_Of_Punjab_Ors_on_13_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"13 September,
 2012",256.0,0,3590
+Ramesh_A_Naika_vs_The_Registrar_General_High_Court_Of_on_13_February_2025_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,16-06-2010,,0,7468
+Ramesh_Baghel_vs_State_Of_Chhattisgarh_on_27_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"27 January, 2025",26.0,2,13551
 Ramesh_Harijan_vs_State_Of_U_P_on_21_May_2012_1,criminal,IPC,"302,376",2,"103,65",2,,0,10,0,1,4.46,"21 May, 2012",1967.0,22,5233
+Ramesh_Kumaran_vs_State_Through_The_Inspector_Of_Police_on_27_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.73,"27 March, 2025",3007.0,0,3100
+Ramesh_Mishrimal_Jain_vs_Avinash_Vishwanath_Patne_on_14_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"14
+February, 2025",44.0,0,6044
+Ramesh_vs_The_State_Of_Rajasthan_on_9_January_2025_1,criminal,BNS,"147,148,149,307,323,324,325,326,341,452",10,,0,,0,3,0,1,2.45,"9 January, 2025",374.0,0,4356
 Ramnaresh_Ors_vs_State_Of_Chhattisgarh_on_28_February_2012_1,criminal,IPC,"302,34,376",3,"103,3,65",3,,0,10,1,1,7.5,31-7-2007,,1,14221
 Rampal_Singh_vs_State_Of_U_P_on_24_July_2012_1,criminal,IPC,304,1,105,1,,0,9,1,1,7.29,"24 July, 2012",1300.0,4,7130
+Ramu_Appa_Mahapatar_vs_The_State_Of_Maharashtra_on_4_February_2025_1,criminal,BNS,302,1,,0,,0,3,1,1,4.55,"4
+February, 2025",4417.0,0,6012
 Ram_Dhari_Jindal_Memorial_Trust_vs_Union_Of_India_Ors_on_21_March_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.03,"21
 March, 2012",1906.0,5,5929
 Ram_Gopal_vs_Nand_Lal_And_Others_on_14_November_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"14 November, 1950",5431.0,0,5817
 Ram_Karan_Gupta_vs_J_S_Exim_Ltd_Ors_on_3_December_2012_1,civil,IPC,,0,,0,21,1,3,0,1,2.46,"3 December, 2012",337.0,4,5097
+Ram_Kishan_Since_Deceased_Through_His_vs_State_Of_Haryana_on_3_April_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,30-12-1983,,0,11646
 Ram_Krishna_Ramnath_Agarwalof_Kamptee_vs_Secretary_Municipal_on_14_March_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.13,"14 March, 1950",1533.0,0,4002
+Ram_Lal_vs_Jarnail_Singh_Now_Deceased_Through_on_25_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,30-8-2022,,1,9614
+Ram_Pyarey_vs_The_State_Of_Uttar_Pradesh_on_9_January_2025_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,27-09-1990,,0,1502
 Ranjan_Dwivedi_vs_C_B_I_Tr_Director_General_on_17_August_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.39,"17 August, 2012",594.0,1,8730
+Ranjit_Sarkar_vs_Ravi_Ganesh_Bharadwaj_on_17_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.53,"17 March, 2025",75.0,0,4306
 Rashid_Ahmed_vs_The_Municipal_Board_Kairana_The_Union_on_19_May_1950_1,criminal,IPC,,0,,0,,0,3,0,1,2.51,"19 May, 1950",138.0,0,2237
 Rashid_Kapadia_vs_Medha_Gadgil_Ors_on_25_July_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,20-07-2011,,0,1441
 Rashmi_Rekha_Thatoi_Anr_vs_State_Of_Orissa_Ors_on_4_May_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.52,"4 May,
@@ -400,40 +710,65 @@ Rashtriya_Ispat_Nigam_Ltd_vs_M_S_Dewan_Chand_Ram_Saran_on_25_April_2012_1,civil,
 Ratnagiri_Gas_Power_Pvt_Ltd_vs_Rds_Projects_Ltd_Ors_on_18_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,17/10/2011,,5,12985
 Rattiram_Ors_vs_State_Of_M_P_Tr_Insp_Of_Police_on_17_February_2012_1,criminal,IPC,"148,149,302,323,354,448",6,"191,190,103,115,74,329",6,,0,10,1,1,7.59,"17 February,
 2012",1508.0,20,12041
+Ravinder_Kumar_Raju_vs_State_Of_Punjab_on_25_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.53,"25 March, 2025",83.0,0,1404
 Ravi_Kapur_vs_State_Of_Rajasthan_on_16_August_2012_1,criminal,IPC,"279,299,300,302,304",5,"281,100,101,103,105",5,,0,10,1,1,7.64,"16 August, 2012",1323.0,2,12424
+Ravi_vs_The_State_Of_Punjab_on_10_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.54,"10 February, 2025",40.0,0,2722
 Ravi_Yashwant_Bhoir_vs_The_Collector_District_Raigad_Ors_on_2_March_2012_1,civil,IPC,,0,,0,,0,3,0,4,4.03,"2 March, 2012",61.0,46,11991
 Registrar_General_Patna_High_Court_vs_Pandey_Gajendra_Prasad_Ors_on_11_May_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.41,"11 May, 2012",496.0,0,5487
+Rekha_Sharad_Ushir_vs_Saptashrungi_Mahila_Nagari_Sahkari_on_26_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.53,"26 March, 2025",84.0,0,4015
+Revenue_Divisional_Officer_Chevella_vs_Mohd_Syeed_Ather_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,1,1,4.55,"2 January, 2025",17533.0,0,2863
 Rev_Mother_Marykutty_vs_Reni_C_Kottaram_Anr_on_12_October_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.47,"12 October,
 2012",285.0,0,3777
 Re_Ramlila_Maidan_Incident_Dt_vs_Home_Secretary_And_Ors_on_23_February_2012_1,criminal,IPC,"149,188",2,"190,223",2,,0,4,0,3,3.4,36/1/2010,,31,57162
+Rina_Kumari_Rina_Devi_Reena_vs_Dinesh_Kumar_Mahto_Dinesh_Kumar_Mahato_on_10_January_2025_1,criminal,IPC,498a,1,86,1,,0,6,1,1,6.1,24-9-2001,,4,8431
 Ritesh_Sinha_vs_State_Of_U_P_Anr_on_7_December_2012_1,criminal,IPC,,0,,0,,0,3,1,3,6.05,7/12/2009,,6,20434
 Rohitash_Kumar_Ors_vs_Om_Prakash_Sharma_Ors_on_6_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"6
 November, 2012",5058.0,34,4717
 Rohtash_vs_State_Of_Haryana_on_22_May_2012_1,criminal,IPC,,0,,0,,0,3,0,1,1.55,"22 May, 2012",8542.0,2,3156
 Romesh_Thappar_vs_The_State_Of_Madras_on_26_May_1950_1,criminal,IPC,,0,,0,,0,3,1,1,5.51,"26 May, 1950",145.0,0,4440
 Roy_Fernandes_vs_State_Of_Goa_Ors_on_1_February_2012_1,criminal,IPC,"149,34",2,"190,3",2,,0,4,1,1,4.9,"1 February, 2012",3683.0,8,7148
+Rupa_And_Co_Limited_vs_Firhad_Hakim_on_12_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.34,"12 February, 2025",773.0,0,3082
 Rushikesh_Tanaji_Bhoite_vs_State_Of_Maharashtra_Ors_on_4_January_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,13/05/2011,,2,2067
 R_C_Chandel_vs_High_Court_Of_M_P_Anr_on_8_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.49,"8 August, 2012",220.0,1,7087
 R_Mohan_vs_A_K_Vijaya_Kumar_on_3_July_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,15/12/2011,,1,4319
+R_Shashirekha_vs_State_Of_Karnataka_on_27_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.43,"27 March, 2025",451.0,0,3135
+Sachin_Jaiswal_vs_M_S_Hotel_Alka_Raje_on_27_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.23,"27 February, 2025",1153.0,1,3117
+Sachin_Yallappa_Usulkar_vs_Vijayata_on_28_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.93,"28 February, 2025",2250.0,0,3559
+Sadashiv_Dhondiram_Patil_vs_The_State_Of_Maharashtra_on_9_January_2025_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,3-7-2015,,1,6694
 Sadhupati_Nageswara_Rao_vs_State_Of_A_P_on_3_August_2012_1,criminal,IPC,"405,406,409,420",4,"316,316,316,318",4,,0,5,0,1,3.19,"3 August, 2012",215.0,1,2877
 Saeed_Zakir_Hussain_Malik_vs_State_Of_Maharashtra_Ors_on_9_August_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,3-8-1990,,2,4661
 Sahabuddin_Anr_vs_State_Of_Assam_on_13_December_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,0,1,4.5,10/9/2001,,3,7587
 Sahadevan_Anr_vs_State_Of_T_Nadu_on_8_May_2012_1,criminal,IPC,"120b,302,304",3,"61,103,105",3,,0,10,1,1,7.56,"8 May, 2012",1589.0,0,8266
+Sahakarmaharshi_Bhausaheb_Thorat_vs_Thyssen_Krupp_Industries_India_P_Ltd_on_14_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"14 February, 2025",4062.0,0,5027
 Sahara_India_Real_Estate_Corp_Ltd_Ors_vs_Securities_Exch_Board_Of_India_Anr_on_11_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.38,"11 September, 2012",619.0,11,12537
 Sahara_India_Real_Estate_Corp_Ltd_Ors_vs_Securities_Exch_Board_Of_India_Anr_on_31_August_2012_1,civil,IPC,,0,,0,,0,3,1,1,5.38,"31 August, 2012",608.0,2,86069
 Sajeesh_Babu_K_vs_N_K_Santhosh_Ors_on_19_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.47,"19 October, 2012",292.0,2,3969
+Sajid_Khan_vs_L_Rahmatullah_on_20_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,36/1/2006,,0,3824
+Sajimon_Parayil_vs_State_Of_Kerala_on_7_February_2025_1,civil,BNS,,0,,0,,0,3,1,3,6.48,28/09/2024,271.0,0,3221
+Sajithabai_vs_The_Kerala_Water_Authority_on_18_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"18 March, 2025",807.0,0,4348
 Salauddin_Ahmed_Anr_vs_Samta_Andolan_on_29_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.48,"29 August, 2012",241.0,3,7655
 Samaj_Parivartana_Samudaya_Ors_vs_State_Of_Karnataka_Ors_on_11_May_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.55,28/61/2009,0.0,3,11361
 Sampath_Kumar_vs_Inspector_Of_Police_Krishnagiri_on_2_March_2012_1,criminal,IPC,"302,324,34",3,"103,118,3",3,,0,10,1,1,7.48,"2 March,
 2012",1887.0,9,4081
+Samtola_Devi_vs_The_State_Of_Uttar_Pradesh_on_27_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"27 March, 2025",816.0,0,3596
 Sandeep_vs_State_Of_U_P_on_11_May_2012_1,criminal,IPC,"302,34",2,"103,3",2,,0,10,1,1,7.66,"11 May, 2012",1226.0,8,12409
 Sandesh_Sainath_Kailash_Abhang_vs_State_Of_Maharashtra_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.35,"13 December, 2012",712.0,1,4841
 Sangeetaben_Mahendrabhai_Patel_vs_State_Of_Gujarat_Anr_on_23_April_2012_1,criminal,IPC,"114,201,330,348,406,409,420,71",8,"54,238,120,127,316,316,318,9",8,,0,8,0,3,4.8,21-9-1969,,29,6252
 Sangeet_Anr_vs_State_Of_Haryana_on_20_November_2012_1,criminal,IPC,,0,,0,,0,3,1,3,5.66,"20 November, 2012",3246.0,3,12534
+Sangita_Sinha_vs_Bhawana_Bhardwaj_on_4_April_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,4-9-1996,,0,7634
+Sanjay_Dutt_vs_The_State_Of_Haryana_on_2_January_2025_1,criminal,IPC,"192,199",2,"228,236",2,,0,4,0,1,2.4,02/09/2021,,0,3887
+Sanjay_Kumar_vs_The_State_Of_Bihar_on_27_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"27 February, 2025",3710.0,0,931
+Sanjay_Rajpoot_vs_Ram_Singh_on_11_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"11 February, 2025",41.0,0,1296
+Sanjay_vs_Union_Of_India_on_6_February_2025_1,criminal,IPC,"201,302,376",3,"238,103,65",3,,0,10,0,1,4.5,19-7-1985,,0,4949
 Sanjeev_Kr_Samrat_vs_National_Insurance_Co_Ltd_And_Ors_on_11_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.46,"11 December, 2012",345.0,1,5073
 Santosh_Devi_vs_National_Insurance_Co_Ltd_Ors_on_23_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.32,"23 April,
 2012",843.0,1,3623
+Saranga_Anilkumar_Aggarwal_vs_Bhavesh_Dhirajlal_Sheth_on_4_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"4
+March, 2025",793.0,0,5462
+Sarita_Choudhary_vs_High_Court_Of_Madhya_Pradesh_on_28_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"28
+February, 2025",424.0,4,28549
 Sarju_Pershad_vs_Raja_Jwaleshwari_Pratap_Narain_Singh_on_14_November_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.36,"14 November, 1950",682.0,0,4597
+Satbir_Singh_vs_Rajesh_Kumar_on_1_April_2025_1,criminal,BNS,"307,323,324,34,506",5,,0,,0,3,0,1,2.53,"1 April, 2025",90.0,0,3873
 Sathya_Narayanan_vs_State_Tr_Insp_Of_Police_on_2_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.07,"2 November,
 2012",1767.0,2,7240
 Satish_Batra_vs_Sudhir_Rawal_on_18_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.47,"18 October, 2012",291.0,3,3995
@@ -444,31 +779,56 @@ Satyabrata_Sahoo_Ors_vs_State_Of_Orissa_Ors_on_3_August_2012_1,civil,IPC,,0,,0,,
 Satyajit_Ballubhai_Desai_Ors_vs_State_Of_Gujarat_on_20_July_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,"20 July,
 2012",,1,4736
 Satya_Jain_D_Ors_vs_Anis_Ahmed_Rushdie_D_Tr_Lrs_Ors_on_3_December_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.46,"3 December, 2012",337.0,6,8248
+Sau_Jiya_vs_Kuldeep_on_31_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.74,"31 January, 2025",2952.0,0,3666
 Sayed_Mohd_Ahmed_Kazmi_vs_State_Gnctd_Ors_on_19_October_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.47,"19
 October, 2012",292.0,1,4380
+Seema_Rani_vs_The_Oriental_Insurance_Company_Limited_on_11_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"11
+February, 2025",41.0,0,1099
 Seth_Premchand_Satramdas_vs_The_State_Of_Bihar_on_30_November_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.46,"30 November, 1950",333.0,0,2756
+Shabeen_Ahmad_vs_The_State_Of_Uttar_Pradesh_on_3_March_2025_1,criminal,BNS,304b,1,,0,,0,3,1,1,5.53,"3 March, 2025",61.0,0,3232
 Shahejadkhan_Mahebubkhan_Pathan_vs_State_Of_Gujarat_on_5_October_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.47,"5
 October, 2012",278.0,3,4353
 Shailendra_Bhardwaj_Ors_vs_Chandra_Pal_Anr_on_21_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.46,"21
 November, 2012",325.0,1,2718
+Shankar_Lal_Sharma_vs_Rajesh_Koolwal_on_29_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.24,"29 January, 2025",1124.0,1,2544
 Shanti_Devi_W_O_Shanker_Lal_vs_State_Of_Rajasthan_on_5_October_2012_1,criminal,IPC,,0,,0,,0,3,1,1,4.77,"5
 October, 2012",2834.0,2,4694
+Shanti_vs_National_Insurance_Company_on_17_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"17 February, 2025",47.0,0,1320
+Sharmila_Velamur_vs_V_Sanjay_on_3_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.13,"3 March, 2025",1522.0,0,14235
 Sheodhari_Rai_And_Ors_vs_Suraj_Prasad_Singh_And_Ors_on_1_December_1950_1,civil,IPC,,0,,0,,0,3,1,1,5.05,23-2-1948,,0,1713
 Sheoraj_Singh_Ahlawat_Ors_vs_State_Of_U_P_Anr_on_9_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.46,"9
 November, 2012",313.0,0,4432
 Sheth_Maneklal_Mansukhbhai_vs_Messrs_Hormusji_Jamshedji_on_21_March_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"21 March, 1950",3732.0,0,5141
+Shivaleela_vs_The_Divisional_Manager_on_17_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.53,"17 March, 2025",75.0,0,2549
 Shreejith_L_vs_Deputy_Director_Education_Kerala_on_3_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.5,"3 July,
 2012",184.0,0,6571
+Shripal_vs_Nagar_Nigam_Ghaziabad_on_31_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"31 January, 2025",4779.0,0,4480
+Shri_Khereshwar_Mahadev_Va_Dauji_vs_The_State_Of_Uttar_Pradesh_on_5_March_2025_1,civil,BNS,,0,,0,,0,3,0,4,3.83,"5 March, 2025",794.0,0,1870
+Shri_Masaidevi_Vividh_Karyakari_vs_The_State_Of_Maharashtra_on_2_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.42,"2 April, 2025",457.0,0,5696
 Shudhakar_vs_State_Of_M_P_on_24_July_2012_1,criminal,IPC,302,1,103,1,,0,10,0,1,4.5,18-7-1994,,1,8725
 Shyamal_Ghosh_vs_State_Of_West_Bengal_on_11_July_2012_1,criminal,IPC,"149,201,302,34,379",5,"190,238,103,3,303",5,,0,10,1,1,7.45,"11 July, 2012",2018.0,0,18258
 Shyam_Babu_vs_State_Of_U_P_on_7_September_2012_1,criminal,IPC,149,1,190,1,,0,4,0,1,2.23,"7 September, 2012",2441.0,1,3773
+Shyam_Narayan_Singh_vs_Sanjay_Kumar_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.15,"8 January, 2025",1468.0,0,1418
+Shyam_Prasad_Nagalla_vs_The_Andhra_Pradesh_State_Road_Transport_on_11_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"11 February, 2025",41.0,0,1224
+Siba_Nial_Trilochan_vs_The_State_Of_Odisha_on_11_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.44,"11 February,
+2025",407.0,0,1297
+Siddharth_Dalmia_vs_Union_Of_India_on_4_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.83,"4 March, 2025",2619.0,0,1875
+Sita_Ram_vs_The_State_Of_Himachal_Pradesh_on_6_March_2025_1,criminal,IPC,"304,323,324,34,451,504,505,506",8,"105,115,118,3,332,352,353,351",8,,0,9,0,1,3.78,13-9-2012,3178.0,0,6097
+Smt_N_Usha_Rani_vs_Moodududla_Srinivas_on_30_January_2025_1,criminal,BNS,494,1,,0,,0,3,1,1,4.74,"30 January, 2025",2951.0,0,4235
 Society_For_Un_Aided_P_School_Of_Raj_vs_U_O_I_Anr_on_12_April_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.05,15-7-2004,,1,41771
 Soman_vs_State_Of_Kerala_on_14_December_2012_1,criminal,IPC,,0,,0,,0,3,1,1,4.75,"14 December, 2012",2904.0,0,5382
+Som_Datt_Builders_Ncc_Nec_Jv_vs_National_Highways_Auth_Of_India_on_27_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"27 January, 2025",4775.0,0,11019
+Soumen_Paul_vs_Shrabani_Nayek_on_4_April_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,29/07/2011,,0,9999
+Sovaran_Singh_Prajapati_vs_The_State_Of_Uttar_Pradesh_on_4_February_2025_1,criminal,BNS,"201,302",2,,0,,0,3,1,1,4.94,"4
+February, 2025",2226.0,6,18832
 Speaker_Haryana_Vidhan_Sabha_vs_Kuldeep_Bishnoi_Ors_on_28_September_2012_1,civil,IPC,,0,,0,41,1,3,0,1,2.48,"28
 September, 2012",271.0,2,9086
+Sports_Authority_Of_India_vs_Dr_Kulbir_Singh_Rana_on_4_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,04-03-2025,428.0,0,2822
+Srikrishna_Kanta_Singh_vs_The_Oriental_Insurance_Company_Ltd_on_25_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.53,"25 March, 2025",83.0,0,3120
 Sri_Bhagwan_vs_State_Of_U_P_on_6_December_2012_1,criminal,IPC,326,1,118,1,,0,6,0,1,3.21,06/12/2012,1435.0,0,6751
 Sri_Marcel_Martins_vs_M_Printer_Ors_on_27_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.62,"27 April, 2012",3404.0,1,6251
 Sri_Ranga_Nilayam_Rama_Krishna_Rao_vs_Kandokori_Chellayamma_Alias_Mangamma_on_17_October_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.48,1-10-1937,273.0,0,5949
+State_Cbi_vs_Mohd_Salim_Zargar_Fayaz_on_20_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,4.55,"20 March, 2025",5922.0,0,10443
 State_Of_A_P_Ors_vs_D_Raghukul_Pershad_D_By_Lrs_Ors_on_8_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.49,"8 August, 2012",220.0,1,1630
 State_Of_Bihar_Anr_vs_Arvind_Kumar_Anr_on_23_July_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.39,"23 July, 2012",569.0,2,2472
 State_Of_Bombay_vs_Narothamdas_Jethabai_And_Anr_on_20_December_1950_1,civil,IPC,,0,,0,9,1,3,0,3,3.45,"20
@@ -478,7 +838,7 @@ State_Of_Gujarat_Ors_vs_Arvindkumar_T_Tiwari_Anr_on_14_September_2012_1,civil,IP
 September, 2012",257.0,9,2510
 State_Of_Gujarat_Ors_vs_Essar_Oil_Ltd_Anr_on_17_January_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.55,"17 January,
 2012",16.0,4,9720
-State_Of_Haryana_Ors_vs_Vijay_Singh_Ors_on_22_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,1/95/3515,5329.0,1,8873
+State_Of_Haryana_Ors_vs_Vijay_Singh_Ors_on_22_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,1/95/3515,5352.0,1,8873
 State_Of_Kerala_Ors_vs_M_S_Mar_Appraem_Kuri_Co_Ltd_Anr_on_8_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,9-9-1976,,6,20362
 State_Of_Maharashtra_Tr_C_B_I_vs_Balakrishna_Dattatrya_Kumbhar_on_15_October_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.07,"15 October, 2012",1749.0,6,2564
 State_Of_Maharashtra_vs_Vishwanath_Maranna_Shetty_on_19_October_2012_1,criminal,IPC,,0,,0,,0,3,1,2,5.97,"19
@@ -490,50 +850,134 @@ State_Of_M_P_Ors_vs_Sandhya_Tomar_Anr_on_13_December_2012_1,civil,IPC,,0,,0,,0,3
 State_Of_M_P_vs_Rakesh_Kohli_Anr_on_11_May_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.71,"11 May, 2012",3053.0,11,7032
 State_Of_M_P_vs_Surendra_Kori_on_26_September_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,25/3/2006,,1,5478
 State_Of_N_C_T_Of_Delhi_vs_Ajay_Kumar_Tyagi_on_31_August_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.05,27-3-1996,,0,4624
+State_Of_Odisha_vs_Sudhansu_Sekhar_Jena_on_21_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.44,"21 February, 2025",417.0,0,10849
 State_Of_Orissa_Ors_vs_Ujjal_Kumar_Burdhan_on_19_March_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,3-10-1997,,1,2922
 State_Of_Punjab_vs_Balwinder_Singh_Etc_on_6_January_2012_1,criminal,IPC,"279,304a,337",3,"281,106,125",3,,0,4,1,1,5.9,"6 January, 2012",5.0,1,2357
 State_Of_Punjab_vs_Dalbir_Singh_on_1_February_2012_1,criminal,IPC,,0,,0,,0,3,1,3,5.55,"1 February, 2012",4414.0,1,15262
 State_Of_Rajasthan_vs_Darshan_Singh_Darshan_Lal_on_21_May_2012_1,criminal,IPC,"120b,201,302,449",4,"61,238,103,332",4,,0,10,1,1,7.06,"21 May,
 2012",3428.0,3,4193
+State_Of_Rajasthan_vs_Indraj_Singh_And_Etc_on_7_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.53,"7 March, 2025",65.0,1,3512
 State_Of_Rajasthan_vs_Rajkumar_Agarwal_Anr_on_17_August_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,10/9/2009,,1,2949
 State_Of_Rajasthan_vs_Vinod_Kumar_on_18_May_2012_1,criminal,IPC,"120b,376",2,"61,65",2,,0,10,1,3,8.56,"18 May, 2012",1599.0,26,4610
 State_Of_Uttarakhand_Prev_U_P_vs_Mohan_Singh_Ors_on_12_September_2012_1,civil,IPC,,0,,0,100,1,3,0,1,2.18,"12
 September, 2012",1350.0,2,6724
+State_Of_Uttar_Pradesh_vs_Dr_Ritu_Garg_on_24_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.53,"24 March, 2025",82.0,0,911
 State_Of_U_P_Ors_vs_Ambrish_Tandon_Anr_on_20_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.54,"20 January,
 2012",19.0,1,1930
 State_Of_U_P_Ors_vs_Ashok_Kumar_Nigam_on_13_December_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.45,"13 December,
 2012",347.0,0,5844
 State_Of_U_P_vs_Sanjay_Kumar_on_21_August_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.19,"21 August, 2012",1328.0,18,4156
+State_Rep_By_Deputy_Superintendent_Of_vs_G_Easwaran_on_26_March_2025_1,criminal,IPC,,0,,0,,0,3,0,3,3.52,27-4-2017,116.0,1,5080
 State_Tr_P_S_Lodhi_Colony_New_Delhi_vs_Sanjeev_Nanda_on_3_August_2012_1,criminal,IPC,"201,299,300,304,304a,338",6,"238,100,101,105,106,125",6,,0,9,0,1,4.59,"3
 August, 2012",215.0,12,20428
+Subhelal_Sushil_Sahu_vs_The_State_Of_Chhattisgarh_on_18_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.05,22-7-2024,,0,4160
 Subramanian_Swamy_vs_A_Raja_on_24_August_2012_1,civil,IPC,,0,,0,,0,3,0,5,4.49,"24 August, 2012",236.0,1,14311
+Sudam_Prabhakar_Achat_vs_The_State_Of_Maharashtra_on_21_March_2025_1,criminal,BNS,"302,304",2,,0,,0,3,1,1,5.43,"21
+March, 2025",445.0,0,2148
+Sudershan_Singh_Wazir_vs_State_Nct_Of_Delhi_on_28_February_2025_1,criminal,BNS,"120b,201,302,34",4,,0,,0,3,1,1,5.53,"28 February, 2025",58.0,0,6156
 Sudevanand_vs_State_Through_Cbi_on_19_January_2012_1,criminal,IPC,"307,4",2,109,1,,0,8,0,1,3.8,6-2-1991,,0,6479
 Sukhdev_Singh_vs_State_Of_Haryana_on_13_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,"13 December, 2012",1808.0,1,5795
+Sukhdev_Singh_vs_Sukhbir_Kaur_on_12_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.94,"12 February, 2025",2234.0,3,6193
+Suman_Mishra_vs_The_State_Of_Uttar_Pradesh_on_12_February_2025_1,criminal,BNS,"328,352,354,376,498a,504,506",7,,0,,0,3,0,1,2.44,"12 February, 2025",408.0,0,3471
 Sumit_Tomar_vs_State_Of_Punjab_on_19_October_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.37,"19 October, 2012",657.0,0,2071
+Suneeti_Toteja_vs_State_Of_U_P_on_25_February_2025_1,criminal,BNS,,0,,0,,0,3,0,3,2.63,"25 February, 2025",3343.0,2,7079
 Sunil_Clifford_Daniel_vs_State_Of_Punjab_on_14_September_2012_1,criminal,IPC,"201,302",2,"238,103",2,,0,10,0,1,4.73,"14 September, 2012",987.0,19,8989
+Sunil_Kumar_Singh_vs_Bihar_Legislative_Council_on_25_February_2025_1,civil,BNS,,0,,0,,0,3,0,3,3.43,"25 February, 2025",421.0,0,12496
 Sunil_Kumar_vs_State_Of_Haryana_on_27_March_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.53,"27 March, 2012",86.0,10,2141
+Sunita_vs_Vinod_Singh_on_19_March_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.42,30-4-2004,485.0,0,3111
+Sunkari_Tirumala_Rao_vs_Penki_Aruna_Kumari_on_17_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,1.8,17-7-2019,2754.0,1,3344
 Super_Cassetts_Industries_Ltd_vs_Music_Broadcast_Pvt_Ltd_on_3_May_2012_1,civil,IPC,,0,,0,151,1,3,0,1,2.52,"3
 May, 2012",123.0,2,10878
+Supreme_Court_Bar_Association_vs_State_Of_Uttar_Pradesh_on_19_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.53,"19
+March, 2025",77.0,0,6387
 Surat_Singh_vs_State_Of_Uttaranchal_Anr_on_10_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.46,"10 December, 2012",344.0,0,1091
+Surendra_G_Shankar_vs_Esque_Finamark_Pvt_Ltd_on_22_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"22 January, 2025",21.0,0,1247
+Surepally_Srinivas_vs_The_State_Of_Andhra_Pradesh_Now_State_Of_on_25_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.53,25-03-2025,83.0,0,2360
+Suresh_Chandra_vs_State_Of_Uttar_Pradesh_on_30_January_2025_1,criminal,BNS,302,1,,0,,0,3,0,1,2.44,"30 January, 2025",395.0,0,2539
+Suresh_Hanumant_vs_State_Govt_Of_Nct_Delhi_on_5_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.33,"5 March, 2025",794.0,0,3140
 Suresh_Ors_vs_State_Of_Madhya_Pradesh_on_22_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.16,"22 November,
 2012",1421.0,0,5483
 Suresh_Sakharam_Nangre_vs_State_Of_Maharashtra_on_21_September_2012_1,criminal,IPC,34,1,3,1,,0,4,0,1,2.43,"21
 September, 2012",1725.0,0,3751
+Suresh_vs_State_Rep_By_Inspector_Of_Police_on_4_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,04-03-2025,4445.0,0,3122
+Surinder_Dogra_vs_State_Through_Director_Cbi_on_21_February_2025_1,criminal,BNS,,0,,0,,0,3,0,3,3.24,"21 February,
+2025",1147.0,0,1487
 Surinder_Kumar_vs_State_Of_Punjab_on_21_November_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.16,"21 November, 2012",1420.0,0,2938
 Surjit_Sarkar_vs_State_Of_West_Bengal_on_4_December_2012_1,criminal,IPC,,0,,0,,0,3,0,1,2.16,"4 December, 2012",1433.0,3,7573
+Sushant_Sharma_vs_U_T_Chandigarh_on_10_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.44,"10 February, 2025",406.0,0,1495
+S_Rajaseekaran_vs_Union_Of_India_And_Ors_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"8 January, 2025",4756.0,0,2762
+S_Shobha_vs_Muthoot_Finance_Ltd_on_24_January_2025_1,civil,BNS,,0,,0,,0,3,1,1,5.54,"24 January, 2025",23.0,2,5391
+S_Vishnu_Ganga_vs_M_S_Oriental_Insurance_Company_Ltd_Rep_on_29_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"29 January, 2025",28.0,2,3046
+Tanaji_Shamrao_Kale_vs_The_State_Of_Maharashtra_on_5_March_2025_1,criminal,BNS,,0,,0,,0,3,1,1,4.55,"5 March,
+2025",5177.0,0,2683
+Tanvi_Behl_vs_Shrey_Goel_on_29_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.94,"29 January, 2025",2220.0,3,9124
+Tapas_Kumar_Palit_vs_State_Of_Chhattisgarh_on_14_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.44,"14 February, 2025",410.0,2,1523
 Tejas_Construction_Infras_Pvt_Ltd_vs_Municipal_Council_Sendhwa_Anr_on_4_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.52,"4 May, 2012",124.0,0,5498
+Thammaraya_vs_State_Of_Karnataka_on_22_January_2025_1,criminal,BNS,"201,302,34",3,,0,,0,3,1,1,4.55,"22 January, 2025",6961.0,0,4294
+The_Auroville_Foundation_vs_Natasha_Storey_on_17_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"17 March, 2025",441.0,1,6509
+The_Auroville_Foundation_vs_Navroz_Kersasp_Mody_on_17_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.23,"17 March, 2025",1171.0,0,7767
 The_Bharat_Bank_Ltd_Delhi_vs_Employees_Of_The_Bharat_Bank_on_26_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.51,"26 May, 1950",145.0,0,26117
 The_Bharat_Bank_Ltd_Delhi_vs_The_Employees_Of_The_Bharat_Bank_Ltd_on_1_March_1950_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"1 March, 1950",11382.0,0,25300
+The_Chief_Manager_Central_Bank_Of_India_vs_M_S_Ad_Bureau_Advertising_Pvt_Ltd_on_28_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"28 February, 2025",789.0,0,4044
+The_Chief_Officer_Nagpur_Housing_And_vs_Manohar_Burde_on_26_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"26 March, 2025",450.0,0,2238
+The_Cosmos_Co_Operative_Bank_Ltd_vs_Central_Bank_Of_India_on_4_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,30/11/2006,,4,20916
+The_General_Manager_Business_Network_vs_P_Soundarya_on_2_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"2
+April, 2025",4840.0,0,5244
+The_General_Manager_Personnel_vs_B_S_N_Prasad_on_21_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.44,"21
+January, 2025",386.0,1,4886
+The_Management_Of_Worth_Trust_vs_The_Secretary_Worth_Trust_Workers_Union_on_2_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.92,"2 April, 2025",2283.0,0,3085
+The_Municipal_Corporation_Of_Greater_vs_Century_Textiles_And_Industries_on_7_January_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,3-12-1999,,11,18764
 The_New_Piecegoods_Bazar_Co_vs_The_Commissioner_Of_Income_Tax_Bombay_on_26_May_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.41,"26 May, 1950",510.0,0,3989
 The_Registrar_Rajiv_Gandhi_University_vs_G_Hemlatha_And_Ors_on_23_August_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.49,"23 August, 2012",235.0,2,1849
+The_Secretary_All_India_Shri_Shivaji_vs_The_State_Of_Maharashtra_on_1_April_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,1-1-2006,,0,5677
+The_Secretary_To_Government_Department_vs_K_C_Devaki_on_25_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.53,"25 March, 2025",83.0,0,5478
+The_State_Central_Bureau_Of_vs_A_Satish_Kumar_on_2_January_2025_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,2-6-2014,,0,7999
+The_State_Of_Assam_vs_Arabinda_Rabha_on_7_March_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,4-6-2004,,1,11461
+The_State_Of_Chhattisgarh_vs_Ashok_Bhoi_on_27_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,4.55,"27 February, 2025",3710.0,0,1346
+The_State_Of_Goa_vs_Namita_Tripathi_on_3_March_2025_1,criminal,IPC,,0,,0,,0,3,0,1,2.05,21-1-1978,,1,9173
+The_State_Of_Haryana_vs_Aalamgir_on_18_March_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,1-1-2014,,0,8148
+The_State_Of_Himachal_Pradesh_vs_Rajesh_Kumar_Munnu_on_20_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.05,20-02-2025,,0,1982
+The_State_Of_Jharkhand_vs_Nishkant_Dubey_on_21_January_2025_1,criminal,IPC,"10,336,378,441,447,448",6,"2,125,303,329,329,329",6,,0,4,1,4,6.9,02/09/2022,,0,7111
+The_State_Of_Jharkhand_vs_Rukma_Kesh_Mishra_on_28_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.43,"28 March, 2025",452.0,0,8669
+The_State_Of_Jharkhand_vs_Sunny_Kumar_Sunny_Kumar_Sao_on_3_February_2025_1,criminal,IPC,,0,,0,,0,3,1,1,5.46,24-11-2022,327.0,0,845
+The_State_Of_Jharkhand_vs_Vikash_Tiwary_Bikash_Tiwary_Bikash_on_17_January_2025_1,criminal,BNS,,0,,0,,0,3,1,4,7.05,"17 January, 2025",16.0,1,6256
+The_State_Of_Karnataka_vs_T_N_Sudhakar_Reddy_on_17_February_2025_1,criminal,BNS,"161,165",2,,0,,0,3,0,3,3.54,2/02/2023,32.0,0,11927
+The_State_Of_Kerala_vs_Moushmi_Ann_Jacob_on_20_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"20 February,
+2025",4799.0,2,7004
+The_State_Of_Madhya_Pradesh_vs_Balveer_Singh_on_24_February_2025_1,criminal,IPC,"201,302,34",3,"238,103,3",3,,0,10,1,1,7.5,3/8/2003,,9,31904
+The_State_Of_Madhya_Pradesh_vs_Shyamlal_on_20_March_2025_1,criminal,BNS,"149,325",2,,0,,0,3,0,1,2.43,"20 March, 2025",444.0,0,3925
 The_State_Of_Maharashtra_And_Etc_Etc_vs_Saeed_Sohail_Sheikh_Etc_Etc_on_2_November_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.47,"2 November, 2012",306.0,5,9777
+The_State_Of_Maharashtra_vs_Prism_Cement_Limited_on_12_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"12
+February, 2025",3695.0,1,4825
+The_State_Of_Punjab_vs_Hari_Kesh_on_7_January_2025_1,criminal,IPC,,0,,0,,0,3,0,3,3.51,20-05-2019,139.0,0,1658
+The_State_Of_Punjab_vs_M_S_Om_Prakash_Brick_Kiln_Owner_on_21_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"21
+January, 2025",4403.0,0,3675
+The_State_Of_Punjab_vs_Trishala_Alloys_Pvt_Ltd_on_17_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.44,"17 February,
+2025",413.0,0,8069
+The_State_Of_Rajasthan_vs_Chatra_on_18_March_2025_1,criminal,BNS,375,1,,0,,0,3,0,1,1.73,"18 March, 2025",2998.0,3,8765
+The_State_Of_Rajasthan_vs_Surendra_Singh_Rathore_on_19_February_2025_1,criminal,BNS,,0,,0,,0,3,0,3,2.55,"19
+February, 2025",9911.0,1,3917
 The_State_Of_Tripura_vs_The_Province_Of_East_Bengalunion_Of_on_20_December_1950_1,civil,IPC,,0,,0,9,1,3,0,3,3.45,"20 December, 1950",353.0,0,31355
 The_State_Of_Tripura_vs_The_Province_Of_East_Bengalunion_Of_on_4_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.26,"4 December, 1950",1068.0,0,20790
+The_State_Of_Uttarakhand_Law_And_Justice_vs_Sanjay_Ram_Tamta_Sanju_Prem_Prakash_on_11_February_2025_1,criminal,BNS,113b,1,,0,,0,3,0,1,2.05,"11 February, 2025",,0,2679
+The_State_Of_Uttar_Pradesh_Home_vs_Satendra_Etc_on_20_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"20
+March, 2025",7749.0,0,2917
+The_State_Of_Uttar_Pradesh_Through_The_vs_Dinesh_Kumar_Sharma_on_20_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"20 March, 2025",7383.0,0,3444
+The_State_Of_Uttar_Pradesh_vs_R_K_Pandey_on_9_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"9 January, 2025",4026.0,0,3580
+The_State_Of_West_Bengal_vs_Baishakhi_Bhattacharyya_Chatterjee_on_3_April_2025_1,civil,IPC,,0,,0,,0,3,0,1,1.84,16-02-2023,2603.0,1,14089
+The_State_Of_West_Bengal_vs_Pam_Developments_Private_Limited_on_9_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.45,"9 January, 2025",374.0,0,3191
+The_Union_Of_India_vs_Kanhaiya_Prasad_on_13_February_2025_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,31-7-2019,,0,4578
 Thoti_Manohar_vs_State_Of_A_P_on_15_May_2012_1,criminal,IPC,302,1,103,1,,0,10,0,1,4.46,"15 May, 2012",1961.0,16,7055
+Tilku_Alias_Tilak_Singh_vs_The_State_Of_Uttarakhand_on_6_February_2025_1,criminal,BNS,"363,366,376",3,,0,,0,3,1,1,4.55,"6
+February, 2025",4054.0,0,2602
 Tukaram_Kana_Joshi_Ors_Thr_Poa_Holder_vs_M_I_D_C_Ors_on_2_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.17,"2 November, 2012",1401.0,14,3755
 Tulshiram_Sahadu_Suryawanshi_Anr_vs_State_Of_Maharashtra_on_14_September_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.08,"14 September, 2012",1718.0,0,4288
 T_N_Godavarman_Thirumulpad_vs_Union_Of_India_Ors_on_13_February_2012_1,civil,IPC,,0,,0,,0,3,0,3,2.55,"13
 February, 2012",6252.0,1,11758
+T_Rajamoni_D_Thr_Lrs_vs_The_Manager_Oriental_Insurance_Co_Ltd_on_24_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"24 January, 2025",3676.0,0,2131
+Uco_Bank_vs_Vijay_Kumar_Handa_on_3_April_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.42,"3 April, 2025",458.0,0,3832
+Udhaw_Singh_vs_Enforcement_Directorate_on_17_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.54,"17 February, 2025",47.0,0,1257
+Umadevi_vs_Anand_Kumar_on_2_April_2025_1,civil,BNS,,0,,0,7,1,3,0,1,2.53,"2 April, 2025",91.0,0,2425
 Union_Of_India_Anr_vs_Shashank_Goswami_Anr_on_23_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.71,"23 May,
 2012",3065.0,0,1733
 Union_Of_India_Anr_vs_Talwinder_Singh_on_20_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.52,"20 April, 2012",110.0,6,1778
@@ -541,32 +985,66 @@ Union_Of_India_Ors_vs_Brigadier_P_S_Gill_on_23_March_2012_1,civil,IPC,,0,,0,,0,3
 Union_Of_India_Ors_vs_Madhu_E_V_Anr_on_26_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,27-12-1995,,0,2899
 Union_Of_India_Ors_vs_N_R_Parmar_Ors_on_27_November_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,11/7/1986,,0,17191
 Union_Of_India_Ors_vs_S_Srinivasan_on_21_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.81,"21 May, 2012",2697.0,11,7568
+Union_Of_India_vs_Future_Gaming_Solutions_P_Ltd_And_on_11_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.45,13/1/2010,377.0,8,28567
 Union_Of_India_vs_Ibrahim_Uddin_Anr_on_17_July_2012_1,civil,IPC,,0,,0,100,1,3,1,1,5.1,"17 July, 2012",1659.0,71,13983
+Union_Of_India_vs_Man_Singh_Verma_on_28_February_2025_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,18-2-2019,,0,3268
+Union_Of_India_vs_Tarsem_Singh_on_4_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.94,"4 February, 2025",2226.0,0,3805
+Urmila_Dixit_vs_Sunil_Sharan_Dixit_on_2_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.45,"2 January, 2025",367.0,0,3434
 U_P_Power_Corp_Ltd_vs_Rajesh_Kumar_Ors_on_27_April_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.05,10-2-1995,,6,18210
 U_Sree_vs_U_Srinivas_on_11_December_2012_1,civil,IPC,,0,,0,,0,3,1,1,4.55,"11 December, 2012",5823.0,2,7798
+U_Sudheera_vs_C_Yashoda_on_17_January_2025_1,civil,IPC,,0,,0,"100,151,41",3,3,0,1,2.05,1-2-1977,,3,5984
+Vaibhav_Goel_vs_Deputy_Commissioner_Of_Income_Tax_on_20_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.23,"20
+March, 2025",1174.0,0,2819
 Vasanti_Dubey_vs_State_Of_M_P_on_17_January_2012_1,criminal,IPC,,0,,0,,0,3,0,3,3.55,"17 January, 2012",16.0,3,5333
+Vasant_Girish_Akbarasab_Sanavale_vs_The_State_Of_Karnataka_on_11_February_2025_1,criminal,IPC,34,1,3,1,,0,4,0,1,2.4,03-01-2013,,12,9263
+Vellore_Dist_Environment_vs_The_District_Collector_Vellore_on_30_January_2025_1,civil,IPC,,0,,0,,0,3,0,5,4.05,31-08-2005,,1,40470
 Vidur_Impex_Traders_Pvt_Ltd_Ors_vs_Tosh_Apartments_Pvt_Ltd_Ors_on_21_August_2012_1,civil,IPC,,0,,0,"151,22",2,3,0,1,2.05,2-12-1991,,2,15511
+Vihaan_Kumar_vs_The_State_Of_Haryana_on_7_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.54,"7 February, 2025",37.0,2,10076
+Vijayalaxmi_Roopa_V_Shenoy_vs_National_Insurance_Co_Ltd_on_11_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"11 February, 2025",41.0,0,946
+Vijay_Bahadur_vs_Sunil_Kumar_on_6_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"6 March, 2025",11752.0,2,6900
 Vijay_Kumar_Kaul_Ors_vs_U_O_I_Ors_on_25_May_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.55,"25 May, 2012",7815.0,13,5361
+Vijay_Prabhu_vs_S_T_Lajapathie_on_8_January_2025_1,civil,BNS,,0,,0,,0,3,0,1,1.55,"8 January, 2025",4390.0,7,3459
 Vijay_Singh_vs_State_Of_Delhi_on_29_August_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.05,1-4-2001,,1,5974
 Vijay_Singh_vs_State_Of_U_P_Ors_on_13_April_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.52,"13 April, 2012",103.0,11,2863
+Vijay_Vijayakumar_vs_State_Represented_By_Inspector_Of_on_16_January_2025_1,criminal,IPC,300,1,101,1,,0,4,0,1,2.4,27-6-2019,,0,3464
 Vilas_Pandurang_Pawar_Anr_vs_State_Of_Maharashtra_Ors_on_10_September_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.48,"10 September, 2012",253.0,2,2268
 Village_Panchayat_Calangute_vs_Additional_Director_Of_Panchayat_Ii_on_2_July_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.4,"2 July, 2012",548.0,3,8431
 Vinayak_Kashinath_Shilkar_vs_Dy_Collector_Competent_Auth_Ors_on_29_February_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.53,"29 February, 2012",59.0,0,1614
+Vinay_Aggarwal_vs_State_Of_Haryana_on_2_April_2025_1,criminal,BNS,,0,,0,,0,3,0,3,3.42,"2 April, 2025",457.0,0,2278
 Vinay_Tyagi_vs_Irshad_Ali_Deepak_Ors_on_13_December_2012_1,criminal,IPC,"120b,121,121a,122,123",5,"61,147,148,149,150",5,,0,8,1,3,8.2,"13 December, 2012",347.0,1,15708
+Vinobhai_vs_State_Of_Kerala_on_29_January_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.74,"29 January, 2025",2950.0,0,2210
 Vinod_Kapoor_vs_State_Of_Goa_Ors_on_3_October_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.05,13-3-1997,,0,2318
+Vinod_Kumar_vs_State_Govt_Of_Nct_Of_Delhi_on_13_February_2025_1,criminal,BNS,,0,,0,,0,3,0,1,1.55,"13 February, 2025",4061.0,0,2611
+Vinod_Nasmulla_vs_The_State_Of_Chhattisgarh_on_14_February_2025_1,criminal,BNS,25,1,,0,,0,3,0,1,1.94,"14 February, 2025",2236.0,0,3701
+Vinubhai_Mohanlal_Dobaria_vs_Chief_Commissioner_Of_Income_Tax_on_7_February_2025_1,civil,IPC,,0,,0,,0,3,0,1,2.05,85/20/2014,,6,17068
+Vipin_Kumar_vs_Jaydeep_on_21_January_2025_1,civil,BNS,,0,,0,"100,96",2,3,0,1,2.34,"21 January, 2025",751.0,2,5531
 Vipul_Shital_Prasad_Agarwal_vs_State_Of_Gujarat_Anr_on_6_November_2012_1,criminal,IPC,25,1,2,1,,0,4,1,1,5.82,"6
 November, 2012",310.0,1,3418
+Vishal_Shah_vs_Monalisha_Gupta_on_20_February_2025_1,criminal,BNS,"120b,186,188,307,323,324,332,341,342,378,379,403,405,406,407,420,498a,499,500,504,506",21,,0,,0,3,1,1,5.34,"20 February, 2025",781.0,0,7573
+Vishnoo_Mittal_vs_M_S_Shakti_Trading_Company_on_17_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.53,"17 March,
+2025",75.0,0,2725
+Vishwanath_vs_The_State_Of_Uttarakhand_on_5_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.53,05-03-2025,63.0,0,2289
+Vivek_Kumar_Chaturvedi_vs_State_Of_U_P_on_7_February_2025_1,criminal,BNS,,0,,0,,0,3,1,1,5.54,"7 February, 2025",37.0,0,1938
 Vodafone_International_Holdings_B_V_vs_Union_Of_India_Anr_on_20_January_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.34,"20 January, 2012",749.0,9,60965
 V_Chandrasekaran_Anr_vs_Administrative_Officer_Ors_on_18_September_2012_1,civil,IPC,,0,,0,,0,3,0,1,2.18,"18
 September, 2012",1356.0,27,8776
 V_D_Bhanot_vs_Savita_Bhanot_on_7_February_2012_1,criminal,IPC,,0,,0,,0,3,1,1,5.34,"7 February, 2012",767.0,0,2250
 V_K_Sasikala_vs_State_Rep_By_Superintendent_Of_Police_on_27_September_2012_1,criminal,IPC,,0,,0,,0,3,1,3,5.55,"27
 September, 2012",4287.0,1,9051
+V_Ravikumar_vs_S_Kumar_on_3_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.33,"3 March, 2025",792.0,0,1130
 V_V_R_N_M_Subbayya_Chettiar_vs_Commissioner_Of_Income_Tax_Madras_on_21_December_1950_1,civil,IPC,,0,,0,,0,3,0,1,2.05,"21 December, 1950",1815.0,0,2786
+Wahid_vs_State_Govt_Of_Nct_Of_Delhi_on_4_February_2025_1,criminal,IPC,"25,397,411",3,"2,311,317",3,,0,4,0,1,2.4,5/12/2011,,0,3932
+Western_Coal_Fields_Limited_vs_Manohar_Govinda_Fulzele_on_17_February_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.54,"17
+February, 2025",47.0,2,3320
 West_U_P_Sugar_Mills_Association_Ors_vs_State_Of_Uttar_Pradesh_Ors_on_17_January_2012_1,civil,IPC,,0,,0,,0,3,0,1,1.85,"17 January, 2012",2572.0,2,3331
+Yadwinder_Singh_vs_Lakhi_Alias_Lakhwinder_Singh_on_26_March_2025_1,criminal,BNS,,0,,0,,0,3,0,1,2.05,18-07-2024,,1,9266
 Yanab_Sheikh_Gagu_vs_State_Of_West_Bengal_on_13_December_2012_1,criminal,IPC,"302,34,410",3,"103,3,317",3,,0,10,0,3,5.5,20-5-1995,,1,12274
+Yerikala_Sunkalamma_vs_The_State_Of_Andhra_Pradesh_And_Ors_on_24_March_2025_1,civil,IPC,,0,,0,80,1,3,0,1,2.05,3-2-1989,,15,40100
 Yeswant_Deorao_Deshmukh_vs_Walchand_Ramchand_Kothari_on_1_December_1950_1,civil,IPC,,0,,0,48,1,3,0,1,2.46,"1 December, 1950",334.0,0,6523
+Yogesh_Kumar_vs_The_State_Of_Uttar_Pradesh_on_18_March_2025_1,civil,BNS,,0,,0,,0,3,0,1,2.53,"18 March, 2025",76.0,0,2026
 Yumman_Ongbi_Lembi_Leima_vs_State_Of_Manipur_Ors_on_4_January_2012_1,criminal,IPC,"302,34,386",3,"103,3,308",3,,0,10,1,1,8.0,"4
 January, 2012",3.0,0,3417
+Yuvraj_Laxmilal_Kanther_vs_The_State_Of_Maharashtra_on_7_March_2025_1,criminal,BNS,"182,201,299,300,304,304a,34,35",8,,0,,0,3,0,1,2.43,"7
+March, 2025",431.0,0,4824
 Y_K_Singla_vs_Punjab_National_Bank_Ors_on_14_December_2012_1,civil,IPC,,0,,0,,0,3,0,3,3.25,"14 December,
 2012",1078.0,0,7308
