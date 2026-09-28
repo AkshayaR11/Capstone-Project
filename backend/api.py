@@ -49,10 +49,11 @@ UPLOAD_AGENT = None
 PRIORITIZATION_AGENT = None
 EXPLAINABILITY_AGENT = None
 BIAS_AGENT = None
+RECONCILIATION_AGENT = None
 
 @app.post("/summarize_upload")
 async def process_pdf_upload(file: UploadFile = File(...)):
-    global UPLOAD_AGENT, PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, BIAS_AGENT
+    global UPLOAD_AGENT, PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, BIAS_AGENT, RECONCILIATION_AGENT
     conn = None
     cur = None
     try:
@@ -101,6 +102,11 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             print("🚀 Loading Bias Agent...")
             from agents.fairness.bias_agent import BiasAgent
             BIAS_AGENT = BiasAgent()
+
+        if not RECONCILIATION_AGENT:
+            print("🏛️ Loading Judicial Reconciliation Agent...")
+            from agents.reconciliation.reconciliation_agent import JudicialReconciliationAgent
+            RECONCILIATION_AGENT = JudicialReconciliationAgent()
             
         if result and result[0]:
             print(f"🔥 Fast Cache Hit! Returned {result[10]} instantly without hitting Gemini.")
@@ -171,6 +177,25 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             except Exception as sim_err:
                 print(f"⚠️ Warning: Cache hit semantic similarity lookup failed: {sim_err}")
             
+            # Execute LangGraph Judicial Reconciliation Agent
+            reconciliation = {}
+            try:
+                reconciliation = RECONCILIATION_AGENT.reconcile({
+                    "case_id": result[10] if (len(result) > 10 and result[10]) else filename_id,
+                    "case_type": result[6] if result[6] else "civil",
+                    "legal_regime": result[2] if result[2] else "ipc",
+                    "summary": result[0],
+                    "priority_score": float(result[5]) if result[5] is not None else 5.0,
+                    "severity": float(result[1]) if result[1] is not None else 3.0,
+                    "contributions": contributions,
+                    "bias_score": result[7],
+                    "bias_details": result[8] if result[8] is not None else "Automated audit unavailable.",
+                    "bias_flags": result[9].split(",") if (result[9] and result[9].strip()) else [],
+                    "similar_cases": similar_cases
+                })
+            except Exception as rec_err:
+                print(f"[WARNING] Cache hit reconciliation failed: {rec_err}")
+
             return {
                 "case_id": result[10] if (len(result) > 10 and result[10]) else filename_id,
                 "summary": result[0],
@@ -185,7 +210,8 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 "contributions": contributions,
                 "bias_score": result[7],
                 "bias_details": result[8] if result[8] is not None else "Automated audit unavailable.",
-                "bias_flags": result[9].split(",") if (result[9] and result[9].strip()) else []
+                "bias_flags": result[9].split(",") if (result[9] and result[9].strip()) else [],
+                "reconciliation": reconciliation
             }
             
         # Cache Miss -> Close DB connections immediately so they aren't held open during Gemini execution
@@ -370,6 +396,30 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             
         conn.commit()
         
+        # Execute LangGraph Judicial Reconciliation Agent
+        reconciliation = {}
+        try:
+            if not RECONCILIATION_AGENT:
+                print("🏛️ Loading Judicial Reconciliation Agent...")
+                from agents.reconciliation.reconciliation_agent import JudicialReconciliationAgent
+                RECONCILIATION_AGENT = JudicialReconciliationAgent()
+
+            reconciliation = RECONCILIATION_AGENT.reconcile({
+                "case_id": filename_id,
+                "case_type": case_type,
+                "legal_regime": regime,
+                "summary": raw_summary_string,
+                "priority_score": float(priority_score) if priority_score is not None else 5.0,
+                "severity": float(severity) if severity is not None else 3.0,
+                "contributions": contributions,
+                "bias_score": bias_score,
+                "bias_details": bias_details,
+                "bias_flags": bias_flags_list,
+                "similar_cases": similar_cases
+            })
+        except Exception as rec_err:
+            print(f"[WARNING] Cache miss reconciliation failed: {rec_err}")
+
         return {
             "case_id": filename_id,
             "summary": raw_summary_string,
@@ -384,7 +434,8 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             "contributions": contributions,
             "bias_score": bias_score,
             "bias_details": bias_details,
-            "bias_flags": bias_flags_list
+            "bias_flags": bias_flags_list,
+            "reconciliation": reconciliation
         }
         
     except Exception as e:
@@ -681,6 +732,99 @@ async def get_pending_priority_queue(
     except Exception as e:
         print(f"Error fetching pending priority queue: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch pending priority queue")
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+@app.post("/cases/{case_id}/reconcile")
+async def reconcile_case_by_id(case_id: str):
+    """
+    On-demand endpoint to run LangGraph Judicial Reconciliation Agent on any existing case.
+    """
+    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, RECONCILIATION_AGENT
+    if not RECONCILIATION_AGENT:
+        print("🏛️ Loading Judicial Reconciliation Agent...")
+        from agents.reconciliation.reconciliation_agent import JudicialReconciliationAgent
+        RECONCILIATION_AGENT = JudicialReconciliationAgent()
+    if not EXPLAINABILITY_AGENT:
+        from agents.explainability.explainability_agent import ExplainabilityAgent
+        EXPLAINABILITY_AGENT = ExplainabilityAgent()
+
+    conn = None
+    cur = None
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT case_id, priority_score, case_type, legal_regime, case_date,
+                   max_severity_score, case_summary, bns_sections, ipc_sections,
+                   num_ipc_sections, num_cpc_sections, num_precedents, case_age_days,
+                   immediate_threat_flag, societal_impact_score, total_words,
+                   bias_score, bias_details, bias_flags
+            FROM cases WHERE case_id = %s
+        """, (case_id,))
+        r = cur.fetchone()
+        if not r:
+            raise HTTPException(status_code=404, detail=f"Case {case_id} not found")
+
+        features_for_explain = {
+            "case_type": r[2] if r[2] else "civil",
+            "num_ipc_sections": r[9] if r[9] is not None else 0,
+            "num_cpc_sections": r[10] if r[10] is not None else 0,
+            "num_precedents": r[11] if r[11] is not None else 0,
+            "total_words": r[15] if r[15] is not None else 1000,
+            "case_age_days": r[12] if r[12] is not None else 365.0,
+            "max_severity_score": float(r[5]) if r[5] is not None else 3.0,
+            "immediate_threat_flag": r[13] if r[13] is not None else 0,
+            "societal_impact_score": r[14] if r[14] is not None else 1
+        }
+        contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
+
+        # Retrieve similar precedents
+        similar_cases = []
+        try:
+            cur.execute("SELECT embedding FROM case_chunks WHERE case_id = %s LIMIT 1", (case_id,))
+            emb_res = cur.fetchone()
+            if emb_res:
+                cur.execute("""
+                    SELECT DISTINCT ON (c.case_id) c.case_id, cc.embedding <=> %s::vector AS distance
+                    FROM case_chunks cc
+                    JOIN cases c ON cc.case_id = c.case_id
+                    WHERE c.case_id != %s
+                    ORDER BY c.case_id, distance ASC
+                    LIMIT 3;
+                """, (emb_res[0], case_id))
+                sim_records = cur.fetchall()
+                for sr in sim_records:
+                    similar_cases.append({"case_id": sr[0], "score": round(1 - float(sr[1]), 4)})
+        except Exception:
+            pass
+
+        reconciliation = RECONCILIATION_AGENT.reconcile({
+            "case_id": r[0],
+            "case_type": r[2] if r[2] else "civil",
+            "legal_regime": r[3] if r[3] else "ipc",
+            "summary": r[6] if r[6] else "",
+            "priority_score": float(r[1]) if r[1] is not None else 5.0,
+            "severity": float(r[5]) if r[5] is not None else 3.0,
+            "contributions": contributions,
+            "bias_score": r[16],
+            "bias_details": r[17] if r[17] is not None else "",
+            "bias_flags": r[18].split(",") if (r[18] and r[18].strip()) else [],
+            "similar_cases": similar_cases
+        })
+
+        return {
+            "case_id": case_id,
+            "reconciliation": reconciliation
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in on-demand reconciliation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         if cur:
             cur.close()

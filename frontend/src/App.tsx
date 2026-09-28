@@ -2,6 +2,16 @@ import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import './index.css'
 
+interface ReconciliationData {
+  status: "APPROVED" | "ADJUSTED" | "FLAGGED_FOR_BENCH";
+  reconciled_score: number;
+  conflict_detected: boolean;
+  conflict_reasons: string[];
+  deliberation_notes: string;
+  memo: string;
+  recommendation: string;
+}
+
 interface CaseResult {
   rank?: number;
   case_id: string;
@@ -20,6 +30,7 @@ interface CaseResult {
   bias_score?: number | null;
   bias_details?: string;
   bias_flags?: string[];
+  reconciliation?: ReconciliationData;
 }
 
 interface QueueStats {
@@ -119,6 +130,77 @@ const renderBiasCard = (r: CaseResult) => (
   </div>
 );
 
+const renderReconciliationCard = (
+  r: CaseResult,
+  onRunAudit?: (caseId: string) => void,
+  isAuditing?: boolean
+) => {
+  if (!r.reconciliation || !r.reconciliation.status) {
+    if (!onRunAudit) return null;
+    return (
+      <div className="agent-card" style={{ gridColumn: 'span 2', background: 'rgba(99, 102, 241, 0.05)', border: '1px dashed rgba(99, 102, 241, 0.3)', textAlign: 'center', padding: '16px' }}>
+        <p style={{ fontSize: '0.88rem', color: '#c7d2fe', marginBottom: '10px' }}>
+          🏛️ <strong>LangGraph Judicial Review & Reconciliation Agent</strong> is ready to audit this docket record.
+        </p>
+        <button
+          className="search-btn"
+          style={{ margin: '0 auto', padding: '8px 18px', fontSize: '0.85rem' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRunAudit(r.case_id);
+          }}
+          disabled={isAuditing}
+        >
+          {isAuditing ? "⚡ Running LangGraph State Machine..." : "⚡ Run LangGraph Judicial Audit"}
+        </button>
+      </div>
+    );
+  }
+
+  const { status, reconciled_score, conflict_detected, conflict_reasons, deliberation_notes, memo, recommendation } = r.reconciliation;
+  const statusColor = status === "APPROVED" ? "#10b981" : status === "ADJUSTED" ? "#f59e0b" : "#ef4444";
+  const statusBg = status === "APPROVED" ? "rgba(16, 185, 129, 0.15)" : status === "ADJUSTED" ? "rgba(245, 158, 11, 0.15)" : "rgba(239, 68, 68, 0.15)";
+  const statusBadgeText = status === "APPROVED" ? "Validated (Consistent)" : status === "ADJUSTED" ? `Adjusted to ${reconciled_score?.toFixed(1)}` : "Flagged for Bench Caution";
+
+  return (
+    <div className="agent-card" style={{ gridColumn: 'span 2', borderLeft: `3px solid ${statusColor}`, background: 'rgba(255, 255, 255, 0.03)' }}>
+      <div className="agent-card-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+        <span>🏛️ Judicial Review & Reconciliation Agent <span style={{ fontSize: '0.75rem', opacity: 0.7, fontWeight: 'normal' }}>(LangGraph State Machine)</span></span>
+        <span style={{ fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px', background: statusBg, color: statusColor, fontWeight: 600, border: `1px solid ${statusColor}40` }}>
+          {statusBadgeText}
+        </span>
+      </div>
+      <div className="agent-card-content" style={{ marginTop: '10px' }}>
+        <div style={{ marginBottom: '10px', padding: '8px 12px', borderRadius: '6px', background: 'rgba(99, 102, 241, 0.12)', border: '1px solid rgba(99, 102, 241, 0.25)', fontSize: '0.85rem', color: '#c7d2fe' }}>
+          <strong>Scheduling Directive:</strong> {recommendation || "Standard Docket Scheduling"}
+        </div>
+
+        {conflict_detected && conflict_reasons && conflict_reasons.length > 0 && (
+          <div style={{ marginBottom: '10px', padding: '10px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+            <strong style={{ color: '#fca5a5', fontSize: '0.82rem', display: 'block', marginBottom: '6px' }}>⚠️ Reconciled Contradictions:</strong>
+            {conflict_reasons.map((reason, idx) => (
+              <p key={idx} style={{ fontSize: '0.8rem', color: '#fecaca', margin: '3px 0' }}>• {reason}</p>
+            ))}
+          </div>
+        )}
+
+        {deliberation_notes && (
+          <div style={{ marginBottom: '10px', fontSize: '0.82rem', color: '#cbd5e1' }}>
+            <strong style={{ color: '#93c5fd' }}>Agent Deliberation Trace:</strong> {deliberation_notes}
+          </div>
+        )}
+
+        {memo && (
+          <div style={{ marginTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '10px' }}>
+            <strong style={{ fontSize: '0.82rem', color: '#cbd5e1', display: 'block', marginBottom: '6px' }}>📋 Bench Triage Memo:</strong>
+            <p style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.5, whiteSpace: 'pre-line' }}>{memo}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState<'search' | 'queue' | 'batch'>('search');
 
@@ -148,6 +230,29 @@ function App() {
   const [batchFiles, setBatchFiles] = useState<FileList | null>(null);
   const [batchResults, setBatchResults] = useState<CaseResult[]>([]);
   const [batchLoading, setBatchLoading] = useState(false);
+
+  // On-Demand LangGraph Reconciliation Audit State
+  const [auditingCaseId, setAuditingCaseId] = useState<string | null>(null);
+
+  const handleRunReconciliation = async (caseId: string) => {
+    setAuditingCaseId(caseId);
+    try {
+      const res = await fetch(`http://localhost:8000/cases/${encodeURIComponent(caseId)}/reconcile`, {
+        method: 'POST'
+      });
+      if (!res.ok) throw new Error("Reconciliation failed");
+      const data = await res.json();
+      
+      setQueueResults(prev => prev.map(c => c.case_id === caseId ? { ...c, reconciliation: data.reconciliation } : c));
+      setResults(prev => prev.map(c => c.case_id === caseId ? { ...c, reconciliation: data.reconciliation } : c));
+      setBatchResults(prev => prev.map(c => c.case_id === caseId ? { ...c, reconciliation: data.reconciliation } : c));
+      setUploadResult(prev => prev && prev.case_id === caseId ? { ...prev, reconciliation: data.reconciliation } : prev);
+    } catch (err: unknown) {
+      console.error("Audit error:", err);
+    } finally {
+      setAuditingCaseId(null);
+    }
+  };
 
   // Priority Helpers
   const getPriorityCategory = (score?: number) => {
@@ -275,7 +380,8 @@ function App() {
         contributions: data.contributions,
         bias_score: data.bias_score,
         bias_details: data.bias_details,
-        bias_flags: data.bias_flags
+        bias_flags: data.bias_flags,
+        reconciliation: data.reconciliation
       });
       setShowUploadSummary(true);
     } catch (err: unknown) {
@@ -468,6 +574,7 @@ function App() {
                           </div>
                         </div>
                         {renderBiasCard(uploadResult)}
+                        {renderReconciliationCard(uploadResult, handleRunReconciliation, auditingCaseId === uploadResult.case_id)}
                       </div>
                     </div>
                   )}
@@ -524,6 +631,7 @@ function App() {
                           </div>
                         </div>
                         {renderBiasCard(r)}
+                        {renderReconciliationCard(r, handleRunReconciliation, auditingCaseId === r.case_id)}
                       </div>
                     </div>
                   )}
@@ -641,6 +749,7 @@ function App() {
                             </div>
                           </div>
                           {renderBiasCard(r)}
+                          {renderReconciliationCard(r, handleRunReconciliation, auditingCaseId === r.case_id)}
                         </div>
                       </div>
                     )}
@@ -745,6 +854,7 @@ function App() {
                               </div>
                             </div>
                             {renderBiasCard(r)}
+                            {renderReconciliationCard(r, handleRunReconciliation, auditingCaseId === r.case_id)}
                           </div>
                         </div>
                       )}
