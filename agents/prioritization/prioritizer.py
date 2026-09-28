@@ -17,11 +17,11 @@ class PrioritizationAgent:
             try:
                 self.model = joblib.load(self.model_path)
                 self.encoder = joblib.load(self.encoder_path)
-                print("🎯 PrioritizationAgent: Loaded XGBoost ML prioritizer model.")
+                print("PrioritizationAgent: Loaded XGBoost ML prioritizer model.")
             except Exception as e:
-                print(f"⚠️ Warning: Failed to load ML model: {e}. Falling back to Rule-Based.")
+                print(f"Warning: Failed to load ML model: {e}. Falling back to Rule-Based.")
         else:
-            print("⚠️ Warning: XGBoost model not found at data/prioritization/models/. Using Rule-Based fallback.")
+            print("Warning: XGBoost model not found at data/prioritization/models/. Using Rule-Based fallback.")
 
     def is_valid_age(self, age) -> bool:
         """Helper to determine if a case age value is numeric and not NaN/Inf."""

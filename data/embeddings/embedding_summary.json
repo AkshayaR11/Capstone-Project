@@ -1,9 +1,9 @@
 {
-  "total_cases": 460,
-  "total_chunks": 19786,
+  "total_cases": 860,
+  "total_chunks": 33388,
   "embedding_dim": 768,
   "model_name": "nlpaueb/legal-bert-base-uncased",
-  "file_size_mb": 57.9669189453125,
+  "file_size_mb": 97.8165283203125,
   "sample_metadata": [
     {
       "case_id": "Abdulla_Ahmed_vs_Animendra_Kissen_Mitter_on_14_March_1950_1",
