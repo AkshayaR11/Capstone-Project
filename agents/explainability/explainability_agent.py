@@ -162,46 +162,42 @@ class ExplainabilityAgent:
             return self._fallback_attributions(case_features)
 
     def _fallback_attributions(self, case_features: dict) -> dict:
-        """Fallback attribution rules aligned with rule-based priority scoring."""
-        attributions = {col: 0.0 for col in self.baseline.keys()}
-        
-        # Estimate coarse contributions based on rule weighting
+        """Return the exact weighted components used by compute_priority_score."""
+        severity = float(case_features.get("max_severity_score", 3.0))
+        societal_impact = float(case_features.get("societal_impact_score", 1))
+        immediate_threat = float(case_features.get("immediate_threat_flag", 0))
+        case_age_days = case_features.get("case_age_days")
         case_type = case_features.get("case_type", "civil")
-        attributions["case_type"] = 2.0 if case_type == "criminal" else 0.0
 
-        ipc = int(case_features.get("num_ipc_sections", 0))
-        if ipc >= 3:
-            attributions["num_ipc_sections"] = 2.0
-        elif ipc >= 1:
-            attributions["num_ipc_sections"] = 1.0
+        severity_norm = severity / 10.0
+        if case_type == "civil":
+            severity_norm = min(severity_norm, 0.4)
 
-        cpc = int(case_features.get("num_cpc_sections", 0))
-        if cpc >= 3:
-            attributions["num_cpc_sections"] = 1.5
-        elif cpc >= 1:
-            attributions["num_cpc_sections"] = 1.0
+        impact_norm = societal_impact / 5.0
+        threat_norm = float(bool(immediate_threat))
+        try:
+            age = float(case_age_days)
+            valid_age = not math.isnan(age) and not math.isinf(age)
+        except (ValueError, TypeError):
+            valid_age = False
+            age = 0.0
+        recency = max(0.0, 1.0 - age / 3650.0) if valid_age else 0.5
 
-        age = float(case_features.get("case_age_days", 0.0))
-        if not math.isnan(age) and age > 365:
-            attributions["case_age_days"] = round(min(age / 3650.0, 3.0), 2)
-
-        prec = int(case_features.get("num_precedents", 0))
-        if prec > 10:
-            attributions["num_precedents"] = 1.0
-        elif prec > 5:
-            attributions["num_precedents"] = 0.5
-
-        sev = float(case_features.get("max_severity_score", 3.0))
-        if not math.isnan(sev):
-            attributions["max_severity_score"] = round(min((sev - 3.0) / 2.0, 3.5), 2)
-
-        threat = int(case_features.get("immediate_threat_flag", 0))
-        attributions["immediate_threat_flag"] = 3.0 if threat > 0 else 0.0
-
-        impact = int(case_features.get("societal_impact_score", 1))
-        attributions["societal_impact_score"] = round(max((impact - 1.0) * 0.5, 0.0), 2)
-
-        return attributions
+        components = {
+            "severity_contribution": severity_norm * 3.5,
+            "societal_impact_contribution": impact_norm * 2.5,
+            "immediate_threat_contribution": threat_norm * 3.0,
+            "recency_contribution": recency,
+        }
+        total = sum(components.values())
+        if total > 10.0:
+            components = {key: value * (10.0 / total) for key, value in components.items()}
+        rounded = {key: round(value, 2) for key, value in components.items()}
+        displayed_total = round(min(total, 10.0), 2)
+        rounded["recency_contribution"] = round(
+            rounded["recency_contribution"] + displayed_total - sum(rounded.values()), 2
+        )
+        return rounded
 
 if __name__ == "__main__":
     # Test stub

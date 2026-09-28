@@ -542,35 +542,6 @@ body {
   border: 1px solid rgba(16, 185, 129, 0.5);
 }
 
-/* Queue Header Stats Bar */
-.queue-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.queue-stat-card {
-  padding: 16px;
-  border-radius: 12px;
-  background: rgba(20, 28, 44, 0.6);
-  border: 1px solid var(--glass-border);
-  text-align: center;
-}
-
-.queue-stat-value {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-top: 4px;
-}
-
-.queue-stat-label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 /* Filter bar */
 .filter-bar {
   display: flex;
