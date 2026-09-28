@@ -39,13 +39,13 @@ class BiasAgent:
         if self.gemini_model is not None:
             try:
                 prompt = (
-                    "You are a Judicial Fairness Auditor reviewing Indian court judgments.\n\n"
+                    "You are a Judicial Fairness Auditor reviewing Indian legal documents (court judgments, petitions, FIRs, or charge-sheets).\n\n"
                     "Check ONLY for these specific issues:\n"
-                    "1. References to defendant's caste, religion, gender, or socioeconomic status used as reasoning.\n"
-                    "2. Language that assumes guilt based on community membership.\n"
+                    "1. References to a party's caste, religion, gender, or socioeconomic status used as justification.\n"
+                    "2. Language that assumes guilt or suspicion based on demographic/community membership.\n"
                     "3. Differential language when describing similar acts by different demographic groups.\n"
-                    "4. Irrelevant personal characteristics mentioned in sentencing rationale.\n\n"
-                    "Rate the judgment from 0.0 (serious bias found) to 1.0 (no bias detected).\n\n"
+                    "4. Irrelevant personal characteristics or profiling in allegations or legal arguments.\n\n"
+                    "Rate the document from 0.0 (serious bias/profiling found) to 1.0 (no bias detected).\n\n"
                     "Return ONLY a valid JSON object matching this structure (no markdown formatting, code block fences, or other text):\n"
                     "{\n"
                     "  \"bias_score\": <float between 0.0 and 1.0>,\n"
