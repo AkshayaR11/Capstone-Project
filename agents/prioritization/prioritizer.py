@@ -178,7 +178,8 @@ class PrioritizationAgent:
         severity: float | None = None,
         immediate_threat: int | None = None,
         societal_impact: int | None = None,
-        case_date: str | None = None
+        case_date: str | None = None,
+        scoring_method: str | None = None
     ) -> str:
         """Formulate a quick justification of priority score assignment."""
         reasons = []
@@ -226,7 +227,9 @@ class PrioritizationAgent:
         if societal_impact and societal_impact >= 3:
             reasons.append("Significant societal impact identified")
 
-        if self.model is not None:
+        if scoring_method:
+            reasons.append(f"Evaluated using {scoring_method}")
+        elif self.model is not None:
             reasons.append("Evaluated using XGBoost Machine Learning model")
         else:
             reasons.append("Evaluated using baseline Rule-Based framework")

@@ -15,12 +15,8 @@ from config import DATABASE_URL
 # Load Gemini API
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
-import google.generativeai as genai
-if api_key:
-    genai.configure(api_key=api_key)
-    GEMINI_MODEL = genai.GenerativeModel('gemini-2.5-flash')
-else:
-    GEMINI_MODEL = None
+from agents.gemini_client import create_gemini_client, generate_gemini_content
+GEMINI_MODEL = create_gemini_client()
 
 
 # ==========================================
@@ -162,7 +158,7 @@ Output strictly valid JSON (no markdown formatting, no code fences):
     if GEMINI_MODEL:
         for attempt in range(2):
             try:
-                res = GEMINI_MODEL.generate_content(prompt).text.strip()
+                res = generate_gemini_content(GEMINI_MODEL, prompt).text.strip()
                 # Clean code blocks if present
                 if res.startswith("```"):
                     lines = res.split("\n")
@@ -246,7 +242,7 @@ Return ONLY the plain text of the memo.
 
     if GEMINI_MODEL:
         try:
-            res = GEMINI_MODEL.generate_content(prompt).text.strip()
+            res = generate_gemini_content(GEMINI_MODEL, prompt).text.strip()
             if res:
                 memo = res
         except Exception:

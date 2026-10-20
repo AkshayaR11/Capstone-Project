@@ -12,6 +12,17 @@ interface ReconciliationData {
   recommendation: string;
 }
 
+interface RetrievalInfo {
+  retried: boolean;
+  retry_recommended: boolean;
+  candidate_count: number;
+  rewritten_query: string;
+  rewrite_status: string;
+  retry_retrieval_status: string;
+  grading_method: string;
+  returned_count: number;
+}
+
 interface CaseResult {
   rank?: number;
   case_id: string;
@@ -31,6 +42,9 @@ interface CaseResult {
   bias_details?: string;
   bias_flags?: string[];
   reconciliation?: ReconciliationData;
+  relevance_score?: number;
+  relevance_label?: string;
+  relevance_reason?: string;
 }
 
 const renderContributions = (contribs: Record<string, number> | undefined) => {
@@ -248,6 +262,7 @@ function App() {
   const [query, setQuery] = useState('')
   const [yearFilter, setYearFilter] = useState('')
   const [results, setResults] = useState<CaseResult[]>([])
+  const [retrievalInfo, setRetrievalInfo] = useState<RetrievalInfo | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [expandedCase, setExpandedCase] = useState<string | null>(null)
@@ -358,6 +373,7 @@ function App() {
     setLoading(true)
     setError(null)
     setResults([])
+    setRetrievalInfo(null)
 
     try {
       const response = await fetch('http://localhost:8000/search', {
@@ -369,6 +385,7 @@ function App() {
       if (!response.ok) throw new Error("Failed to fetch search results from backend");
       const data = await response.json();
       setResults(data.results);
+      setRetrievalInfo(data.retrieval || null);
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
       else setError("An unknown error occurred.");
@@ -543,6 +560,29 @@ function App() {
               </form>
             </div>
 
+            {retrievalInfo && (
+              <div className="upload-container glass" style={{ marginTop: '12px', padding: '12px 16px', color: '#cbd5e1', fontSize: '0.88rem' }}>
+                <strong>Corrective precedent search:</strong>{' '}
+                {retrievalInfo.candidate_count === 0
+                  ? 'No precedent candidates were retrieved for this query.'
+                  : retrievalInfo.returned_count === 0
+                  ? 'Cases were retrieved, but none met the relevance threshold. Try a more specific or broader legal query.'
+                  : retrievalInfo.grading_method.includes('Lexical fallback grader')
+                  ? 'Gemini was unavailable; showing the original retrieval results. Relevance labels use the local lexical fallback.'
+                  : retrievalInfo.retry_retrieval_status === 'completed'
+                  ? `Initial results were weak, so a rewritten query was searched once: "${retrievalInfo.rewritten_query}".`
+                  : retrievalInfo.retry_retrieval_status === 'failed'
+                  ? 'A revised query was produced, but the retry search failed; showing the original results.'
+                  : retrievalInfo.retry_recommended && retrievalInfo.rewrite_status === 'failed'
+                    ? 'First-pass results graded weak; Gemini could not produce a revised query. Check the backend log for the API error.'
+                    : retrievalInfo.retry_recommended && retrievalInfo.rewrite_status === 'unchanged'
+                      ? 'First-pass results graded weak; Gemini returned the original query, so no retry ran.'
+                      : retrievalInfo.retry_recommended
+                        ? 'First-pass results graded weak; Gemini query rewriting was not configured, so the original results are shown.'
+                        : 'The first-pass results met the relevance threshold; no retry was needed.'}
+              </div>
+            )}
+
             <div className="upload-container glass" style={{ marginTop: '20px', marginBottom: '20px', padding: '20px' }}>
               <h3 style={{ marginBottom: '10px', fontSize: '1.2rem', color: '#fff' }}>📄 Live Single Document Summarization</h3>
               <form className="upload-form" onSubmit={handleUploadSubmit} style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
@@ -565,7 +605,7 @@ function App() {
                     onClick={(e) => { e.preventDefault(); setShowUploadSummary(!showUploadSummary); }}
                     style={{ marginBottom: '15px', background: 'rgba(16, 185, 129, 0.1)', borderColor: '#10b981', color: '#10b981', display: 'block' }}
                   >
-                    {showUploadSummary ? "Hide Live Summary & Agents ▲" : "View Live Summary & Agents ▼"}
+                    {showUploadSummary ? "Hide Live Summary & Modules ▲" : "View Live Summary & Modules ▼"}
                   </button>
                   
                   {showUploadSummary && (
@@ -581,15 +621,15 @@ function App() {
                         </span>
                       </div>
 
-                      <p style={{ marginBottom: '15px' }}><strong><span style={{ fontSize: '1.1rem', color: '#10b981'}}>🤖 Summarization Agent (Gemini-2.5-Flash)</span></strong></p>
+                      <p style={{ marginBottom: '15px' }}><strong><span style={{ fontSize: '1.1rem', color: '#10b981'}}>🤖 Summarization Module</span></strong></p>
                       <div className="markdown-body" style={{ background: 'rgba(0, 0, 0, 0.2)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                         <ReactMarkdown>{uploadResult.summary}</ReactMarkdown>
                       </div>
 
-                      <p style={{ marginBottom: '10px' }}><strong><span style={{ fontSize: '1.1rem', color: '#818cf8'}}>⚙️ Multi-Agent Intelligence Scan</span></strong></p>
+                      <p style={{ marginBottom: '10px' }}><strong><span style={{ fontSize: '1.1rem', color: '#818cf8'}}>⚙️ Case Intelligence Modules</span></strong></p>
                       <div className="agent-grid">
                         <div className="agent-card">
-                          <div className="agent-card-title">🤖 Prioritization Agent <span className="badge-green">Active</span></div>
+                          <div className="agent-card-title">🤖 Prioritization Module <span className="badge-green">Active</span></div>
                           <div className="agent-card-content">
                             <strong>Score:</strong> {uploadResult.priority_score?.toFixed(2)} / 10.0<br/>
                             <strong>Category:</strong> {getPriorityCategory(uploadResult.priority_score)}
@@ -597,7 +637,7 @@ function App() {
                           </div>
                         </div>
                         <div className="agent-card">
-                          <div className="agent-card-title">🔍 Explainability Agent <span className="badge-green">Active</span></div>
+                          <div className="agent-card-title">🔍 Explainability Module <span className="badge-green">Active</span></div>
                           <div className="agent-card-content">
                             <strong>Key Reasons:</strong>
                             {renderDecisionTrace(uploadResult.priority_explanation)}
@@ -616,10 +656,8 @@ function App() {
               {results.map((r, index) => (
                 <div key={r.case_id} className="result-card glass" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="card-header" style={{ flexWrap: 'wrap', gap: '8px' }}>
-                    <span className="similarity-badge">{((r.score || 0) * 100).toFixed(1)}% Match</span>
-                    <span className={`severity-badge level-${r.severity > 7 ? 'high' : r.severity > 4 ? 'med' : 'low'}`}>
-                      Severity {r.severity}
-                    </span>
+                    <span className="similarity-badge">Vector similarity: {Math.min((r.score || 0) * 100, 90).toFixed(1)}%</span>
+                    {r.relevance_label && <span className="similarity-badge">Legal relevance: {r.relevance_label}</span>}
                     <span className="case-type-badge">{r.case_type}</span>
                     <span className={`priority-badge ${getPriorityClass(r.priority_score)}`}>
                       Priority: {r.priority_score?.toFixed(1)} ({getPriorityCategory(r.priority_score)})
@@ -629,21 +667,26 @@ function App() {
                   <div className="card-footer">
                     <p><strong>Date:</strong> {r.date}</p>
                     <button className="summary-btn" onClick={(e) => toggleSummary(r.case_id, e)}>
-                      {expandedCase === r.case_id ? "Hide Case Insights ▲" : "⚖️ AI Insights & Agents ▼"}
+                      {expandedCase === r.case_id ? "Hide Case Insights ▲" : "⚖️ AI Insights & Modules ▼"}
                     </button>
                   </div>
                   
                   {expandedCase === r.case_id && (
                     <div className="summary-dropdown" style={{ borderLeft: '3px solid #3b82f6' }}>
-                      <p style={{ marginBottom: '15px' }}><strong><span style={{ fontSize: '1.1rem', color: '#3b82f6'}}>🏛️ Summarization Agent</span></strong></p>
+                      <p style={{ marginBottom: '15px' }}><strong><span style={{ fontSize: '1.1rem', color: '#3b82f6'}}>🏛️ Summarization Module</span></strong></p>
                       <div className="markdown-body" style={{ background: 'rgba(0, 0, 0, 0.2)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                         <ReactMarkdown>{r.summary}</ReactMarkdown>
                       </div>
+                      {r.relevance_reason && (
+                        <div style={{ marginBottom: '16px', padding: '10px 12px', borderRadius: '6px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', fontSize: '0.85rem' }}>
+                          <strong>Precedent relevance ({Math.round(Math.min((r.relevance_score || 0) * 100, 90))}%):</strong> {r.relevance_reason}
+                        </div>
+                      )}
 
-                      <p style={{ marginBottom: '10px' }}><strong><span style={{ fontSize: '1.1rem', color: '#818cf8'}}>⚙️ Multi-Agent Intelligence Scan</span></strong></p>
+                      <p style={{ marginBottom: '10px' }}><strong><span style={{ fontSize: '1.1rem', color: '#818cf8'}}>⚙️ Case Intelligence Modules</span></strong></p>
                       <div className="agent-grid">
                         <div className="agent-card">
-                          <div className="agent-card-title">🤖 Prioritization Agent <span className="badge-green">Active</span></div>
+                          <div className="agent-card-title">🤖 Prioritization Module <span className="badge-green">Active</span></div>
                           <div className="agent-card-content">
                             <strong>Score:</strong> {r.priority_score?.toFixed(2)} / 10.0<br/>
                             <strong>Category:</strong> {getPriorityCategory(r.priority_score)}
@@ -651,7 +694,7 @@ function App() {
                           </div>
                         </div>
                         <div className="agent-card">
-                          <div className="agent-card-title">🔍 Explainability Agent <span className="badge-green">Active</span></div>
+                          <div className="agent-card-title">🔍 Explainability Module <span className="badge-green">Active</span></div>
                           <div className="agent-card-content">
                             <strong>Key Reasons:</strong>
                             {renderDecisionTrace(r.priority_explanation)}
@@ -721,7 +764,7 @@ function App() {
                     <div className="card-footer">
                       <p><strong>Date:</strong> {r.date}</p>
                       <button className="summary-btn" onClick={(e) => toggleSummary(r.case_id, e)}>
-                        {expandedCase === r.case_id ? "Hide Case Insights ▲" : "⚖️ AI Insights & Agents ▼"}
+                        {expandedCase === r.case_id ? "Hide Case Insights ▲" : "⚖️ AI Insights & Modules ▼"}
                       </button>
                     </div>
 
@@ -734,7 +777,7 @@ function App() {
 
                         <div className="agent-grid">
                           <div className="agent-card">
-                            <div className="agent-card-title">🤖 Prioritization Agent <span className="badge-green">Active</span></div>
+                            <div className="agent-card-title">🤖 Prioritization Module <span className="badge-green">Active</span></div>
                             <div className="agent-card-content">
                               <strong>Queue Priority Rank:</strong> #{r.rank}<br/>
                               <strong>Score:</strong> {r.priority_score?.toFixed(2)} / 10.0<br/>
@@ -743,7 +786,7 @@ function App() {
                             </div>
                           </div>
                           <div className="agent-card">
-                            <div className="agent-card-title">🔍 Explainability Agent <span className="badge-green">Active</span></div>
+                            <div className="agent-card-title">🔍 Explainability Module <span className="badge-green">Active</span></div>
                             <div className="agent-card-content">
                               <strong>Key Reasons:</strong>
                               {renderDecisionTrace(r.priority_explanation)}
@@ -767,7 +810,7 @@ function App() {
             <div className="upload-container glass" style={{ padding: '25px', marginBottom: '25px' }}>
               <h3 style={{ marginBottom: '12px', fontSize: '1.3rem', color: '#fff' }}>📁 Batch File Prioritizer & Ranker</h3>
               <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '20px' }}>
-                Select multiple case PDF dockets at once. The multi-agent pipeline will process, summarize, score, and automatically rank them from highest priority to lowest priority.
+                Select multiple case PDF dockets at once. The processing workflow will summarize and score them, then rank them from highest priority to lowest priority.
               </p>
 
               <form onSubmit={handleBatchUploadSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -821,7 +864,7 @@ function App() {
                       <div className="card-footer">
                         <p><strong>File Name:</strong> {r.case_id || 'Uploaded Case'}.pdf</p>
                         <button className="summary-btn" onClick={(e) => toggleSummary(r.case_id || 'Uploaded_Case', e)}>
-                          {expandedCase === (r.case_id || 'Uploaded_Case') ? "Hide Case Insights ▲" : "⚖️ AI Insights & Agents ▼"}
+                          {expandedCase === (r.case_id || 'Uploaded_Case') ? "Hide Case Insights ▲" : "⚖️ AI Insights & Modules ▼"}
                         </button>
                       </div>
 
@@ -834,7 +877,7 @@ function App() {
 
                           <div className="agent-grid">
                             <div className="agent-card">
-                              <div className="agent-card-title">🤖 Prioritization Agent <span className="badge-green">Active</span></div>
+                                <div className="agent-card-title">🤖 Prioritization Module <span className="badge-green">Active</span></div>
                               <div className="agent-card-content">
                                 <strong>Score:</strong> {r.priority_score?.toFixed(2)} / 10.0<br/>
                                 <strong>Category:</strong> {getPriorityCategory(r.priority_score)}
@@ -842,7 +885,7 @@ function App() {
                               </div>
                             </div>
                             <div className="agent-card">
-                              <div className="agent-card-title">🔍 Explainability Agent <span className="badge-green">Active</span></div>
+                                <div className="agent-card-title">🔍 Explainability Module <span className="badge-green">Active</span></div>
                               <div className="agent-card-content">
                                 <strong>Key Reasons:</strong>
                                 {renderDecisionTrace(r.priority_explanation)}

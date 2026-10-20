@@ -4,12 +4,12 @@ import os
 import time
 import sys
 from pgvector.psycopg2 import register_vector
-import google.generativeai as genai
 from dotenv import load_dotenv
 
 # Ensure parent directory is in sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from config import DATABASE_URL
+from agents.gemini_client import create_gemini_client, generate_gemini_content
 
 class SummarizationAgent:
     def __init__(self):
@@ -19,8 +19,7 @@ class SummarizationAgent:
         load_dotenv()
         api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
-            genai.configure(api_key=api_key)
-            self.gemini_model = genai.GenerativeModel('gemini-2.5-flash')
+            self.gemini_model = create_gemini_client()
         else:
             print("Warning: GEMINI_API_KEY environment variable is not set.")
             self.gemini_model = None
@@ -40,7 +39,7 @@ class SummarizationAgent:
 
         for attempt in range(retries):
             try:
-                return self.gemini_model.generate_content(prompt).text.strip()
+                return generate_gemini_content(self.gemini_model, prompt).text.strip()
             except Exception as e:
                 err_msg = str(e).lower()
                 if "429" in err_msg or "quota" in err_msg or "rate limit" in err_msg:

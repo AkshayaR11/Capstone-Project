@@ -50,6 +50,122 @@ PRIORITIZATION_AGENT = None
 EXPLAINABILITY_AGENT = None
 BIAS_AGENT = None
 RECONCILIATION_AGENT = None
+PRECEDENT_SEARCH_AGENT = None
+
+
+def retrieve_hybrid_candidates(query_text: str, year_filter: str, top_k: int):
+    """Run the existing Legal-BERT + pgvector + lexical precedent retrieval."""
+    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT
+
+    encoded_input = tokenizer([query_text.lower()], padding=True, truncation=True, max_length=512, return_tensors='pt')
+    with torch.no_grad():
+        model_output = model(**encoded_input)
+    query_emb = mean_pooling(model_output, encoded_input['attention_mask'])
+    query_emb = F.normalize(query_emb, p=2, dim=1).numpy()[0]
+    query_words = [word.lower() for word in query_text.replace("_", " ").split() if len(word) > 2]
+
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+    try:
+        select_sql = """
+            SELECT c.case_id, MIN(cc.embedding <=> %s::vector) AS min_dist,
+                   c.case_date, c.max_severity_score, c.case_summary,
+                   c.bns_sections, c.ipc_sections, c.priority_score, c.case_type,
+                   c.num_ipc_sections, c.num_cpc_sections, c.num_precedents,
+                   c.case_age_days, c.immediate_threat_flag, c.societal_impact_score,
+                   c.total_words, c.bias_score, c.bias_details, c.bias_flags,
+                   c.legal_regime
+            FROM case_chunks cc
+            JOIN cases c ON cc.case_id = c.case_id
+        """
+        if year_filter:
+            select_sql += " WHERE c.case_date LIKE %s OR c.case_id LIKE %s"
+        select_sql += """
+            GROUP BY c.case_id, c.case_date, c.max_severity_score, c.case_summary,
+                     c.bns_sections, c.ipc_sections, c.priority_score, c.case_type,
+                     c.num_ipc_sections, c.num_cpc_sections, c.num_precedents,
+                     c.case_age_days, c.immediate_threat_flag, c.societal_impact_score,
+                     c.total_words, c.bias_score, c.bias_details, c.bias_flags, c.legal_regime
+        """
+        if year_filter:
+            year_param = f"%{year_filter}%"
+            cur.execute(select_sql, (query_emb.tolist(), year_param, year_param))
+        else:
+            cur.execute(select_sql, (query_emb.tolist(),))
+        records = cur.fetchall()
+    finally:
+        cur.close()
+        conn.close()
+
+    scored_records = []
+    for record in records:
+        vec_sim = 1.0 - float(record[1])
+        case_id_lower = record[0].lower().replace("_", " ")
+        ipc_lower = (record[6] or "").lower()
+        bns_lower = (record[5] or "").lower()
+        title_matches = sum(1 for word in query_words if word in case_id_lower)
+        lexical_boost = 0.0
+        if query_words:
+            if title_matches == len(query_words):
+                lexical_boost = 0.50
+            elif title_matches:
+                lexical_boost = 0.25 * (title_matches / len(query_words))
+        if any(word in ipc_lower or word in bns_lower for word in query_words):
+            lexical_boost += 0.15
+        scored_records.append((vec_sim + lexical_boost, record))
+
+    scored_records.sort(key=lambda item: item[0], reverse=True)
+    results = []
+    for score, record in scored_records[:max(1, min(top_k, 50))]:
+        explanation = PRIORITIZATION_AGENT.generate_explanation(
+            case_type=record[8] or "Unknown",
+            num_ipc_sections=record[9] if record[9] is not None else 0,
+            num_cpc_sections=record[10] if record[10] is not None else 0,
+            case_age_days=record[12],
+            num_precedents=record[11] if record[11] is not None else 0,
+            severity=float(record[3]) if record[3] is not None else 3.0,
+            immediate_threat=record[13] if record[13] is not None else 0,
+            societal_impact=record[14] if record[14] is not None else 1,
+            case_date=record[2],
+            scoring_method="baseline Rule-Based framework"
+        )
+        features = {
+            "case_type": record[8] or "civil",
+            "num_ipc_sections": record[9] if record[9] is not None else 0,
+            "num_cpc_sections": record[10] if record[10] is not None else 0,
+            "num_precedents": record[11] if record[11] is not None else 0,
+            "total_words": record[15] if record[15] is not None else 1000,
+            "case_age_days": record[12] if record[12] is not None else 365.0,
+            "max_severity_score": float(record[3]) if record[3] is not None else 3.0,
+            "immediate_threat_flag": record[13] if record[13] is not None else 0,
+            "societal_impact_score": record[14] if record[14] is not None else 1,
+        }
+        contributions = EXPLAINABILITY_AGENT._fallback_attributions(features)
+        current_priority_score = PRIORITIZATION_AGENT.compute_priority_score(
+            severity=features["max_severity_score"],
+            societal_impact=features["societal_impact_score"],
+            immediate_threat=features["immediate_threat_flag"],
+            case_age_days=features["case_age_days"],
+            case_type=features["case_type"],
+        )
+        results.append({
+            "case_id": record[0],
+            "score": round(min(score, 1.0), 4),
+            "date": record[2] if record[2] else "Unknown",
+            "severity": record[3],
+            "summary": record[4] if record[4] else "AI Synopsis Pending Processing.",
+            "bns_sections": record[5] or "",
+            "ipc_sections": record[6] or "",
+            "priority_score": current_priority_score,
+            "case_type": record[8] or "Unknown",
+            "legal_regime": record[19] or "Unknown",
+            "priority_explanation": explanation,
+            "contributions": contributions,
+            "bias_score": record[16],
+            "bias_details": record[17] if record[17] is not None else "Automated audit unavailable.",
+            "bias_flags": record[18].split(",") if (record[18] and record[18].strip()) else [],
+        })
+    return results
 
 @app.post("/summarize_upload")
 async def process_pdf_upload(file: UploadFile = File(...)):
@@ -449,162 +565,46 @@ async def process_pdf_upload(file: UploadFile = File(...)):
 
 @app.post("/search")
 async def search_cases(req: SearchRequest):
-    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, BIAS_AGENT
+    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, PRECEDENT_SEARCH_AGENT
     if not req.query:
         raise HTTPException(status_code=400, detail="Query cannot be empty")
-        
-    # Generate Semantic Vector
-    encoded_input = tokenizer([req.query.lower()], padding=True, truncation=True, max_length=512, return_tensors='pt')
-    with torch.no_grad():
-        model_output = model(**encoded_input)
-    query_emb = mean_pooling(model_output, encoded_input['attention_mask'])
-    query_emb = F.normalize(query_emb, p=2, dim=1).numpy()[0]
-    
-    # Initialize Prioritization, Explainability, & Bias Agents
+
     if not PRIORITIZATION_AGENT:
         from agents.prioritization.prioritizer import PrioritizationAgent
         PRIORITIZATION_AGENT = PrioritizationAgent()
-
     if not EXPLAINABILITY_AGENT:
         from agents.explainability.explainability_agent import ExplainabilityAgent
         EXPLAINABILITY_AGENT = ExplainabilityAgent()
+    if not PRECEDENT_SEARCH_AGENT:
+        from agents.corrective_precedent_search import CorrectivePrecedentSearch
+        PRECEDENT_SEARCH_AGENT = CorrectivePrecedentSearch()
 
-    if not BIAS_AGENT:
-        from agents.fairness.bias_agent import BiasAgent
-        BIAS_AGENT = BiasAgent()
-        
-    conn = None
-    cur = None
     try:
-        conn = psycopg2.connect(DATABASE_URL)
-        cur = conn.cursor()
-        
-        # Extract query keywords for lexical title & section matching
-        query_words = [w.lower() for w in req.query.replace("_", " ").split() if len(w) > 2]
-
-        if req.yearFilter:
-            sql = """
-                SELECT 
-                    c.case_id, 
-                    MIN(cc.embedding <=> %s::vector) AS min_dist,
-                    c.case_date, c.max_severity_score, c.case_summary,
-                    c.bns_sections, c.ipc_sections, c.priority_score, c.case_type,
-                    c.num_ipc_sections, c.num_cpc_sections, c.num_precedents,
-                    c.case_age_days, c.immediate_threat_flag, c.societal_impact_score,
-                    c.total_words, c.bias_score, c.bias_details, c.bias_flags
-                FROM case_chunks cc
-                JOIN cases c ON cc.case_id = c.case_id
-                WHERE c.case_date LIKE %s OR c.case_id LIKE %s
-                GROUP BY c.case_id, c.case_date, c.max_severity_score, c.case_summary, c.bns_sections, c.ipc_sections, c.priority_score, c.case_type, c.num_ipc_sections, c.num_cpc_sections, c.num_precedents, c.case_age_days, c.immediate_threat_flag, c.societal_impact_score, c.total_words, c.bias_score, c.bias_details, c.bias_flags;
-            """
-            year_param = f"%{req.yearFilter}%"
-            cur.execute(sql, (query_emb.tolist(), year_param, year_param))
-        else:
-            sql = """
-                SELECT 
-                    c.case_id, 
-                    MIN(cc.embedding <=> %s::vector) AS min_dist,
-                    c.case_date, c.max_severity_score, c.case_summary,
-                    c.bns_sections, c.ipc_sections, c.priority_score, c.case_type,
-                    c.num_ipc_sections, c.num_cpc_sections, c.num_precedents,
-                    c.case_age_days, c.immediate_threat_flag, c.societal_impact_score,
-                    c.total_words, c.bias_score, c.bias_details, c.bias_flags
-                FROM case_chunks cc
-                JOIN cases c ON cc.case_id = c.case_id
-                GROUP BY c.case_id, c.case_date, c.max_severity_score, c.case_summary, c.bns_sections, c.ipc_sections, c.priority_score, c.case_type, c.num_ipc_sections, c.num_cpc_sections, c.num_precedents, c.case_age_days, c.immediate_threat_flag, c.societal_impact_score, c.total_words, c.bias_score, c.bias_details, c.bias_flags;
-            """
-            cur.execute(sql, (query_emb.tolist(),))
-
-        records = cur.fetchall()
-
-        # Perform Hybrid Fusion Scoring (Vector Cosine Similarity + Lexical Title/Section Boost)
-        scored_records = []
-        for r in records:
-            case_id = r[0]
-            min_dist = float(r[1])
-            vec_sim = 1.0 - min_dist
-
-            case_id_lower = case_id.lower().replace("_", " ")
-            ipc_lower = (r[6] or "").lower()
-            bns_lower = (r[5] or "").lower()
-
-            title_matches = sum(1 for w in query_words if w in case_id_lower)
-            lexical_boost = 0.0
-
-            if len(query_words) > 0:
-                if title_matches == len(query_words):
-                    lexical_boost = 0.50  # Exact title match -> guaranteed top rank
-                elif title_matches > 0:
-                    lexical_boost = 0.25 * (title_matches / len(query_words))
-
-            if any(w in ipc_lower or w in bns_lower for w in query_words):
-                lexical_boost += 0.15
-
-            final_score = vec_sim + lexical_boost
-            scored_records.append((final_score, r))
-
-        # Sort descending by hybrid score & slice topK
-        scored_records.sort(key=lambda x: x[0], reverse=True)
-        top_records = scored_records[:req.topK]
-
-        results = []
-        for score, r in top_records:
-            sim_score = min(score, 1.0)  # Cap match score display at 100%
-
-            
-            # Generate dynamic explanation trace
-            exp = PRIORITIZATION_AGENT.generate_explanation(
-                case_type=r[8] if r[8] else "Unknown",
-                num_ipc_sections=r[9] if r[9] is not None else 0,
-                num_cpc_sections=r[10] if r[10] is not None else 0,
-                case_age_days=r[12] if r[12] is not None else None,
-                num_precedents=r[11] if r[11] is not None else 0,
-                severity=float(r[3]) if r[3] is not None else 3.0,
-                immediate_threat=r[13] if r[13] is not None else 0,
-                societal_impact=r[14] if r[14] is not None else 1,
-                case_date=r[2] if r[2] else None
-            )
-
-            # Generate Explainability attributions
-            features_for_explain = {
-                "case_type": r[8] if r[8] else "civil",
-                "num_ipc_sections": r[9] if r[9] is not None else 0,
-                "num_cpc_sections": r[10] if r[10] is not None else 0,
-                "num_precedents": r[11] if r[11] is not None else 0,
-                "total_words": r[15] if r[15] is not None else 1000,
-                "case_age_days": r[12] if r[12] is not None else 365.0,
-                "max_severity_score": r[3] if r[3] is not None else 3.0,
-                "immediate_threat_flag": r[13] if r[13] is not None else 0,
-                "societal_impact_score": r[14] if r[14] is not None else 1
-            }
-            contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
-            
-            results.append({
-                "case_id": r[0],
-                "score": round(sim_score, 4),
-                "date": r[2] if r[2] else "Unknown",
-                "severity": r[3],
-                "summary": r[4] if r[4] else "AI Synopsis Pending Processing.",
-                "bns_sections": r[5] if r[5] else "",
-                "ipc_sections": r[6] if r[6] else "",
-                "priority_score": r[7] if r[7] is not None else 0.0,
-                "case_type": r[8] if r[8] else "Unknown",
-                "priority_explanation": exp,
-                "contributions": contributions,
-                "bias_score": r[16],
-                "bias_details": r[17] if r[17] is not None else "Automated audit unavailable.",
-                "bias_flags": r[18].split(",") if (r[18] and r[18].strip()) else []
-            })
-            
-        return {"results": results}
+        initial_results = retrieve_hybrid_candidates(req.query, req.yearFilter, req.topK)
+        workflow_result = PRECEDENT_SEARCH_AGENT.search(
+            query=req.query,
+            initial_candidates=initial_results,
+            retrieve_fn=lambda rewritten_query: retrieve_hybrid_candidates(
+                rewritten_query, req.yearFilter, req.topK
+            ),
+            top_k=max(1, min(req.topK, 50)),
+        )
+        return {
+            "results": workflow_result["results"],
+            "retrieval": {
+                "retried": workflow_result["retried"],
+                "retry_recommended": workflow_result["retry_recommended"],
+                "candidate_count": workflow_result["candidate_count"],
+                "rewritten_query": workflow_result["rewritten_query"],
+                "rewrite_status": workflow_result["rewrite_status"],
+                "retry_retrieval_status": workflow_result["retry_retrieval_status"],
+                "grading_method": workflow_result["grading_method"],
+                "returned_count": workflow_result["returned_count"],
+            },
+        }
     except Exception as e:
-        print(f"Database error: {e}")
-        raise HTTPException(status_code=500, detail="Database error occurred")
-    finally:
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
+        print(f"Precedent search failed: {e}")
+        raise HTTPException(status_code=500, detail="Precedent search failed")
 
 @app.get("/cases/pending")
 async def get_pending_priority_queue(

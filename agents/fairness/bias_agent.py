@@ -2,6 +2,7 @@ import os
 import re
 import json
 from dotenv import load_dotenv
+from agents.gemini_client import create_gemini_client, generate_gemini_content
 
 class BiasAgent:
     def __init__(self):
@@ -13,9 +14,7 @@ class BiasAgent:
         
         if api_key:
             try:
-                import google.generativeai as genai
-                genai.configure(api_key=api_key)
-                self.gemini_model = genai.GenerativeModel('gemini-2.5-flash')
+                self.gemini_model = create_gemini_client()
                 print("BiasAgent: Loaded Gemini API node for opinion auditing.")
             except Exception as e:
                 print(f"Warning: Failed to load Gemini API in BiasAgent: {e}. Using Lexical Fallback.")
@@ -55,7 +54,7 @@ class BiasAgent:
                     f"TEXT:\n{text[:40000]}"
                 )
 
-                response = self.gemini_model.generate_content(prompt)
+                response = generate_gemini_content(self.gemini_model, prompt)
                 response_text = response.text.strip()
                 
                 # Clean up any potential markdown formatting in LLM output
