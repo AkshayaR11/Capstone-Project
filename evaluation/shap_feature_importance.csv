@@ -1,0 +1,10 @@
+Feature,Mean Absolute SHAP (Impact on Priority)
+Immediate Threat Flag,1.1875985
+Offence Severity Rating,0.39486617
+Case Pending Days,0.29639235
+Societal Impact Score,0.2832021
+Precedents Cited,0.003611347
+Document Word Count,0.0035801867
+IPC Sections Count,0.002220108
+Case Type,0.0006652996
+CPC Sections Count,0.000106748645

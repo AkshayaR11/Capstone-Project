@@ -1,0 +1,5 @@
+Policy,Cases Resolved,Critical Turnaround (Mean Days),Critical Turnaround (Median Days),Civil Wait Time (Mean Days),Overall Wait (Mean Days)
+FIFO,850,12.7,3.0,39.1,36.2
+LIFO,850,3.3,2.0,40.9,36.2
+SEVERITY_ONLY,850,2.1,1.0,41.2,36.2
+AI_PRIORITY,850,0.0,0.0,45.6,36.2

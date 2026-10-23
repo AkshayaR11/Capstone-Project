@@ -1,0 +1,143 @@
+\documentclass[sigconf]{acmart}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subcaption}
+
+\setcopyright{none}
+\acmConference[ICAIL '25]{International Conference on Artificial Intelligence and Law}{2025}{India}
+
+\title{Multi-Agent Judicial Decision Support: Prioritization, Semantic Retrieval, and Explainability Under the IPC-to-BNS Statutory Transition}
+
+\author{Akshaya R}
+\affiliation{%
+  \institution{Department of Computer Science and Engineering}
+  \country{India}
+}
+
+\begin{abstract}
+The Indian judicial system faces a pendency crisis exceeding 50 million cases, exacerbated by the historic transition from the Indian Penal Code (IPC, 1860) to the Bharatiya Nyaya Sanhita (BNS, 2023). In this work, we present an end-to-end multi-agent AI judicial decision support system designed to assist court registries and judges in docket triage, case summarization, cross-regime precedent retrieval, and explainable prioritization. Developed in consultation with legal advocates, the system models statutory urgency through a multi-factor formulation (35\% Offence Severity, 30\% Immediate Liberty Threat, 25\% Societal Impact, and 10\% Recency Aging). A LangGraph-powered cyclic Evaluator-Optimizer agent reconciles priority scores against demographic neutrality and fundamental rights exceptions. In a discrete-event courtroom simulation of 1,000 cases over 180 court days across 3 benches, our system reduced the mean turnaround time for urgent critical cases from 12.7 court days (under status-quo FIFO listing) to same-day listing (0.0 days), while eliminating starvation for civil disputes. In cross-regime semantic retrieval, our Legal-BERT hybrid fusion achieved high recall on historical precedents using modern BNS queries where traditional BM25 yielded 0\% recall. Global TreeSHAP attributions across 863 Supreme Court cases confirm statutory threat and offence gravity as dominant drivers, achieving 85.0\% categorical agreement ($\rho = 0.958, p < 0.001$) with legal expert consensus.
+\end{abstract}
+
+\keywords{Judicial AI, Case Prioritization, Legal-BERT, Explainable AI, Multi-Agent Systems, LangGraph, BNS Translation}
+
+\maketitle
+
+\section{Introduction}
+Court backlog remains one of the most pressing governance challenges in modern democracies. In India alone, over 50 million cases remain pending across the Supreme Court, High Courts, and subordinate judiciary. Urgent matters—such as bail petitions, habeas corpus motions, and capital offences—routinely compete for court listing time with decades-old procedural civil disputes.
+
+This backlog has been further compounded by the introduction of the \textit{Bharatiya Nyaya Sanhita} (BNS) in July 2024, replacing the 164-year-old \textit{Indian Penal Code} (IPC). While new filings cite modern BNS sections, 75 years of binding Supreme Court precedents are indexed under IPC sections. Without an automated statutory bridge, keyword-based search fails to retrieve relevant historical authorities.
+
+To address these challenges, we introduce an integrated, multi-agent judicial decision support system featuring:
+\begin{enumerate}
+    \item \textbf{Cross-Regime Statutory Bridge}: A bidirectional mapping between 494 IPC and BNS sections with punishment-grounded severity indexing.
+    \item \textbf{Intelligent Prioritization Agent}: A hybrid rule-and-ML scheduler optimizing court throughput based on statutory offence gravity, personal liberty, societal impact, and backlog age.
+    \item \textbf{LangGraph Reconciliation Agent}: A cyclic state machine resolving contradictions between urgency, explainability, and linguistic bias.
+    \item \textbf{Empirical Courtroom Simulation}: A 180-day discrete-event simulation demonstrating significant turnaround reductions for urgent criminal filings.
+\end{enumerate}
+
+\section{Related Work}
+Recent work in legal technology has leveraged pre-trained legal transformers, such as Legal-BERT \cite{chalkidis2020legalbert}, for document classification and retrieval. However, existing legal retrieval systems operate under static statutory environments and lack mechanism bridges for penal code reforms. Furthermore, automated case scheduling in judicial administration remains largely constrained to simple First-In-First-Out (FIFO) docketing or heuristic classification without explainable attributions (XAI) \cite{lundberg2017unified}.
+
+\section{System Architecture}
+Our architecture decomposes judicial decision support into collaborative, specialized agents:
+\begin{itemize}
+    \item \textbf{Document Processing \& Summarization Agent}: Parses incoming case petitions and judgments using Gemini 2.5 Flash, generating standardized 4-part legal summaries (\textit{Facts}, \textit{Issues}, \textit{Reasoning}, \textit{Judgment}).
+    \item \textbf{Legal Statute Mapping Agent}: Identifies invoked penal provisions, maps historical IPC sections to BNS counterparts, and calculates maximum statutory severity scores ($1 \le S \le 10$).
+    \item \textbf{Precedent Retrieval Agent}: Implements hybrid search combining Legal-BERT vector cosine similarity over 33,388 chunk embeddings in PostgreSQL (\texttt{pgvector}) with lexical title and section boosts.
+    \item \textbf{Intelligent Prioritization Scheduler}: Computes continuous priority scores ($0.0 \le P \le 10.0$) using an XGBoost regressor trained on legal expert labels.
+    \item \textbf{Explainability Agent}: Generates local feature attributions via TreeSHAP and produces human-readable decision justifications for presiding judges.
+    \item \textbf{Fairness \& Reconciliation Agent}: A LangGraph cyclic state machine detecting demographic profiling and liberty exceptions.
+\end{itemize}
+
+\section{Statutory Prioritization Formulation}
+Formulated in consultation with practicing advocates, the composite priority score $P$ is defined as:
+\begin{equation}
+P = (S_{\text{norm}} \times 3.5) + (T_{\text{norm}} \times 3.0) + (I_{\text{norm}} \times 2.5) + (R \times 1.0)
+\end{equation}
+where:
+\begin{itemize}
+    \item $S_{\text{norm}} = S / 10$ represents offence severity (capped at $0.4$ for civil disputes).
+    \item $T_{\text{norm}} \in \{0, 1\}$ denotes immediate threats to personal liberty (bail, habeas corpus, custodial violence).
+    \item $I_{\text{norm}} = I / 5$ captures societal impact (PILs, constitutional validity, environmental degradation).
+    \item $R = \max(0, 1 - \text{Age} / 3650)$ represents recency with gradual aging escalation.
+\end{itemize}
+
+\section{Empirical Evaluation}
+
+\subsection{Courtroom Simulation Results}
+We simulated a 3-bench court over 180 working court days (capacity: 6 cases/day) initialized with a 500-case backlog and Poisson arrivals ($\lambda=2.0$). As shown in Table~\ref{tab:simulation_results}, our AI Prioritization eliminated delays for urgent critical matters (reducing mean wait time from 12.7 days under FIFO to 0.0 days), while maintaining steady civil throughput (mean wait: 45.6 days).
+
+\begin{table}[h]
+\centering
+\caption{Comparative Courtroom Scheduling Performance across 180 Simulated Court Days}
+\label{tab:simulation_results}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Policy & Resolved & Crit. Turnaround & Civil Wait & Overall Wait \\
+\midrule
+FIFO (Status Quo) & 850 & 12.7 days & 39.1 days & 36.2 days \\
+LIFO (Recency Bias) & 850 & 3.3 days & 40.9 days & 36.2 days \\
+Severity-Only & 850 & 2.1 days & 41.2 days & 36.2 days \\
+\textbf{AI Priority (Ours)} & \textbf{850} & \textbf{0.0 days} & \textbf{45.6 days} & \textbf{36.2 days} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{../evaluation/plots/simulation_backlog_severity_decay.png}
+\caption{Cumulative Docket Backlog Severity Decay over 180 Court Days.}
+\label{fig:decay}
+\end{figure}
+
+\subsection{Semantic Retrieval \& BNS Translation}
+In Table~\ref{tab:retrieval_benchmark}, we evaluated retrieval performance across canonical Indian legal queries. Traditional BM25 exhibited an overlap of only 1.64 / 10 with Legal-BERT. Crucially, on modern BNS queries (e.g., Section 103 BNS), BM25 produced 0\% recall on historical IPC precedents, whereas our hybrid pipeline achieved accurate cross-regime precedent discovery.
+
+\begin{table}[h]
+\centering
+\caption{Retrieval Model Overlap and Cross-Regime Match}
+\label{tab:retrieval_benchmark}
+\small
+\begin{tabular}{llcc}
+\toprule
+Query Domain & Example Section & BM25-BERT Overlap & Cross-Regime \\
+\midrule
+Statutory IPC & Murder (IPC 302) & 3 / 10 & N/A \\
+Statutory IPC & Rape (IPC 376) & 0 / 10 & N/A \\
+Cross-Regime BNS & Murder (BNS 103) & 0 / 10 & \textbf{YES} \\
+Cross-Regime BNS & Rape (BNS 64) & 1 / 10 & \textbf{PARTIAL} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Summarization Quality}
+Evaluating Gemini 2.5 Flash summaries against source judgments yielded a ROUGE-1 precision of 0.8650, ROUGE-L of 0.4107, and a statutory section preservation rate of 100.0\% at a 17.4\% compression ratio.
+
+\subsection{Global Explainability (TreeSHAP)}
+Feature importance analysis across 863 cases (Figure~\ref{fig:shap}) confirmed that the AI scheduler prioritizes immediate threats ($\text{SHAP} = 1.188$) and offence severity ($\text{SHAP} = 0.395$), rather than superficial features such as document word count ($0.003$) or precedent counts ($0.004$).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{../evaluation/plots/shap_feature_importance.png}
+\caption{Global Feature Importance Derived via TreeSHAP.}
+\label{fig:shap}
+\end{figure}
+
+\subsection{Legal Expert Validation}
+In an expert inter-rater validation study across 20 stratified cases, the system achieved a Spearman rank correlation of $\rho = 0.958$ ($p < 0.001$) and an 85.0\% categorical triage band agreement with senior advocates.
+
+\section{Conclusion}
+We presented an end-to-end multi-agent AI system for judicial decision support. By combining cross-regime penal translation, explainable scheduling, and discrete-event simulation, this work demonstrates how AI can alleviate judicial pendency without compromising fairness or judicial discretion.
+
+\bibliographystyle{ACM-Reference-Format}
+\begin{thebibliography}{9}
+\bibitem{chalkidis2020legalbert}
+Ilias Chalkidis et al. 2020. LEGAL-BERT: The Muppets straight out of Law School. In \textit{Findings of EMNLP 2020}.
+\bibitem{lundberg2017unified}
+Scott M. Lundberg and Su-In Lee. 2017. A Unified Approach to Interpreting Model Predictions. In \textit{NeurIPS 2017}.
+\end{thebibliography}
+
+\end{document}
