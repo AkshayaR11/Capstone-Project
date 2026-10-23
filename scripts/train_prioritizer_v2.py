@@ -1,6 +1,6 @@
 """
 Train a fresh XGBoost Prioritization Model on the existing 460 cases.
-Labels are generated using Dr. Saritha P's legally-validated rule formula.
+Labels are generated using the legally-validated agentic approach.
 This replaces Akshaya's old model trained on manually-labelled CSV data.
 
 Run from project root:
@@ -61,7 +61,7 @@ def fetch_cases():
     return rows
 
 # ------------------------------------------------------------------ #
-#  2. GENERATE LABELS USING DR. SARITHA'S RULE FORMULA
+#  2. GENERATE LABELS USING AGENTIC APPROACH
 # ------------------------------------------------------------------ #
 def generate_labels(rows, agent):
     print("Generating rule-based priority labels for all cases...")
@@ -161,7 +161,7 @@ def train(df):
     plt.figure(figsize=(7, 5))
     plt.scatter(y_test, y_pred, alpha=0.6, edgecolors='k', linewidths=0.4)
     plt.plot([0, 10], [0, 10], 'r--', label='Perfect prediction')
-    plt.xlabel("Rule-Based Label (Dr. Saritha formula)")
+    plt.xlabel("Rule-Based Label (Agentic Approach)")
     plt.ylabel("XGBoost Prediction")
     plt.title("XGBoost Priority Model v2 — Predicted vs Actual")
     plt.legend()

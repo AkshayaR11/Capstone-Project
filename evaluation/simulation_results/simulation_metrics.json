@@ -1,0 +1,47 @@
+{
+    "parameters": {
+        "num_judges": 3,
+        "cases_per_judge_day": 2,
+        "daily_capacity": 6,
+        "total_cases_simulated": 860
+    },
+    "critical_turnaround_improvement_percent": 74.45,
+    "strategy_comparison": {
+        "FIFO (Traditional - First In First Out)": {
+            "Total Cases": 860,
+            "Critical Cases Count": 89,
+            "Avg Resolution Days (Critical)": 63.73,
+            "Median Resolution Days (Critical)": 43.0,
+            "90th Percentile Resolution Days (Critical)": 131.0,
+            "Avg Resolution Days (Overall)": 72.17,
+            "Total Days to Complete Docket": 144
+        },
+        "LIFO (Recency Skew - Last In First Out)": {
+            "Total Cases": 860,
+            "Critical Cases Count": 89,
+            "Avg Resolution Days (Critical)": 90.91,
+            "Median Resolution Days (Critical)": 86.0,
+            "90th Percentile Resolution Days (Critical)": 131.0,
+            "Avg Resolution Days (Overall)": 72.17,
+            "Total Days to Complete Docket": 144
+        },
+        "Random Scheduling (Unprioritized Docket)": {
+            "Total Cases": 860,
+            "Critical Cases Count": 89,
+            "Avg Resolution Days (Critical)": 76.04,
+            "Median Resolution Days (Critical)": 80.0,
+            "90th Percentile Resolution Days (Critical)": 129.4,
+            "Avg Resolution Days (Overall)": 72.17,
+            "Total Days to Complete Docket": 144
+        },
+        "AI Agent Prioritization (Proposed)": {
+            "Total Cases": 860,
+            "Critical Cases Count": 89,
+            "Avg Resolution Days (Critical)": 16.28,
+            "Median Resolution Days (Critical)": 8.0,
+            "90th Percentile Resolution Days (Critical)": 39.2,
+            "Avg Resolution Days (Overall)": 72.17,
+            "Total Days to Complete Docket": 144
+        }
+    }
+}
