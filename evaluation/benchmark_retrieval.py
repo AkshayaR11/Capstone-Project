@@ -2,7 +2,8 @@
 Semantic Retrieval Benchmark
 Empirically evaluates Legal-BERT, Lexical BM25, and Hybrid Fusion (Legal-BERT + Lexical Section/Title Boost).
 Evaluates cross-regime retrieval (modern BNS queries retrieving historical IPC precedents).
-Produces publication-grade metrics and LaTeX tables for Section 6.1 of the paper.
+Produces ranking-overlap results for exploratory comparison. Without relevance
+judgments, this benchmark does not measure retrieval accuracy or recall.
 """
 
 import os
@@ -22,6 +23,8 @@ from config import DATABASE_URL
 
 OUTPUT_CSV = "evaluation/retrieval_benchmark_results.csv"
 OUTPUT_TEX = "evaluation/retrieval_benchmark_table.tex"
+RRF_K = 60
+RRF_POOL_SIZE = 100
 
 def mean_pooling(model_output, attention_mask):
     token_embeddings = model_output.last_hidden_state
@@ -36,38 +39,45 @@ def run_retrieval_benchmark():
     cur = conn.cursor()
     cur.execute("SELECT case_id, ipc_sections, bns_sections, case_summary FROM cases;")
     db_cases = cur.fetchall()
+    cur.execute("SELECT DISTINCT case_id FROM case_chunks;")
+    vector_case_ids = {r[0] for r in cur.fetchall()}
     conn.close()
 
     corpus_ids = []
-    corpus_texts = []
+    bm25_chunk_ids = []
+    bm25_chunk_texts = []
     case_metadata = {}
 
     for case_id, ipc, bns, summary in db_cases:
+        if case_id not in vector_case_ids:
+            continue
         chunk_file = os.path.join("data", "chunks", f"{case_id}_chunks.json")
-        text = ""
+        chunk_texts = []
         if os.path.exists(chunk_file):
             try:
                 with open(chunk_file, "r", encoding="utf-8") as f:
                     cdata = json.load(f)
-                text = " ".join(c["text"] for c in cdata.get("chunks", []))
+                chunk_texts = [c["text"] for c in cdata.get("chunks", []) if c.get("text")]
             except Exception:
                 pass
-        if not text and summary:
-            text = summary
+        if not chunk_texts and summary:
+            chunk_texts = [summary]
 
-        if text:
+        if chunk_texts:
             corpus_ids.append(case_id)
-            corpus_texts.append(text)
             case_metadata[case_id] = {
                 "ipc": ipc or "",
                 "bns": bns or ""
             }
+            bm25_chunk_ids.extend([case_id] * len(chunk_texts))
+            bm25_chunk_texts.extend(chunk_texts)
 
-    print(f"[RETRIEVAL] Loaded {len(corpus_texts)} cases into evaluation corpus.")
+    print(f"[RETRIEVAL] Loaded {len(corpus_ids)} cases and {len(bm25_chunk_texts)} chunks into evaluation corpus.")
 
-    # 1. Build BM25 Index
-    print("[RETRIEVAL] Building BM25 index...")
-    tokenized_corpus = [t.lower().split() for t in corpus_texts]
+    # BM25 scores the same chunks used by vector search, then pools each case
+    # by its best matching chunk so both baselines return case-level rankings.
+    print("[RETRIEVAL] Building chunk-level BM25 index...")
+    tokenized_corpus = [t.lower().split() for t in bm25_chunk_texts]
     bm25 = BM25Okapi(tokenized_corpus)
 
     # 2. Load Legal-BERT
@@ -75,23 +85,33 @@ def run_retrieval_benchmark():
     model_name = "nlpaueb/legal-bert-base-uncased"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModel.from_pretrained(model_name)
+    query_embedding_cache = {}
 
     def get_query_embedding(query_text):
+        if query_text in query_embedding_cache:
+            return query_embedding_cache[query_text]
         encoded = tokenizer([query_text.lower()], padding=True, truncation=True, max_length=512, return_tensors='pt')
         with torch.no_grad():
             output = model(**encoded)
         emb = mean_pooling(output, encoded['attention_mask'])
-        return F.normalize(emb, p=2, dim=1).numpy()[0]
+        result = F.normalize(emb, p=2, dim=1).numpy()[0]
+        query_embedding_cache[query_text] = result
+        return result
 
-    def search_bm25(query_text, top_k=10):
+    def search_bm25(query_text, top_k=None):
         scores = bm25.get_scores(query_text.lower().split())
-        top_indices = np.argsort(scores)[::-1][:top_k]
-        return [corpus_ids[i] for i in top_indices]
+        case_scores = {}
+        for case_id, score in zip(bm25_chunk_ids, scores):
+            case_scores[case_id] = max(case_scores.get(case_id, float("-inf")), float(score))
+        ranked = sorted(case_scores, key=case_scores.get, reverse=True)
+        return ranked if top_k is None else ranked[:top_k]
 
-    def search_legalbert_vector(query_text, top_k=10):
+    def search_legalbert_vector(query_text, top_k=None):
         emb = get_query_embedding(query_text)
         conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
+        limit_clause = "LIMIT %s" if top_k is not None else ""
+        params = (emb.tolist(), top_k) if top_k is not None else (emb.tolist(),)
         cur.execute("""
             SELECT * FROM (
                 SELECT DISTINCT ON (c.case_id)
@@ -102,11 +122,21 @@ def run_retrieval_benchmark():
                 ORDER BY c.case_id, distance ASC
             ) AS matches
             ORDER BY distance ASC
-            LIMIT %s;
-        """, (emb.tolist(), top_k))
+        """ + limit_clause, params)
         records = [r[0] for r in cur.fetchall()]
+        cur.close()
         conn.close()
         return records
+
+    def search_bm25_legalbert_rrf(query_text, top_k=10):
+        """Fuse BM25 and Legal-BERT case rankings with equal-weight RRF."""
+        bm25_ranked = search_bm25(query_text, top_k=RRF_POOL_SIZE)
+        bert_ranked = search_legalbert_vector(query_text, top_k=RRF_POOL_SIZE)
+        fused_scores = {}
+        for ranked in (bm25_ranked, bert_ranked):
+            for rank, case_id in enumerate(ranked, start=1):
+                fused_scores[case_id] = fused_scores.get(case_id, 0.0) + 1.0 / (RRF_K + rank)
+        return sorted(fused_scores, key=fused_scores.get, reverse=True)[:top_k]
 
     def search_hybrid(query_text, top_k=10):
         emb = get_query_embedding(query_text)
@@ -169,13 +199,14 @@ def run_retrieval_benchmark():
         {"query": "temporary injunction prima facie case balance of convenience CPC Order 39", "type": "Civil CPC"},
         {"query": "arbitration award challenge Section 34 arbitral tribunal", "type": "Commercial Civil"},
 
-        # CROSS-REGIME BNS QUERIES (The Critical Novelty Test)
-        # Note: BNS 103 = Murder (old IPC 302); BNS 64 = Rape (old IPC 376); BNS 80 = Dowry Death (old IPC 304B)
+        # Cross-regime candidates with unambiguous IPC counterparts are checked
+        # as section-hit proxies only; this is not a relevance judgment.
         {"query": "murder charges under BNS Section 103 criminal appeal", "type": "Cross-Regime BNS"},
-        {"query": "sexual assault prosecution under BNS Section 64", "type": "Cross-Regime BNS"},
-        {"query": "dowry death investigation under Section 80 BNS", "type": "Cross-Regime BNS"},
-        {"query": "snatching and theft under Section 304 BNS", "type": "Cross-Regime BNS"}
+        {"query": "sexual assault prosecution under BNS Section 64", "type": "Cross-Regime BNS", "expected_ipc": None},
+        {"query": "dowry death investigation under Section 80 BNS", "type": "Cross-Regime BNS", "expected_ipc": {"304b"}},
+        {"query": "snatching under BNS Section 304", "type": "Cross-Regime BNS", "expected_ipc": None}
     ]
+    test_queries[10]["expected_ipc"] = {"302"}
 
     print("\n--- Running Retrieval Comparisons across Test Queries ---")
     results = []
@@ -187,26 +218,25 @@ def run_retrieval_benchmark():
         bm25_top = search_bm25(q, top_k=10)
         bert_top = search_legalbert_vector(q, top_k=10)
         hybrid_top = search_hybrid(q, top_k=10)
+        rrf_top = search_bm25_legalbert_rrf(q, top_k=10)
 
         # Overlap@10 between BM25 and Legal-BERT
         overlap_bert_bm25 = len(set(bm25_top) & set(bert_top))
         overlap_hybrid_bert = len(set(hybrid_top) & set(bert_top))
 
-        # Check if BNS query retrieved historical IPC precedents (via mappings in database)
-        bns_success = False
-        if "BNS" in q_type:
-            # Check if top 3 hybrid results contain relevant IPC counterparts
-            top3 = hybrid_top[:3]
-            for cid in top3:
-                meta = case_metadata.get(cid, {})
-                if "103" in q and "302" in meta.get("ipc", ""):
-                    bns_success = True
-                elif "64" in q and "376" in meta.get("ipc", ""):
-                    bns_success = True
-                elif "80" in q and "304" in meta.get("ipc", ""):
-                    bns_success = True
-                elif "304" in q and "379" in meta.get("ipc", ""):
-                    bns_success = True
+        expected_ipc = q_item.get("expected_ipc", "not_applicable")
+
+        def mapped_ipc_hit_at_3(ranked_cases):
+            if q_type != "Cross-Regime BNS":
+                return "N/A"
+            if expected_ipc is None:
+                return "AMBIGUOUS/NO DIRECT MAP"
+            return "YES" if any(
+                expected_ipc.intersection(
+                    {section.strip().lower() for section in case_metadata.get(cid, {}).get("ipc", "").split(",")}
+                )
+                for cid in ranked_cases[:3]
+            ) else "NO"
 
         results.append({
             "Query": q,
@@ -214,9 +244,16 @@ def run_retrieval_benchmark():
             "BM25 Top-1": bm25_top[0].replace("_", " ")[:35],
             "LegalBERT Top-1": bert_top[0].replace("_", " ")[:35],
             "Hybrid Top-1": hybrid_top[0].replace("_", " ")[:35],
+            "BM25+LegalBERT RRF Top-1": rrf_top[0].replace("_", " ")[:35],
             "BM25-BERT Overlap@10": overlap_bert_bm25,
             "Hybrid-BERT Overlap@10": overlap_hybrid_bert,
-            "Cross-Regime Match": "YES" if bns_success else ("N/A" if "BNS" not in q_type else "PARTIAL")
+            "RRF-BM25 Overlap@10": len(set(rrf_top) & set(bm25_top)),
+            "RRF-BERT Overlap@10": len(set(rrf_top) & set(bert_top)),
+            "RRF-CurrentHybrid Overlap@10": len(set(rrf_top) & set(hybrid_top)),
+            "BM25 Mapped IPC Section Hit@3 (proxy)": mapped_ipc_hit_at_3(bm25_top),
+            "LegalBERT Mapped IPC Section Hit@3 (proxy)": mapped_ipc_hit_at_3(bert_top),
+            "CurrentHybrid Mapped IPC Section Hit@3 (proxy)": mapped_ipc_hit_at_3(hybrid_top),
+            "RRF Mapped IPC Section Hit@3 (proxy)": mapped_ipc_hit_at_3(rrf_top)
         })
 
     res_df = pd.DataFrame(results)
@@ -224,16 +261,19 @@ def run_retrieval_benchmark():
     print("\n==========================================================================================")
     print("                    RETRIEVAL BENCHMARK & CROSS-REGIME COMPARISON                          ")
     print("==========================================================================================")
-    print(res_df[["Query", "Domain", "BM25-BERT Overlap@10", "Cross-Regime Match"]].to_string(index=False))
+    print(res_df[["Query", "Domain", "BM25-BERT Overlap@10", "RRF-BM25 Overlap@10", "RRF-BERT Overlap@10", "RRF-CurrentHybrid Overlap@10", "BM25 Mapped IPC Section Hit@3 (proxy)", "LegalBERT Mapped IPC Section Hit@3 (proxy)", "CurrentHybrid Mapped IPC Section Hit@3 (proxy)", "RRF Mapped IPC Section Hit@3 (proxy)"]].to_string(index=False))
 
     # Save CSV & LaTeX
     res_df.to_csv(OUTPUT_CSV, index=False)
     with open(OUTPUT_TEX, "w", encoding="utf-8") as f:
-        f.write(res_df.to_latex(index=False, caption="Evaluation of Precedent Retrieval Models and Cross-Regime BNS to IPC Translation", label="tab:retrieval_benchmark"))
+        f.write(res_df.to_latex(index=False, caption="Exploratory Retrieval Ranking Overlap (No Relevance Judgments)", label="tab:retrieval_benchmark"))
 
     print(f"\n[RETRIEVAL] Saved CSV -> {OUTPUT_CSV}")
     print(f"[RETRIEVAL] Saved LaTeX -> {OUTPUT_TEX}")
     print(f"[RETRIEVAL] Mean BM25 vs Legal-BERT Overlap@10: {res_df['BM25-BERT Overlap@10'].mean():.2f} / 10")
+    print(f"[RETRIEVAL] Mean RRF vs BM25 Overlap@10: {res_df['RRF-BM25 Overlap@10'].mean():.2f} / 10")
+    print(f"[RETRIEVAL] Mean RRF vs Legal-BERT Overlap@10: {res_df['RRF-BERT Overlap@10'].mean():.2f} / 10")
+    print(f"[RETRIEVAL] Mean RRF vs current hybrid Overlap@10: {res_df['RRF-CurrentHybrid Overlap@10'].mean():.2f} / 10")
     print("[SUCCESS] Retrieval Benchmark Completed Cleanly!\n")
 
 if __name__ == "__main__":

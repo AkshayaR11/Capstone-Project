@@ -8,8 +8,11 @@ import torch.nn.functional as F
 import os
 import sys
 import re
+import json
 import hashlib
 from datetime import datetime
+from pathlib import Path
+from rank_bm25 import BM25Okapi
 
 # Ensure parent directory is in sys.path for config and agent imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -50,6 +53,83 @@ PRIORITIZATION_AGENT = None
 EXPLAINABILITY_AGENT = None
 BIAS_AGENT = None
 RECONCILIATION_AGENT = None
+
+# BM25 over the same chunks used to generate the pgvector embeddings.
+BM25_RRF_K = 60
+BM25_RRF_POOL_SIZE = 100
+BM25_INDEX = None
+BM25_CHUNK_CASE_IDS = []
+
+
+def build_bm25_index():
+    """Build a case-linked BM25 index from the persisted chunk files."""
+    global BM25_INDEX, BM25_CHUNK_CASE_IDS
+
+    chunks_dir = Path(__file__).resolve().parents[1] / "data" / "chunks"
+    chunk_texts = []
+    chunk_case_ids = []
+
+    for chunk_file in sorted(chunks_dir.glob("*_chunks.json")):
+        try:
+            with chunk_file.open("r", encoding="utf-8") as f:
+                chunk_data = json.load(f)
+            case_id = chunk_data.get("case_id") or chunk_file.name[:-len("_chunks.json")]
+            for chunk in chunk_data.get("chunks", []):
+                text = chunk.get("text", "").strip()
+                if text:
+                    chunk_texts.append(text.lower().split())
+                    chunk_case_ids.append(case_id)
+        except (OSError, json.JSONDecodeError) as exc:
+            print(f"⚠️ Skipping unreadable BM25 chunk file {chunk_file.name}: {exc}")
+
+    if not chunk_texts:
+        BM25_INDEX = None
+        BM25_CHUNK_CASE_IDS = []
+        print(f"⚠️ No chunk text found for BM25 index in {chunks_dir}")
+        return
+
+    BM25_INDEX = BM25Okapi(chunk_texts)
+    BM25_CHUNK_CASE_IDS = chunk_case_ids
+    print(f"BM25 index ready: {len(chunk_texts)} chunks across {len(set(chunk_case_ids))} cases.")
+
+
+@app.on_event("startup")
+async def initialize_bm25_index():
+    build_bm25_index()
+
+
+def search_bm25_legalbert_rrf(query_text, vector_records, top_k):
+    """Fuse BM25 chunk ranks with per-case Legal-BERT vector ranks using RRF."""
+    if BM25_INDEX is None:
+        raise HTTPException(status_code=503, detail="BM25 retrieval index is unavailable")
+
+    record_by_case = {record[0]: record for record in vector_records}
+    available_case_ids = set(record_by_case)
+
+    vector_ranked = [
+        record[0]
+        for record in sorted(vector_records, key=lambda record: float(record[1]))[:BM25_RRF_POOL_SIZE]
+    ]
+
+    bm25_chunk_scores = BM25_INDEX.get_scores(query_text.lower().split())
+    bm25_case_scores = {}
+    for case_id, score in zip(BM25_CHUNK_CASE_IDS, bm25_chunk_scores):
+        if case_id in available_case_ids:
+            bm25_case_scores[case_id] = max(bm25_case_scores.get(case_id, float("-inf")), float(score))
+
+    bm25_ranked = sorted(
+        (case_id for case_id, score in bm25_case_scores.items() if score > 0),
+        key=bm25_case_scores.get,
+        reverse=True
+    )[:BM25_RRF_POOL_SIZE]
+
+    fused_scores = {}
+    for ranked in (bm25_ranked, vector_ranked):
+        for rank, case_id in enumerate(ranked, start=1):
+            fused_scores[case_id] = fused_scores.get(case_id, 0.0) + 1.0 / (BM25_RRF_K + rank)
+
+    fused_case_ids = sorted(fused_scores, key=fused_scores.get, reverse=True)[:top_k]
+    return [(fused_scores[case_id], record_by_case[case_id]) for case_id in fused_case_ids]
 
 @app.post("/summarize_upload")
 async def process_pdf_upload(file: UploadFile = File(...)):
@@ -479,9 +559,8 @@ async def search_cases(req: SearchRequest):
         conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
         
-        # Extract query keywords for lexical title & section matching
-        query_words = [w.lower() for w in req.query.replace("_", " ").split() if len(w) > 2]
-
+        # Retrieve per-case Legal-BERT vector distances. BM25 ranks the same
+        # persisted case chunks; the two ranked lists are fused below with RRF.
         if req.yearFilter:
             sql = """
                 SELECT 
@@ -517,41 +596,10 @@ async def search_cases(req: SearchRequest):
 
         records = cur.fetchall()
 
-        # Perform Hybrid Fusion Scoring (Vector Cosine Similarity + Lexical Title/Section Boost)
-        scored_records = []
-        for r in records:
-            case_id = r[0]
-            min_dist = float(r[1])
-            vec_sim = 1.0 - min_dist
-
-            case_id_lower = case_id.lower().replace("_", " ")
-            ipc_lower = (r[6] or "").lower()
-            bns_lower = (r[5] or "").lower()
-
-            title_matches = sum(1 for w in query_words if w in case_id_lower)
-            lexical_boost = 0.0
-
-            if len(query_words) > 0:
-                if title_matches == len(query_words):
-                    lexical_boost = 0.50  # Exact title match -> guaranteed top rank
-                elif title_matches > 0:
-                    lexical_boost = 0.25 * (title_matches / len(query_words))
-
-            if any(w in ipc_lower or w in bns_lower for w in query_words):
-                lexical_boost += 0.15
-
-            final_score = vec_sim + lexical_boost
-            scored_records.append((final_score, r))
-
-        # Sort descending by hybrid score & slice topK
-        scored_records.sort(key=lambda x: x[0], reverse=True)
-        top_records = scored_records[:req.topK]
+        top_records = search_bm25_legalbert_rrf(req.query, records, req.topK)
 
         results = []
         for score, r in top_records:
-            sim_score = min(score, 1.0)  # Cap match score display at 100%
-
-            
             # Generate dynamic explanation trace
             exp = PRIORITIZATION_AGENT.generate_explanation(
                 case_type=r[8] if r[8] else "Unknown",
@@ -581,7 +629,7 @@ async def search_cases(req: SearchRequest):
             
             results.append({
                 "case_id": r[0],
-                "score": round(sim_score, 4),
+                "score": round(float(score), 6),
                 "date": r[2] if r[2] else "Unknown",
                 "severity": r[3],
                 "summary": r[4] if r[4] else "AI Synopsis Pending Processing.",

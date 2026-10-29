@@ -616,7 +616,6 @@ function App() {
               {results.map((r, index) => (
                 <div key={r.case_id} className="result-card glass" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="card-header" style={{ flexWrap: 'wrap', gap: '8px' }}>
-                    <span className="similarity-badge">{((r.score || 0) * 100).toFixed(1)}% Match</span>
                     <span className={`severity-badge level-${r.severity > 7 ? 'high' : r.severity > 4 ? 'med' : 'low'}`}>
                       Severity {r.severity}
                     </span>

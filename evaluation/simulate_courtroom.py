@@ -1,14 +1,14 @@
-"""
-Courtroom Discrete-Event Simulation Framework
-Evaluates AI Prioritization Scheduling vs. Traditional Listing Policies (FIFO, LIFO, Severity-Only)
-Produces publication-grade metrics and plots for Section 5 & 6 of the Research Paper.
+"""Illustrative paired-seed courtroom scheduling simulation.
+
+Urgency labels, arrival rates, and service targets below are explicit simulation
+assumptions, not lawyer judgments, legal ground truth, or observed future filings.
+Arrivals are bootstrap copies of existing case profiles.
 """
 
 import os
 import sys
-import math
 import random
-from datetime import datetime, timedelta
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -20,12 +20,42 @@ import psycopg2
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config import DATABASE_URL
 
-OUTPUT_DIR = "evaluation/plots"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+OUTPUT_DIR = PROJECT_ROOT / "evaluation" / "plots"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+SIMULATION_DAYS = 180
+INITIAL_BACKLOG = 500
+NUM_BENCHES = 3
+CASES_PER_BENCH_DAY = 2
+DAILY_CAPACITY = NUM_BENCHES * CASES_PER_BENCH_DAY
+REPLICATIONS = 30
+SEED_BASE = 20261029
+WORKLOADS = {
+    "BELOW_CAPACITY": 2.0,
+    "NEAR_CAPACITY": 6.0,
+    "ABOVE_CAPACITY": 8.0,
+}
+POLICIES = ["FIFO", "SEVERITY_ONLY", "AGING_ONLY", "AI_PRIORITY"]
+
+# Illustrative service targets chosen for scenario analysis, not official standards.
+URGENT_WAIT_TARGET_DAYS = 5
+OLDER_CASE_AGE_DAYS = 3650
+OLDER_WAIT_TARGET_DAYS = 30
+
+
+def _number(value, default):
+    try:
+        result = float(value)
+        return result if np.isfinite(result) else default
+    except (TypeError, ValueError):
+        return default
 
 def load_case_dataset():
     """Load cases from PostgreSQL database or fallback to labeled CSV."""
     records = []
+    conn = None
+    cur = None
     try:
         conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
@@ -35,93 +65,97 @@ def load_case_dataset():
             WHERE priority_score IS NOT NULL;
         """)
         rows = cur.fetchall()
-        cur.close()
-        conn.close()
         for r in rows:
             records.append({
                 "case_id": r[0],
                 "case_type": r[1] or "civil",
-                "severity": float(r[2]) if r[2] is not None else 3.0,
-                "priority_score": float(r[3]) if r[3] is not None else 5.0,
-                "immediate_threat": int(r[4]) if r[4] is not None else 0,
-                "societal_impact": int(r[5]) if r[5] is not None else 1,
-                "case_age_days": float(r[6]) if r[6] is not None and not math.isnan(r[6]) else 365.0
+                "severity": _number(r[2], 3.0),
+                "priority_score": _number(r[3], 5.0),
+                "immediate_threat": int(_number(r[4], 0)),
+                "societal_impact": int(_number(r[5], 1)),
+                "case_age_days": _number(r[6], 365.0)
             })
         print(f"[DATA] Successfully loaded {len(records)} cases from PostgreSQL.")
     except Exception as e:
         print(f"[DATA] Warning: DB fetch failed ({e}). Falling back to CSV...")
-        csv_path = "data/prioritization/labeled_cases.csv"
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+    if not records:
+        csv_path = PROJECT_ROOT / "data" / "prioritization" / "labeled_cases.csv"
         if os.path.exists(csv_path):
             df = pd.read_csv(csv_path)
             for _, r in df.iterrows():
                 records.append({
                     "case_id": str(r.get("case_id", f"case_{_}")),
                     "case_type": str(r.get("case_type", "civil")),
-                    "severity": float(r.get("max_severity_score", 3.0)),
-                    "priority_score": float(r.get("priority_score", 5.0)),
-                    "immediate_threat": int(r.get("immediate_threat_flag", 0)),
-                    "societal_impact": int(r.get("societal_impact_score", 1)),
-                    "case_age_days": float(r.get("case_age_days", 365.0))
+                    "severity": _number(r.get("max_severity_score"), 3.0),
+                    "priority_score": _number(r.get("priority_score"), 5.0),
+                    "immediate_threat": int(_number(r.get("immediate_threat_flag"), 0)),
+                    "societal_impact": int(_number(r.get("societal_impact_score"), 1)),
+                    "case_age_days": _number(r.get("case_age_days"), 365.0)
                 })
             print(f"[DATA] Loaded {len(records)} cases from CSV.")
 
     return records
 
 class CourtroomSimulation:
-    def __init__(self, cases: list, num_benches=3, cases_per_bench_day=2, simulation_days=180, arrival_rate=2.0):
-        """
-        Discrete-Event Simulation Parameters:
-        - num_benches: 3 Virtual Judges / Benches
-        - cases_per_bench_day: 2 cases resolved per bench per day (total throughput: 6 cases/day)
-        - simulation_days: 180 working court days
-        - arrival_rate: average 2 new case filings per day (Poisson arrival)
-        """
+    def __init__(self, cases, num_benches=NUM_BENCHES,
+                 cases_per_bench_day=CASES_PER_BENCH_DAY,
+                 simulation_days=SIMULATION_DAYS, arrival_rate=2.0,
+                 initial_backlog=INITIAL_BACKLOG):
         self.raw_cases = cases
         self.num_benches = num_benches
         self.daily_capacity = num_benches * cases_per_bench_day
         self.simulation_days = simulation_days
         self.arrival_rate = arrival_rate
+        self.initial_backlog = initial_backlog
 
     def _prepare_docket(self, seed=42):
-        """Prepares initial backlog + timestamped arrivals."""
-        np.random.seed(seed)
-        random.seed(seed)
-        
-        # Initial backlog of 500 cases
-        initial_pool = random.sample(self.raw_cases, min(500, len(self.raw_cases)))
+        """Create the same bootstrap docket for every policy at this seed."""
+        np_rng = np.random.default_rng(seed)
+        py_rng = random.Random(seed)
+        initial_pool = py_rng.sample(self.raw_cases, min(self.initial_backlog, len(self.raw_cases)))
+        initial_ids = {c["case_id"] for c in initial_pool}
         docket = []
-        for idx, c in enumerate(initial_pool):
+        for c in initial_pool:
             case = dict(c)
             case["filing_day"] = 0
             case["resolved_day"] = None
             case["wait_time"] = None
+            case["is_bootstrap_arrival"] = False
+            case["source_case_id"] = c["case_id"]
+            case["scenario_urgent"] = int(case["immediate_threat"] == 1 or case["severity"] >= 9)
             docket.append(case)
 
-        # Incoming new filings over 180 days (Poisson arrivals)
-        remaining_pool = [c for c in self.raw_cases if c not in initial_pool]
+        # Synthetic filings copy feature profiles from records not in the initial backlog.
+        remaining_pool = [c for c in self.raw_cases if c["case_id"] not in initial_ids]
         if not remaining_pool:
             remaining_pool = self.raw_cases
 
         for day in range(1, self.simulation_days + 1):
-            num_arrivals = np.random.poisson(self.arrival_rate)
+            num_arrivals = int(np_rng.poisson(self.arrival_rate))
             for _ in range(num_arrivals):
-                template = random.choice(remaining_pool)
+                template = py_rng.choice(remaining_pool)
                 case = dict(template)
-                case["case_id"] = f"new_{day}_{_}_{case['case_id']}"
+                case["source_case_id"] = template["case_id"]
+                case["case_id"] = f"synthetic_{seed}_{day}_{_}_{template['case_id']}"
                 case["filing_day"] = day
                 case["resolved_day"] = None
                 case["wait_time"] = None
+                case["is_bootstrap_arrival"] = True
+                case["case_age_days"] = 0.0
+                case["scenario_urgent"] = int(case["immediate_threat"] == 1 or case["severity"] >= 9)
                 docket.append(case)
 
         return docket
 
     def run_policy(self, policy_name: str, seed=42):
         """
-        Runs simulation under a specified scheduling policy:
-        - 'FIFO': First In First Out (standard filing queue)
-        - 'LIFO': Last In First Out (recency bias)
-        - 'SEVERITY_ONLY': Greedy statutory severity
-        - 'AI_PRIORITY': Multi-Agent Priority Scoring with dynamic aging
+        Run one policy against the deterministic docket generated by `seed`.
         """
         docket = self._prepare_docket(seed=seed)
         unresolved = list(docket)
@@ -136,7 +170,7 @@ class CourtroomSimulation:
 
             # Track current metrics
             total_sev = sum(c["severity"] for c in available)
-            critical_cnt = sum(1 for c in available if c["priority_score"] >= 8.0)
+            critical_cnt = sum(1 for c in available if c["scenario_urgent"])
             daily_backlog_severity.append(total_sev)
             daily_critical_pending.append(critical_cnt)
 
@@ -145,19 +179,34 @@ class CourtroomSimulation:
 
             # Sort available queue by policy
             if policy_name == "FIFO":
-                available.sort(key=lambda x: (x["filing_day"], -x["severity"]))
-            elif policy_name == "LIFO":
-                available.sort(key=lambda x: (-x["filing_day"], -x["severity"]))
+                available.sort(key=lambda x: x["filing_day"])
             elif policy_name == "SEVERITY_ONLY":
                 available.sort(key=lambda x: (-x["severity"], x["filing_day"]))
+            elif policy_name == "AGING_ONLY":
+                available.sort(
+                    key=lambda x: (-(x["case_age_days"] + current_day - x["filing_day"]), x["filing_day"])
+                )
             elif policy_name == "AI_PRIORITY":
-                # Dynamic aging boost: cases that have waited longer gain slight priority increments
                 def dynamic_score(c):
                     waiting_days = current_day - c["filing_day"]
-                    aging_boost = min(waiting_days / 100.0, 1.5)  # Prevents starvation
-                    return c["priority_score"] + aging_boost
+                    age_days = max(0.0, c["case_age_days"] + waiting_days)
+                    severity_norm = c["severity"] / 10.0
+                    if c["case_type"].lower() == "civil":
+                        severity_norm = min(severity_norm, 0.4)
+                    impact_norm = c["societal_impact"] / 5.0
+                    recency = max(0.0, 1.0 - age_days / 3650.0)
+                    composite_score = (
+                        severity_norm * 3.5
+                        + float(c["immediate_threat"]) * 3.0
+                        + impact_norm * 2.5
+                        + recency
+                    )
+                    aging_boost = min(waiting_days / 100.0, 1.5)
+                    return composite_score + aging_boost
 
                 available.sort(key=lambda x: -dynamic_score(x))
+            else:
+                raise ValueError(f"Unknown scheduling policy: {policy_name}")
 
             # Resolve top cases up to daily court capacity
             to_resolve = available[:self.daily_capacity]
@@ -167,28 +216,101 @@ class CourtroomSimulation:
                 resolved.append(c)
                 unresolved.remove(c)
 
-        # Compute summary metrics for resolved cases
+        # Compute metrics over resolved and still-pending docket items.
         resolved_df = pd.DataFrame(resolved)
-        critical_cases = resolved_df[resolved_df["priority_score"] >= 8.0]
-        civil_cases = resolved_df[resolved_df["case_type"] == "civil"]
+        unresolved_df = pd.DataFrame(unresolved)
+        if not unresolved_df.empty:
+            unresolved_df["wait_at_horizon"] = [
+                max(0, self.simulation_days - c["filing_day"]) for c in unresolved
+            ]
 
-        crit_wait_mean = critical_cases["wait_time"].mean() if len(critical_cases) > 0 else 0.0
-        crit_wait_median = critical_cases["wait_time"].median() if len(critical_cases) > 0 else 0.0
-        civil_wait_mean = civil_cases["wait_time"].mean() if len(civil_cases) > 0 else 0.0
-        overall_wait_mean = resolved_df["wait_time"].mean() if len(resolved_df) > 0 else 0.0
-        total_resolved = len(resolved)
+        def waits(frame, column="wait_time"):
+            if frame.empty:
+                return np.array([], dtype=float)
+            return pd.to_numeric(frame[column], errors="coerce").dropna().to_numpy(dtype=float)
+
+        def mask_for(frame, predicate):
+            return frame.apply(predicate, axis=1) if not frame.empty else pd.Series([], dtype=bool)
+
+        urgent_resolved = resolved_df[mask_for(resolved_df, lambda c: bool(c["scenario_urgent"]))]
+        urgent_unresolved = unresolved_df[mask_for(unresolved_df, lambda c: bool(c["scenario_urgent"]))]
+        civil_cases = resolved_df[resolved_df["case_type"].str.lower() == "civil"] if not resolved_df.empty else resolved_df
+        criminal_cases = resolved_df[resolved_df["case_type"].str.lower() == "criminal"] if not resolved_df.empty else resolved_df
+        older_resolved = resolved_df[resolved_df["case_age_days"] >= OLDER_CASE_AGE_DAYS] if not resolved_df.empty else resolved_df
+        older_unresolved = unresolved_df[unresolved_df["case_age_days"] >= OLDER_CASE_AGE_DAYS] if not unresolved_df.empty else unresolved_df
+
+        urgent_waits = waits(urgent_resolved)
+        overall_waits = waits(resolved_df)
+        civil_waits = waits(civil_cases)
+        criminal_waits = waits(criminal_cases)
+        older_waits = waits(older_resolved)
+        urgent_unresolved_waits = waits(urgent_unresolved, "wait_at_horizon")
+        older_unresolved_waits = waits(older_unresolved, "wait_at_horizon")
+
+        urgent_misses = int(np.sum(urgent_waits > URGENT_WAIT_TARGET_DAYS) + np.sum(urgent_unresolved_waits > URGENT_WAIT_TARGET_DAYS))
+        older_misses = int(np.sum(older_waits > OLDER_WAIT_TARGET_DAYS) + np.sum(older_unresolved_waits > OLDER_WAIT_TARGET_DAYS))
+
+        def mean_or_nan(values):
+            return float(np.mean(values)) if len(values) else np.nan
+
+        def quantile_or_nan(values, q):
+            return float(np.quantile(values, q)) if len(values) else np.nan
+
+        urgent_total = len(urgent_resolved) + len(urgent_unresolved)
+        older_total = len(older_resolved) + len(older_unresolved)
 
         return {
             "policy": policy_name,
-            "total_resolved": total_resolved,
-            "crit_wait_mean": crit_wait_mean,
-            "crit_wait_median": crit_wait_median,
-            "civil_wait_mean": civil_wait_mean,
-            "overall_wait_mean": overall_wait_mean,
+            "total_cases": len(docket),
+            "total_resolved": len(resolved),
+            "total_unresolved": len(unresolved),
+            "urgent_total": urgent_total,
+            "urgent_resolved": len(urgent_resolved),
+            "urgent_unresolved": len(urgent_unresolved),
+            "urgent_wait_mean": mean_or_nan(urgent_waits),
+            "urgent_wait_median": quantile_or_nan(urgent_waits, .50),
+            "urgent_wait_p90": quantile_or_nan(urgent_waits, .90),
+            "urgent_wait_p95": quantile_or_nan(urgent_waits, .95),
+            "urgent_target_miss_count": urgent_misses,
+            "urgent_target_miss_pct": 100 * urgent_misses / urgent_total if urgent_total else np.nan,
+            "overall_wait_mean": mean_or_nan(overall_waits),
+            "civil_wait_mean": mean_or_nan(civil_waits),
+            "criminal_wait_mean": mean_or_nan(criminal_waits),
+            "older_total": older_total,
+            "older_resolved": len(older_resolved),
+            "older_unresolved": len(older_unresolved),
+            "older_wait_mean": mean_or_nan(older_waits),
+            "older_wait_p90": quantile_or_nan(older_waits, .90),
+            "older_target_miss_count": older_misses,
+            "older_target_miss_pct": 100 * older_misses / older_total if older_total else np.nan,
             "daily_backlog_severity": daily_backlog_severity,
-            "daily_critical_pending": daily_critical_pending,
-            "resolved_df": resolved_df
+            "daily_urgent_pending": daily_critical_pending,
+            "resolved_df": resolved_df,
+            "unresolved_df": unresolved_df,
         }
+
+METRICS = [
+    "total_cases", "total_resolved", "total_unresolved",
+    "urgent_total", "urgent_resolved", "urgent_unresolved",
+    "urgent_wait_mean", "urgent_wait_median", "urgent_wait_p90", "urgent_wait_p95",
+    "urgent_target_miss_count", "urgent_target_miss_pct",
+    "overall_wait_mean", "civil_wait_mean", "criminal_wait_mean",
+    "older_total", "older_resolved", "older_unresolved", "older_wait_mean",
+    "older_wait_p90", "older_target_miss_count", "older_target_miss_pct",
+]
+
+
+def mean_ci95(values):
+    vals = np.asarray(values, dtype=float)
+    vals = vals[np.isfinite(vals)]
+    if not len(vals):
+        return np.nan, np.nan, np.nan
+    mean = float(np.mean(vals))
+    if len(vals) < 2:
+        return mean, mean, mean
+    half_width = 1.96 * float(np.std(vals, ddof=1)) / np.sqrt(len(vals))
+    return mean, mean - half_width, mean + half_width
+
 
 def run_experiment_and_plot():
     cases = load_case_dataset()
@@ -196,103 +318,198 @@ def run_experiment_and_plot():
         print("[ERROR] No cases found to simulate.")
         return
 
-    sim = CourtroomSimulation(cases, num_benches=3, cases_per_bench_day=2, simulation_days=180, arrival_rate=2.0)
-    
-    policies = ["FIFO", "LIFO", "SEVERITY_ONLY", "AI_PRIORITY"]
-    results = {}
+    raw_rows = []
+    daily_history = {}
+    print(
+        f"\n--- Paired-seed simulation: {SIMULATION_DAYS} days, "
+        f"{REPLICATIONS} replications, capacity {DAILY_CAPACITY}/day ---"
+    )
+    print("[ASSUMPTION] Urgent = immediate_threat_flag == 1 OR severity >= 9; this is not legal ground truth.")
+    print("[ASSUMPTION] Poisson arrivals bootstrap existing profiles; synthetic age resets to 0 and composite priority is recomputed.")
 
-    print("\n--- Running Courtroom Scheduling Simulations (180 Days) ---")
-    for p in policies:
-        print(f"Simulating policy: {p}...")
-        results[p] = sim.run_policy(p)
+    for workload, arrival_rate in WORKLOADS.items():
+        sim = CourtroomSimulation(cases, arrival_rate=arrival_rate)
+        for replication in range(REPLICATIONS):
+            seed = SEED_BASE + replication
+            for policy in POLICIES:
+                result = sim.run_policy(policy, seed=seed)
+                row = {
+                    "workload": workload,
+                    "arrival_rate_per_day": arrival_rate,
+                    "capacity_per_day": DAILY_CAPACITY,
+                    "policy": policy,
+                    "seed": seed,
+                    "replication": replication + 1,
+                    "arrival_model": "Poisson bootstrap profiles; arrival age reset to 0 and composite priority recomputed",
+                    "urgency_assumption": "immediate_threat_flag == 1 OR severity >= 9",
+                    "urgent_wait_target_days": URGENT_WAIT_TARGET_DAYS,
+                    "older_case_age_threshold_days": OLDER_CASE_AGE_DAYS,
+                    "older_wait_target_days": OLDER_WAIT_TARGET_DAYS,
+                }
+                row.update({metric: result[metric] for metric in METRICS})
+                raw_rows.append(row)
+                daily_history.setdefault((workload, policy), {}).setdefault("backlog", []).append(
+                    result["daily_backlog_severity"]
+                )
+                daily_history[(workload, policy)].setdefault("urgent_pending", []).append(
+                    result["daily_urgent_pending"]
+                )
+        print(f"[DONE] {workload}: lambda={arrival_rate:g}, policies={len(POLICIES)}, paired seeds={REPLICATIONS}")
 
-    # 1. Summary Comparison Table
+    raw_df = pd.DataFrame(raw_rows)
+    raw_path = PROJECT_ROOT / "evaluation" / "simulation_replications.csv"
+    raw_df.to_csv(raw_path, index=False)
+
+    summary_rows = []
+    for (workload, arrival_rate, policy), group in raw_df.groupby(
+        ["workload", "arrival_rate_per_day", "policy"], sort=False
+    ):
+        row = {
+            "workload": workload,
+            "arrival_rate_per_day": arrival_rate,
+            "capacity_per_day": DAILY_CAPACITY,
+            "policy": policy,
+            "replications": len(group),
+        }
+        for metric in METRICS:
+            mean, low, high = mean_ci95(group[metric])
+            row[f"{metric}_mean"] = mean
+            row[f"{metric}_ci95_low"] = low
+            row[f"{metric}_ci95_high"] = high
+        summary_rows.append(row)
+    summary_df = pd.DataFrame(summary_rows)
+
+    # Paired differences use the exact same seed/docket within each workload.
+    paired_rows = []
+    paired_metrics = [
+        "urgent_wait_mean", "urgent_wait_p90", "urgent_unresolved",
+        "urgent_target_miss_count", "overall_wait_mean", "civil_wait_mean",
+        "criminal_wait_mean", "older_wait_p90", "older_target_miss_count",
+    ]
+    for workload in WORKLOADS:
+        cohort = raw_df[raw_df["workload"] == workload]
+        fifo = cohort[cohort["policy"] == "FIFO"].set_index("seed")
+        for policy in POLICIES:
+            if policy == "FIFO":
+                continue
+            candidate = cohort[cohort["policy"] == policy].set_index("seed")
+            row = {"workload": workload, "policy_vs_fifo": policy, "paired_replications": len(fifo)}
+            for metric in paired_metrics:
+                delta = candidate[metric] - fifo[metric]
+                mean, low, high = mean_ci95(delta)
+                row[f"{metric}_difference_mean"] = mean
+                row[f"{metric}_difference_ci95_low"] = low
+                row[f"{metric}_difference_ci95_high"] = high
+            paired_rows.append(row)
+    paired_df = pd.DataFrame(paired_rows)
+    paired_path = PROJECT_ROOT / "evaluation" / "simulation_paired_vs_fifo.csv"
+    paired_df.to_csv(paired_path, index=False)
+
+    # Compact table: group means with approximate 95% CIs, with trade-offs visible.
+    def ci_text(row, metric, digits=1):
+        mean = row[f"{metric}_mean"]
+        low = row[f"{metric}_ci95_low"]
+        high = row[f"{metric}_ci95_high"]
+        return "NA" if not np.isfinite(mean) else f"{mean:.{digits}f} [{low:.{digits}f}, {high:.{digits}f}]"
+
     table_rows = []
-    for p in policies:
-        res = results[p]
+    for _, row in summary_df.iterrows():
         table_rows.append({
-            "Policy": p,
-            "Cases Resolved": res["total_resolved"],
-            "Critical Turnaround (Mean Days)": round(res["crit_wait_mean"], 1),
-            "Critical Turnaround (Median Days)": round(res["crit_wait_median"], 1),
-            "Civil Wait Time (Mean Days)": round(res["civil_wait_mean"], 1),
-            "Overall Wait (Mean Days)": round(res["overall_wait_mean"], 1)
+            "Workload (arrivals/day)": f"{row['workload']} ({row['arrival_rate_per_day']:g})",
+            "Policy": row["policy"],
+            "Resolved (mean)": ci_text(row, "total_resolved"),
+            "Urgent wait p90, days [95% CI]": ci_text(row, "urgent_wait_p90"),
+            "Urgent unresolved (mean)": ci_text(row, "urgent_unresolved"),
+            "Urgent target misses (mean)": ci_text(row, "urgent_target_miss_count"),
+            "Overall wait, days [95% CI]": ci_text(row, "overall_wait_mean"),
+            "Civil wait, days [95% CI]": ci_text(row, "civil_wait_mean"),
+            "Criminal wait, days [95% CI]": ci_text(row, "criminal_wait_mean"),
+            "Older-case p90, days [95% CI]": ci_text(row, "older_wait_p90"),
+            "Older target misses (mean)": ci_text(row, "older_target_miss_count"),
         })
+    table_df = pd.DataFrame(table_rows)
 
-    summary_df = pd.DataFrame(table_rows)
-    print("\n==========================================================================")
-    print("           COURT DOCKET SCHEDULING SIMULATION RESULTS (180 DAYS)           ")
-    print("==========================================================================")
-    print(summary_df.to_string(index=False))
+    summary_path = PROJECT_ROOT / "evaluation" / "simulation_results.csv"
+    tex_path = PROJECT_ROOT / "evaluation" / "simulation_results_table.tex"
+    summary_df.to_csv(summary_path, index=False)
+    table_df.to_latex(
+        tex_path,
+        index=False,
+        caption=("Illustrative paired-seed courtroom simulation. Urgency and service targets are scenario assumptions; "
+                 "arrivals are bootstrap samples of existing case profiles. Cells report means and approximate 95\\% CIs."),
+        label="tab:simulation_results",
+        escape=True,
+    )
 
-    # Save CSV & LaTeX table
-    csv_out = "evaluation/simulation_results.csv"
-    tex_out = "evaluation/simulation_results_table.tex"
-    summary_df.to_csv(csv_out, index=False)
-    with open(tex_out, "w") as f:
-        f.write(summary_df.to_latex(index=False, caption="Comparative Courtroom Scheduling Performance across 180 Simulated Court Days", label="tab:simulation_results"))
-    print(f"\nSaved CSV -> {csv_out}")
-    print(f"Saved LaTeX -> {tex_out}")
+    print("\n=== Mean outcomes by workload and policy (approx. 95% CI) ===")
+    print(table_df.to_string(index=False))
+    print(f"\nSaved replication rows: {raw_path}")
+    print(f"Saved summary: {summary_path}")
+    print(f"Saved paired differences vs FIFO: {paired_path}")
+    print(f"Saved LaTeX table: {tex_path}")
 
-    # 2. Plot 1: Cumulative Backlog Severity Decay Curve
-    plt.figure(figsize=(9, 5.5))
-    days = list(range(len(results["FIFO"]["daily_backlog_severity"])))
-    
-    colors = {"FIFO": "#64748b", "LIFO": "#f59e0b", "SEVERITY_ONLY": "#8b5cf6", "AI_PRIORITY": "#10b981"}
-    styles = {"FIFO": "--", "LIFO": ":", "SEVERITY_ONLY": "-.", "AI_PRIORITY": "-"}
-    widths = {"FIFO": 1.8, "LIFO": 1.8, "SEVERITY_ONLY": 2.0, "AI_PRIORITY": 2.8}
+    # Plot urgent tail waits by workload with between-seed confidence intervals.
+    colors = {"FIFO": "#64748b", "SEVERITY_ONLY": "#8b5cf6", "AGING_ONLY": "#f59e0b", "AI_PRIORITY": "#10b981"}
+    x = np.arange(len(WORKLOADS))
+    width = 0.19
+    fig, ax = plt.subplots(figsize=(11, 6))
+    for idx, policy in enumerate(POLICIES):
+        rows = summary_df[summary_df["policy"] == policy].set_index("workload").loc[list(WORKLOADS)]
+        means = rows["urgent_wait_p90_mean"].to_numpy(dtype=float)
+        lows = rows["urgent_wait_p90_ci95_low"].to_numpy(dtype=float)
+        highs = rows["urgent_wait_p90_ci95_high"].to_numpy(dtype=float)
+        errors = np.vstack([np.maximum(0, means - lows), np.maximum(0, highs - means)])
+        ax.bar(x + (idx - 1.5) * width, means, width, yerr=errors, capsize=3,
+               label=policy, color=colors[policy], edgecolor="#1e293b", linewidth=.5)
+    ax.set_xticks(x, [f"{name.replace('_', ' ').title()}\nλ={rate:g}/day" for name, rate in WORKLOADS.items()])
+    ax.set_ylabel("Urgent-case 90th percentile wait (days)")
+    ax.set_title("Urgent tail wait across workload scenarios (approx. 95% CI)")
+    ax.grid(axis="y", linestyle="--", alpha=.4)
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(OUTPUT_DIR / "simulation_critical_turnaround.png", dpi=250)
+    plt.close(fig)
 
-    for p in policies:
-        plt.plot(days, results[p]["daily_backlog_severity"], label=p, color=colors[p], linestyle=styles[p], linewidth=widths[p])
+    # Pending urgent load, including cases not resolved by the horizon.
+    fig, ax = plt.subplots(figsize=(11, 6))
+    for idx, policy in enumerate(POLICIES):
+        rows = summary_df[summary_df["policy"] == policy].set_index("workload").loc[list(WORKLOADS)]
+        means = rows["urgent_unresolved_mean"].to_numpy(dtype=float)
+        lows = rows["urgent_unresolved_ci95_low"].to_numpy(dtype=float)
+        highs = rows["urgent_unresolved_ci95_high"].to_numpy(dtype=float)
+        errors = np.vstack([np.maximum(0, means - lows), np.maximum(0, highs - means)])
+        ax.bar(x + (idx - 1.5) * width, means, width, yerr=errors, capsize=3,
+               label=policy, color=colors[policy], edgecolor="#1e293b", linewidth=.5)
+    ax.set_xticks(x, [f"{name.replace('_', ' ').title()}\nλ={rate:g}/day" for name, rate in WORKLOADS.items()])
+    ax.set_ylabel("Urgent cases unresolved at horizon (mean)")
+    ax.set_title("Unresolved urgent cases across workload scenarios (approx. 95% CI)")
+    ax.grid(axis="y", linestyle="--", alpha=.4)
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(OUTPUT_DIR / "simulation_critical_pending.png", dpi=250)
+    plt.close(fig)
 
-    plt.title("Cumulative Docket Backlog Severity Decay Over 180 Court Days", fontsize=13, fontweight='bold', pad=12)
-    plt.xlabel("Simulated Court Working Days", fontsize=11)
-    plt.ylabel("Total Outstanding Backlog Severity Index", fontsize=11)
-    plt.grid(True, linestyle="--", alpha=0.5)
-    plt.legend(frameon=True, fontsize=10)
-    plt.tight_layout()
-    decay_path = os.path.join(OUTPUT_DIR, "simulation_backlog_severity_decay.png")
-    plt.savefig(decay_path, dpi=300)
-    plt.close()
-    print(f"Plot Saved -> {decay_path}")
+    # Daily severity backlog bands for the near-capacity scenario.
+    workload = "NEAR_CAPACITY"
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    days = np.arange(SIMULATION_DAYS)
+    for policy in POLICIES:
+        traces = np.asarray(daily_history[(workload, policy)]["backlog"], dtype=float)
+        mean = traces.mean(axis=0)
+        half = 1.96 * traces.std(axis=0, ddof=1) / np.sqrt(traces.shape[0])
+        ax.plot(days, mean, label=policy, color=colors[policy], linewidth=2)
+        ax.fill_between(days, mean - half, mean + half, color=colors[policy], alpha=.12)
+    ax.set_title("Outstanding severity index: near-capacity workload")
+    ax.set_xlabel("Simulation day")
+    ax.set_ylabel("Unresolved docket severity index")
+    ax.grid(True, linestyle="--", alpha=.4)
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(OUTPUT_DIR / "simulation_backlog_severity_decay.png", dpi=250)
+    plt.close(fig)
 
-    # 3. Plot 2: Critical Case Turnaround Time Comparison (Bar Chart)
-    plt.figure(figsize=(7.5, 4.8))
-    policy_labels = ["FIFO (Status Quo)", "LIFO (Recency Bias)", "Severity Greedy", "AI Priority (Ours)"]
-    crit_means = [results[p]["crit_wait_mean"] for p in policies]
-    bar_colors = ["#94a3b8", "#fcd34d", "#c4b5fd", "#34d399"]
-
-    bars = plt.bar(policy_labels, crit_means, color=bar_colors, edgecolor="#1e293b", linewidth=1.2, width=0.55)
-    for bar in bars:
-        yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2.0, yval + 1.5, f"{yval:.1f}d", ha='center', va='bottom', fontsize=10, fontweight='bold')
-
-    plt.title("Mean Turnaround Time to Resolve 'Critical' Cases (Days)", fontsize=13, fontweight='bold', pad=12)
-    plt.ylabel("Average Wait Time (Court Days)", fontsize=11)
-    plt.ylim(0, max(crit_means) * 1.22)
-    plt.grid(axis='y', linestyle='--', alpha=0.5)
-    plt.tight_layout()
-    turnaround_path = os.path.join(OUTPUT_DIR, "simulation_critical_turnaround.png")
-    plt.savefig(turnaround_path, dpi=300)
-    plt.close()
-    print(f"Plot Saved -> {turnaround_path}")
-
-    # 4. Plot 3: Daily Critical Cases Pending in Queue
-    plt.figure(figsize=(9, 5.0))
-    for p in policies:
-        plt.plot(days, results[p]["daily_critical_pending"], label=p, color=colors[p], linestyle=styles[p], linewidth=widths[p])
-
-    plt.title("Unresolved 'Critical' Urgent Cases Remaining in Docket", fontsize=13, fontweight='bold', pad=12)
-    plt.xlabel("Simulated Court Working Days", fontsize=11)
-    plt.ylabel("Number of Critical Cases Pending", fontsize=11)
-    plt.grid(True, linestyle="--", alpha=0.5)
-    plt.legend(frameon=True, fontsize=10)
-    plt.tight_layout()
-    crit_pending_path = os.path.join(OUTPUT_DIR, "simulation_critical_pending.png")
-    plt.savefig(crit_pending_path, dpi=300)
-    plt.close()
-    print(f"Plot Saved -> {crit_pending_path}")
-    print("\n[SUCCESS] Courtroom Simulation Experiment Completed Successfully!\n")
+    print(f"\nPlots saved under {OUTPUT_DIR}")
+    print("[DONE] Simulation outputs are illustrative and use synthetic bootstrap arrivals/urgency assumptions.\n")
 
 if __name__ == "__main__":
     run_experiment_and_plot()
