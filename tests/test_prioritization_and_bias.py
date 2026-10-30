@@ -4,7 +4,7 @@ import os
 
 # Ensure project root is in sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+from unittest.mock import patch
 from agents.prioritization.prioritizer import PrioritizationAgent
 from agents.explainability.explainability_agent import ExplainabilityAgent
 from agents.fairness.bias_agent import BiasAgent
@@ -117,6 +117,21 @@ class TestJudicialDecisionSupportSystem(unittest.TestCase):
         self.assertIn("recommendation", res)
         self.assertTrue(res["conflict_detected"])  # Should flag liberty exception!
         self.assertIn("memo", res)
+    def test_model_feature_order(self):
+    # would have caught the 6-vs-9 feature mismatch
+        expected = ['case_type','num_ipc_sections','num_cpc_sections','num_precedents',
+                    'total_words','case_age_days','max_severity_score',
+                    'immediate_threat_flag','societal_impact_score']
+        self.assertEqual(self.prioritizer.model.feature_names_in_.tolist(), expected)
+
+    def test_ml_priority_bounded(self):
+        s = self.prioritizer.predict_ml_priority("criminal", 3, 0, 5, 2000, None, 10, 1, 5)
+        self.assertTrue(0.0 <= s <= 10.0)
+
+    def test_ipc_regex(self):
+        from scripts.extract_features import extract_ipc_sections
+        self.assertIn("302", extract_ipc_sections("convicted u/s 302/34 IPC"))
+
 
 if __name__ == "__main__":
     unittest.main()

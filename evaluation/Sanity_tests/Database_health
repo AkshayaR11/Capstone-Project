@@ -1,0 +1,89 @@
+-- 1a. Basic counts
+SELECT 
+  COUNT(*) as total_cases,
+  COUNT(CASE WHEN case_summary IS NOT NULL THEN 1 END) as has_summary,
+  COUNT(CASE WHEN bias_score IS NOT NULL THEN 1 END) as has_bias_score,
+  COUNT(CASE WHEN bias_flags IS NOT NULL THEN 1 END) as has_bias_flags,
+  COUNT(CASE WHEN ipc_sections != '' AND ipc_sections IS NOT NULL THEN 1 END) as has_ipc,
+  COUNT(CASE WHEN cpc_sections != '' AND cpc_sections IS NOT NULL THEN 1 END) as has_cpc,
+  COUNT(CASE WHEN priority_score IS NOT NULL THEN 1 END) as has_priority,
+  COUNT(CASE WHEN case_type = 'criminal' THEN 1 END) as criminal,
+  COUNT(CASE WHEN case_type = 'civil' THEN 1 END) as civil
+FROM cases;
+
+-- 1b. Priority distribution
+SELECT 
+  CASE 
+    WHEN priority_score >= 8 THEN 'Critical'
+    WHEN priority_score >= 6 THEN 'High'
+    WHEN priority_score >= 4 THEN 'Medium'
+    WHEN priority_score >= 2 THEN 'Low'
+    ELSE 'Very Low'
+  END as category,
+  COUNT(*) as count,
+  ROUND(AVG(priority_score)::numeric, 2) as avg_score
+FROM cases
+GROUP BY category
+ORDER BY avg_score DESC;
+
+-- 1c. Severity distribution for criminal cases
+SELECT max_severity_score, COUNT(*) as count
+FROM cases 
+WHERE case_type = 'criminal' 
+GROUP BY max_severity_score 
+ORDER BY max_severity_score DESC;
+
+-- 1d. Immediate threat breakdown
+SELECT 
+  immediate_threat_flag,
+  case_type,
+  ROUND(AVG(priority_score)::numeric, 2) as avg_priority,
+  COUNT(*) as n
+FROM cases
+GROUP BY immediate_threat_flag, case_type
+ORDER BY immediate_threat_flag DESC, case_type;
+
+-- 1e. Societal impact collapsed (clean version)
+SELECT 
+  CASE WHEN societal_impact_score >= 3 THEN 'High Impact (3-5)'
+       ELSE 'Standard (1-2)' END as impact_group,
+  ROUND(AVG(priority_score)::numeric, 2) as avg_priority,
+  COUNT(*) as n
+FROM cases
+GROUP BY impact_group
+ORDER BY avg_priority DESC;
+
+-- 1f. Severity vs priority (for Spearman)
+SELECT 
+  max_severity_score,
+  ROUND(AVG(priority_score)::numeric, 2) as mean_priority,
+  COUNT(*) as n
+FROM cases
+WHERE case_type = 'criminal'
+GROUP BY max_severity_score
+ORDER BY max_severity_score DESC;
+
+-- 1g. Chunk count sanity
+SELECT 
+  COUNT(*) as total_chunks,
+  COUNT(DISTINCT case_id) as cases_with_chunks,
+  ROUND(AVG(chunk_count)::numeric, 1) as avg_chunks_per_case,
+  MAX(chunk_count) as max_chunks,
+  MIN(chunk_count) as min_chunks
+FROM (
+  SELECT case_id, COUNT(*) as chunk_count 
+  FROM case_chunks 
+  GROUP BY case_id
+) sub;
+
+-- 1h. Top 5 cases by chunk count (hubness check)
+SELECT case_id, COUNT(*) as chunk_count
+FROM case_chunks
+GROUP BY case_id
+ORDER BY chunk_count DESC
+LIMIT 5;
+
+-- 1i. Legal regime
+SELECT legal_regime, COUNT(*) 
+FROM cases 
+GROUP BY legal_regime;

@@ -2,6 +2,8 @@ import os
 import sys
 import json
 import time
+import math
+import re
 from typing import TypedDict, List, Dict, Optional, Any
 from dotenv import load_dotenv
 
@@ -27,7 +29,7 @@ else:
 # 1. State Definition
 # ==========================================
 class CaseDossierState(TypedDict):
-    # Core case inputs from previous 4 modules
+    # Dossier inputs; precedent retrieval is displayed but not relevance-audited.
     case_id: str
     case_type: str
     legal_regime: str
@@ -44,6 +46,8 @@ class CaseDossierState(TypedDict):
     # Internal agent deliberation flags
     conflict_detected: bool
     conflict_reasons: List[str]
+    demographic_context_flagged: bool
+    liberty_exception_detected: bool
     deliberation_notes: str
     
     # Output reconciliation verdict
@@ -57,55 +61,94 @@ class CaseDossierState(TypedDict):
 # 2. Node Implementations
 # ==========================================
 
+LIBERTY_PRIORITY_FLOOR = 6.0
+SCORE_ADJUSTMENT_LIMIT = 1.0
+LIBERTY_SCORE_ADJUSTMENT_LIMIT = 2.0
+
+
+def _bounded_score(value: Any, fallback: float = 5.0) -> float:
+    try:
+        score = float(value)
+        if not math.isfinite(score):
+            return fallback
+        return round(min(10.0, max(0.0, score)), 2)
+    except (TypeError, ValueError):
+        return fallback
+
+
+def _bounded_unit_score(value: Any) -> Optional[float]:
+    try:
+        score = float(value)
+        if not math.isfinite(score):
+            return None
+        return min(1.0, max(0.0, score))
+    except (TypeError, ValueError):
+        return None
+
+
 def audit_dossier_node(state: CaseDossierState) -> Dict[str, Any]:
     """
-    Evaluator Node: Scans the combined outputs of Prioritization (XGBoost),
-    Explainability (SHAP), Bias Audit, and Precedents to detect discrepancies or edge cases.
+    Apply deterministic priority, explanation, synopsis, and demographic-language checks.
+    Retrieved precedent candidates are not evaluated for legal relevance here.
     """
     conflicts = []
-    priority = state.get("priority_score", 5.0)
+    priority = _bounded_score(state.get("priority_score", 5.0))
     bias_score = state.get("bias_score")
-    bias_flags = state.get("bias_flags", [])
+    bias_flags = state.get("bias_flags", []) or []
+    if not isinstance(bias_flags, list):
+        bias_flags = [str(bias_flags)]
     summary = (state.get("case_summary") or "").lower()
-    contributions = state.get("contributions", {})
+    contributions = state.get("contributions", {}) or {}
 
-    # Check 1: Bias vs. Priority Anomaly
-    # High priority case flagged with demographic profiling or prejudice in allegations
-    if (bias_score is not None and bias_score < 0.85) or (bias_flags and len(bias_flags) > 0):
-        if priority >= 6.0:
-            flag_text = ", ".join(bias_flags) if bias_flags else "Demographic profiling context"
-            conflicts.append(
-                f"Demographic Fairness Discrepancy: Case is ranked High/Critical ({priority:.1f}/10), "
-                f"but Fairness Audit flagged contextual bias ({flag_text}) with neutrality index of {(bias_score or 0.0)*100:.0f}%."
-            )
-
-    # Check 2: Under-Prioritization of Fundamental Liberties
-    # Low priority assigned by ML model, but text reveals ongoing custody, habeas corpus, or life threat
-    urgent_keywords = ["habeas corpus", "unlawful custody", "illegal detention", "death threat", "custodial violence", "juvenile"]
-    has_liberty_issue = any(kw in summary for kw in urgent_keywords)
-    threat_contrib = contributions.get("immediate_threat_flag", 0.0)
-    
-    if priority < 6.0 and (has_liberty_issue or threat_contrib > 2.0):
-        matched_kw = [kw for kw in urgent_keywords if kw in summary]
-        matched_str = ", ".join(matched_kw) if matched_kw else "active liberty restraint"
+    # This is a language-screen signal, not an evaluation of ranking fairness.
+    numeric_bias_score = _bounded_unit_score(bias_score)
+    demographic_context_flagged = bool(bias_flags) or (
+        numeric_bias_score is not None and numeric_bias_score < 0.85
+    )
+    if demographic_context_flagged:
+        flag_text = ", ".join(str(flag) for flag in bias_flags) if bias_flags else "low language-screen score"
         conflicts.append(
-            f"Statutory Liberty Exception: Model assigned routine priority ({priority:.1f}/10), "
-            f"yet case contains high-urgency fundamental rights factors ({matched_str})."
+            f"Demographic-language review: automated text screening flagged {flag_text}. "
+            "This is a caution about wording in the document; it does not measure fairness of docket ranking."
         )
 
-    # Check 3: Explainability Outlier (Over-reliance on case age vs statutory severity)
-    age_contrib = contributions.get("case_age_days", 0.0)
-    sev_contrib = contributions.get("max_severity_score", 0.0)
-    if age_contrib > 2.5 and sev_contrib <= 0.5 and priority >= 7.0:
+    # Check 2: Under-Prioritization of Fundamental Liberties
+    # Keyword/attribution signals prompt human review; the shortlist is a heuristic.
+    urgent_keywords = ["habeas corpus", "unlawful custody", "illegal detention", "death threat", "custodial violence", "juvenile"]
+    matched_kw = [kw for kw in urgent_keywords if kw in summary]
+    has_liberty_issue = bool(matched_kw)
+    explicit_liberty_keywords = ("habeas corpus", "unlawful custody", "illegal detention", "custodial violence", "death threat")
+    deterministic_liberty_signal = any(kw in summary for kw in explicit_liberty_keywords)
+    try:
+        threat_contrib = float(contributions.get("immediate_threat_flag", 0.0) or 0.0)
+        if not math.isfinite(threat_contrib):
+            threat_contrib = 0.0
+    except (TypeError, ValueError):
+        threat_contrib = 0.0
+
+    # An attribution alone is a review signal, not proof of a liberty restraint.
+    liberty_exception_detected = deterministic_liberty_signal
+    if priority < 6.0 and (has_liberty_issue or threat_contrib > 2.0):
+        matched_str = ", ".join(matched_kw) if matched_kw else "high immediate-threat attribution; verify the underlying facts"
         conflicts.append(
-            "Prioritization Skew: Priority elevated primarily by case age backlog rather than statutory offence gravity."
+            f"Potential liberty/urgency review: model assigned {priority:.1f}/10; review signal: {matched_str}."
+        )
+    # Explicit custody/liberty language gets a deterministic minimum score before
+    # optional LLM deliberation, so the guardrail does not depend on API access.
+    needs_liberty_floor = deterministic_liberty_signal and priority < LIBERTY_PRIORITY_FLOOR
+    reconciled_score = max(priority, LIBERTY_PRIORITY_FLOOR) if needs_liberty_floor else priority
+    if needs_liberty_floor:
+        conflicts.append(
+            f"Deterministic triage guardrail: score raised to at least {LIBERTY_PRIORITY_FLOOR:.1f}/10 for human review."
         )
 
     return {
         "conflict_detected": len(conflicts) > 0,
         "conflict_reasons": conflicts,
+        "demographic_context_flagged": demographic_context_flagged,
+        "liberty_exception_detected": liberty_exception_detected,
         "reconciliation_status": "FLAGGED_FOR_BENCH" if len(conflicts) > 0 else "APPROVED",
-        "reconciled_score": priority
+        "reconciled_score": reconciled_score
     }
 
 
@@ -121,31 +164,64 @@ def route_deliberation(state: CaseDossierState) -> str:
 
 def deliberate_and_reconcile_node(state: CaseDossierState) -> Dict[str, Any]:
     """
-    Optimizer Node: Uses Gemini 2.5 Flash to reason through the detected conflicts,
-    determine if priority adjustment is legally warranted, and formulate judicial cautions.
+    Optional LLM deliberation over review signals with strict score bounds.
+    This step is advisory and does not make a legal finding.
     """
     reasons = "\n- ".join(state.get("conflict_reasons", []))
-    priority = state.get("priority_score", 5.0)
+    original_priority = _bounded_score(state.get("priority_score", 5.0))
+    priority = _bounded_score(state.get("reconciled_score", original_priority), original_priority)
+    liberty_exception = bool(state.get("liberty_exception_detected", False))
+    if liberty_exception:
+        lower_bound = max(LIBERTY_PRIORITY_FLOOR, original_priority - SCORE_ADJUSTMENT_LIMIT)
+        allowed_increase = LIBERTY_SCORE_ADJUSTMENT_LIMIT if original_priority < LIBERTY_PRIORITY_FLOOR else SCORE_ADJUSTMENT_LIMIT
+        upper_bound = min(10.0, max(LIBERTY_PRIORITY_FLOOR, original_priority + allowed_increase))
+    else:
+        lower_bound = max(0.0, original_priority - SCORE_ADJUSTMENT_LIMIT)
+        upper_bound = min(10.0, original_priority + SCORE_ADJUSTMENT_LIMIT)
     summary = state.get("case_summary", "")[:2500]
     bias_score = state.get("bias_score")
-    bias_details = state.get("bias_details", "None")
+    bias_details = state.get("bias_details", "") or ""
+    bias_flags = state.get("bias_flags", []) or []
+    if isinstance(bias_flags, str):
+        bias_flags = [bias_flags]
+    elif not isinstance(bias_flags, list):
+        bias_flags = [str(bias_flags)]
+    bounded_bias_score = _bounded_unit_score(bias_score)
+    if bounded_bias_score is None and bias_flags:
+        bias_summary = (
+            f"No numeric result; text screen supplied these flags: {bias_flags}. "
+            "This screen does not evaluate fairness of docket ranking."
+        )
+    elif bounded_bias_score is None:
+        bias_summary = (
+            "NO SCORE / RESULT RECORDED (not a pass). Do not infer neutrality or ranking fairness. "
+            "Manual review is recommended."
+        )
+    else:
+        bias_summary = (
+            f"Automated demographic-language screen score: {bounded_bias_score:.2f}; flags: {bias_flags}; "
+            f"details: {bias_details}. This screen does not evaluate fairness of docket ranking."
+        )
 
     prompt = f"""
 You are the Judicial Review & Reconciliation Agent presiding over court docket triage.
 A potential discrepancy has been detected in this case filing across our AI modules.
 
-DETECTOR AUDIT ALERTS:
+DETECTOR REVIEW ALERTS:
 - {reasons}
 
 CASE SYNOPSIS:
 {summary}
 
-ORIGINAL ML PRIORITY SCORE: {priority:.2f} / 10.0
-FAIRNESS AUDIT DETAILS: Neutrality Index: {bias_score if bias_score is not None else 'N/A'}, Details: {bias_details}
+ORIGINAL ML PRIORITY SCORE: {original_priority:.2f} / 10.0
+DETERMINISTIC SCORE AFTER GUARDRAILS: {priority:.2f} / 10.0
+DEMOGRAPHIC LANGUAGE SCREEN: {bias_summary}
+ALLOWED SCORE RANGE: {lower_bound:.2f} to {upper_bound:.2f} / 10.0.
+The deterministic liberty/custody guardrail, if triggered, must not be reduced below {LIBERTY_PRIORITY_FLOOR:.1f}.
 
 YOUR TASK:
-1. Deliberate on whether the statutory urgency should be maintained, elevated (e.g. for urgent liberty/custody), or cautioned (due to demographic bias).
-2. Recommend an adjusted priority score (0.0 to 10.0). Keep it close to original unless a fundamental liberty was missed.
+1. Explain the review alert. Treat demographic-language flags only as wording cautions; they do not establish ranking unfairness.
+2. Recommend a score within the allowed range. Preserve the deterministic liberty/custody floor if it was triggered.
 3. Formulate a concise Judicial Deliberation Note (3-4 sentences) explaining the reconciliation to the bench judge.
 
 Output strictly valid JSON (no markdown formatting, no code fences):
@@ -155,7 +231,7 @@ Output strictly valid JSON (no markdown formatting, no code fences):
   "deliberation_notes": "<concise deliberation rationale>"
 }}
 """
-    deliberation_notes = "Automated conflict audit triggered. Judicial caution flag attached."
+    deliberation_notes = "Automated review signal detected; human review required. No LLM adjustment was applied."
     reconciled_score = priority
     status = "FLAGGED_FOR_BENCH"
 
@@ -168,9 +244,17 @@ Output strictly valid JSON (no markdown formatting, no code fences):
                     lines = res.split("\n")
                     res = "\n".join(lines[1:-1] if lines[-1].startswith("```") else lines[1:])
                 parsed = json.loads(res.strip())
-                reconciled_score = round(float(parsed.get("reconciled_score", priority)), 2)
-                status = parsed.get("reconciliation_status", "FLAGGED_FOR_BENCH")
-                deliberation_notes = parsed.get("deliberation_notes", deliberation_notes)
+                proposed_score = _bounded_score(parsed.get("reconciled_score", priority), priority)
+                reconciled_score = round(min(upper_bound, max(lower_bound, proposed_score)), 2)
+                status = "FLAGGED_FOR_BENCH"
+                proposed_notes = str(parsed.get("deliberation_notes", deliberation_notes))
+                if re.search(r"\b(fairness|neutrality|neutral|fair)\b", proposed_notes, flags=re.IGNORECASE):
+                    deliberation_notes = (
+                        "LLM deliberation completed within score bounds. See review alerts; "
+                        "this output makes no demographic or ranking-fairness finding."
+                    )
+                else:
+                    deliberation_notes = proposed_notes
                 break
             except Exception as e:
                 time.sleep(1)
@@ -185,72 +269,83 @@ Output strictly valid JSON (no markdown formatting, no code fences):
 
 def synthesize_judicial_memo_node(state: CaseDossierState) -> Dict[str, Any]:
     """
-    Synthesis Node: Drafts the comprehensive Judicial Bench Triage Memo
-    unifying Precedents, Prioritization, Explainability, and Fairness.
+    Compose a deterministic triage draft with explicit screen and retrieval limits.
     """
-    case_id = state.get("case_id", "Case")
-    case_type = state.get("case_type", "General").capitalize()
-    priority = state.get("reconciled_score", state.get("priority_score", 5.0))
-    status = state.get("reconciliation_status", "APPROVED")
-    deliberation = state.get("deliberation_notes", "")
+    case_id = str(state.get("case_id", "Case"))
+    case_type = str(state.get("case_type", "General") or "General").capitalize()
+    priority = _bounded_score(state.get("reconciled_score", state.get("priority_score", 5.0)))
     bias_score = state.get("bias_score")
-    precedents = state.get("precedents", [])
-    contributions = state.get("contributions", {})
-    summary = state.get("case_summary", "")[:2000]
+    bias_details = state.get("bias_details", "") or ""
+    bias_flags = state.get("bias_flags", []) or []
+    if isinstance(bias_flags, str):
+        bias_flags = [bias_flags]
+    elif not isinstance(bias_flags, list):
+        bias_flags = [str(bias_flags)]
+    precedents = state.get("precedents", []) or []
+    conflict_reasons = state.get("conflict_reasons", []) or []
+    demographic_context_flagged = bool(state.get("demographic_context_flagged", False))
+    summary = str(state.get("case_summary", "") or "")[:1200]
 
-    # Format top precedents
-    top_prec_strs = []
-    for p in precedents[:3]:
-        pid = p.get("case_id", "Precedent").replace("_", " ")
-        match_pct = (p.get("score") or p.get("similarity_score") or 0.0) * 100
-        top_prec_strs.append(f"{pid} ({match_pct:.1f}% match)")
-    prec_summary = "; ".join(top_prec_strs) if top_prec_strs else "Standard canonical jurisprudence"
+    # Scores from semantic retrieval are not calibrated match probabilities.
+    # The memo therefore reports retrieval order only, not a percentage match.
+    def retrieval_score(precedent):
+        for key in ("score", "similarity", "similarity_score"):
+            try:
+                score = float(precedent.get(key))
+                if math.isfinite(score):
+                    return score
+            except (TypeError, ValueError):
+                pass
+        return None
 
-    # Action recommendation logic
-    if priority >= 8.0:
-        action = "Admit for Urgent Motion / Immediate Listing"
-    elif priority >= 6.0:
-        action = "Expedited Listing (2-4 Weeks Queue)"
-    elif priority >= 4.0:
-        action = "Standard Docket Scheduling"
-    else:
-        action = "Routine Civil/Procedural Queue"
-
-    if status == "FLAGGED_FOR_BENCH":
-        action += " [With Judicial Caution on Demographic Context]"
-
-    prompt = f"""
-You are the Judicial Bench Clerk formulating an executive Judicial Triage Memo for the presiding Judge.
-
-CASE: {case_id} ({case_type})
-RECONCILED DOCKET SCORE: {priority:.2f}/10.0 ({status})
-TOP PRECEDENTS: {prec_summary}
-DEMOGRAPHIC FAIRNESS INDEX: {f"{bias_score*100:.0f}% Neutral" if bias_score is not None else "Audited"}
-DELIBERATION AUDIT: {deliberation if deliberation else "All 4 modules in consistent alignment."}
-CASE FACTS:
-{summary}
-
-Write a concise, professional 2-paragraph Judicial Triage Memo:
-- Paragraph 1: Statutory gravity, procedural posture, and relevant precedent alignment.
-- Paragraph 2: Triage justification, fairness/neutrality audit confirmation, and scheduling recommendation.
-
-Return ONLY the plain text of the memo.
-"""
-    memo = (
-        f"The case has been triaged with a statutory priority score of {priority:.2f}/10.0 ({action}). "
-        f"Precedent discovery mapped {len(precedents)} analogous Supreme Court rulings ({prec_summary}). "
-        f"Fairness audit verified demographic neutrality index at "
-        f"{f'{bias_score*100:.0f}%' if bias_score is not None else 'acceptable threshold'}. "
-        f"Scheduling Recommendation: {action}."
+    valid_precedents = [p for p in precedents if isinstance(p, dict)]
+    valid_precedents.sort(key=lambda p: retrieval_score(p) if retrieval_score(p) is not None else float("-inf"), reverse=True)
+    ranked_precedents = []
+    for rank, precedent in enumerate(valid_precedents[:3], start=1):
+        precedent_case_id = str(precedent.get("case_id", "Precedent record")).replace("_", " ")
+        ranked_precedents.append(f"Rank {rank}: {precedent_case_id}")
+    precedent_text = (
+        "Retrieved precedent candidates (ranked by search system): " + "; ".join(ranked_precedents) + "."
+        if ranked_precedents else "No precedent candidates were supplied to reconciliation."
     )
 
-    if GEMINI_MODEL:
-        try:
-            res = GEMINI_MODEL.generate_content(prompt).text.strip()
-            if res:
-                memo = res
-        except Exception:
-            pass
+    # Illustrative score bands only; the project has no lawyer-approved listing policy.
+    if priority >= 8.0:
+        action = "Illustrative suggestion: review for urgent listing (human decision required)"
+    elif priority >= 6.0:
+        action = "Illustrative suggestion: review for expedited listing (human decision required)"
+    elif priority >= 4.0:
+        action = "Illustrative suggestion: standard docket review (human decision required)"
+    else:
+        action = "Illustrative suggestion: routine docket review (human decision required)"
+
+    review_text = (
+        "Demographic-language caution: the automated text screen flagged "
+        f"{', '.join(str(flag) for flag in bias_flags) if bias_flags else 'a low screen score'}. "
+        "This is not an assessment of ranking fairness; manual review is recommended."
+        if demographic_context_flagged else
+        "No demographic-language flag was supplied. This does not establish fairness of docket ranking."
+    )
+    bounded_bias_score = _bounded_unit_score(bias_score)
+    if bounded_bias_score is None and bias_flags:
+        review_text = (
+            f"No numeric screen score is available; flagged wording: {', '.join(str(flag) for flag in bias_flags)}. "
+            "This screen does not evaluate ranking fairness; manual review is recommended."
+        )
+    elif bounded_bias_score is None:
+        review_text = "No demographic-language screen score/result was recorded; this is not a pass or proof of neutrality. Manual review is recommended."
+    else:
+        review_text += f" Screen score: {bounded_bias_score:.2f}/1.00. {bias_details}"
+
+    reasons_text = " ".join(str(reason) for reason in conflict_reasons) or "No automated review signal was detected."
+    memo = (
+        "ILLUSTRATIVE AUTOMATED TRIAGE DRAFT - HUMAN REVIEW REQUIRED.\n"
+        f"Case: {case_id} ({case_type}). The supplied synopsis is: {summary or 'No synopsis supplied.'}\n"
+        f"Composite priority score: {priority:.2f}/10.0. {action}. This score band is illustrative and is not an approved court listing policy.\n"
+        f"Automated review notes: {reasons_text}\n"
+        f"Demographic-language screen: {review_text}\n"
+        f"{precedent_text} Retrieval rank is not a relevance probability; precedent relevance has not been independently reviewed."
+    )
 
     return {
         "reconciliation_memo": memo,
@@ -264,9 +359,9 @@ Return ONLY the plain text of the memo.
 
 class JudicialReconciliationAgent:
     """
-    LangGraph-powered Cyclic Multi-Agent Evaluator & Reconciliation Engine.
-    Inspects outputs from Prioritization, Explainability, Bias Detection, and Semantic Search,
-    detects systemic contradictions, and deliberates to produce a reconciled judicial docket memo.
+    LangGraph workflow with a conditional LLM deliberation step.
+    It checks priority, explainability signals, and demographic-language flags;
+    retrieved precedent candidates are listed by rank but their relevance is not audited.
     """
     def __init__(self):
         print("[INFO] Initializing LangGraph Judicial Reconciliation Agent...")
@@ -300,28 +395,39 @@ class JudicialReconciliationAgent:
 
     def reconcile(self, dossier: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Executes the LangGraph reconciliation state machine over the provided case dossier.
+        Runs deterministic review checks and, when needed, bounded optional LLM deliberation.
         Guaranteed to return a structured reconciliation result without throwing unhandled errors.
         """
+        initial_priority = _bounded_score(dossier.get("priority_score", 5.0))
+        supplied_bias_flags = dossier.get("bias_flags", []) or []
+        if isinstance(supplied_bias_flags, str):
+            supplied_bias_flags = [supplied_bias_flags]
+        elif not isinstance(supplied_bias_flags, list):
+            supplied_bias_flags = [str(supplied_bias_flags)]
+        supplied_precedents = dossier.get("precedents", []) or dossier.get("similar_cases", []) or []
+        if not isinstance(supplied_precedents, list):
+            supplied_precedents = []
         # Populate initial state with defaults
         initial_state: CaseDossierState = {
             "case_id": dossier.get("case_id", "Unknown_Case"),
             "case_type": dossier.get("case_type", "criminal"),
             "legal_regime": dossier.get("legal_regime", "ipc"),
             "case_summary": dossier.get("case_summary") or dossier.get("summary", ""),
-            "priority_score": float(dossier.get("priority_score", 5.0)),
+            "priority_score": initial_priority,
             "priority_category": dossier.get("priority_category", "Medium"),
-            "severity": float(dossier.get("severity", 3.0)),
-            "contributions": dossier.get("contributions", {}),
+            "severity": _bounded_score(dossier.get("severity", 3.0), 3.0),
+            "contributions": dossier.get("contributions", {}) or {},
             "bias_score": dossier.get("bias_score"),
             "bias_details": dossier.get("bias_details", ""),
-            "bias_flags": dossier.get("bias_flags", []),
-            "precedents": dossier.get("precedents", []) or dossier.get("similar_cases", []),
+            "bias_flags": supplied_bias_flags,
+            "precedents": supplied_precedents,
             "conflict_detected": False,
             "conflict_reasons": [],
+            "demographic_context_flagged": False,
+            "liberty_exception_detected": False,
             "deliberation_notes": "",
             "reconciliation_status": "APPROVED",
-            "reconciled_score": float(dossier.get("priority_score", 5.0)),
+            "reconciled_score": initial_priority,
             "reconciliation_memo": "",
             "action_recommendation": "Standard Docket Scheduling"
         }
@@ -331,6 +437,8 @@ class JudicialReconciliationAgent:
             return {
                 "status": final_state.get("reconciliation_status", "APPROVED"),
                 "reconciled_score": final_state.get("reconciled_score", initial_state["priority_score"]),
+                "original_priority_score": initial_priority,
+                "score_changed": final_state.get("reconciled_score", initial_priority) != initial_priority,
                 "conflict_detected": final_state.get("conflict_detected", False),
                 "conflict_reasons": final_state.get("conflict_reasons", []),
                 "deliberation_notes": final_state.get("deliberation_notes", ""),
@@ -340,13 +448,15 @@ class JudicialReconciliationAgent:
         except Exception as e:
             print(f"[WARNING] LangGraph Reconciliation Exception: {e}. Returning safe fallback.")
             return {
-                "status": "APPROVED",
+                "status": "FLAGGED_FOR_BENCH",
                 "reconciled_score": initial_state["priority_score"],
-                "conflict_detected": False,
-                "conflict_reasons": [],
-                "deliberation_notes": "Deterministic fallback applied.",
-                "memo": "Case validated by standard multi-agent pipeline.",
-                "recommendation": "Standard Docket Scheduling"
+                "original_priority_score": initial_priority,
+                "score_changed": False,
+                "conflict_detected": True,
+                "conflict_reasons": ["Reconciliation workflow failed; manual review is required."],
+                "deliberation_notes": "No reconciliation result is available; no fairness conclusion was made.",
+                "memo": "ILLUSTRATIVE AUTOMATED TRIAGE DRAFT — HUMAN REVIEW REQUIRED. The reconciliation workflow failed. No demographic-neutrality or docket-fairness result is available.",
+                "recommendation": "Illustrative suggestion only; human review required."
             }
 
 

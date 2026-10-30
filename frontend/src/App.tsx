@@ -25,6 +25,13 @@ interface CaseResult {
   case_type?: string;
   legal_regime?: string;
   priority_explanation?: string;
+  priority_features?: {
+    case_type?: string | null;
+    max_severity_score?: number | null;
+    societal_impact_score?: number | null;
+    immediate_threat_flag?: number | null;
+    case_age_days?: number | null;
+  };
   similar_cases?: CaseResult[];
   contributions?: Record<string, number>;
   bias_score?: number | null;
@@ -33,123 +40,108 @@ interface CaseResult {
   reconciliation?: ReconciliationData;
 }
 
-const renderContributions = (contribs: Record<string, number> | undefined) => {
-  if (!contribs) return <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Attributions loading...</p>;
-  
-  const labelMap: Record<string, string> = {
-    case_type: "Case Type Risk",
-    num_ipc_sections: "IPC Count Impact",
-    num_cpc_sections: "CPC Count Impact",
-    num_precedents: "Precedents Citations",
-    total_words: "Docket Length",
-    case_age_days: "Pending Age Factor",
-    max_severity_score: "Severity Rating",
-    immediate_threat_flag: "Threat Multiplier",
-    societal_impact_score: "Societal Impact Weight",
-    severity_contribution: "Severity contribution",
-    societal_impact_contribution: "Societal impact contribution",
-    immediate_threat_contribution: "Immediate threat contribution",
-    recency_contribution: "Recency contribution"
-  };
-
-  const activeContribs = Object.entries(contribs)
-    .sort((a, b) => b[1] - a[1]);
-
-  if (activeContribs.length === 0) {
-    return <p style={{ fontSize: '0.85rem', color: '#cbd5e1', fontStyle: 'italic', marginTop: '6px' }}>Neutral priority profile.</p>;
-  }
-
-  return (
-    <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      {activeContribs.map(([key, val]) => {
-        const pct = Math.min(Math.abs(val) * 10, 100);
-        return (
-          <div key={key} style={{ fontSize: '0.8rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px', color: '#cbd5e1' }}>
-              <span>{labelMap[key] || key}</span>
-              <span style={{ fontWeight: 'bold', color: '#ffffff' }}>
-                {val > 0 ? `+${val.toFixed(2)}` : val.toFixed(2)}
-              </span>
-            </div>
-            <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${pct}%`, height: '100%', background: '#ffffff', borderRadius: '3px' }} />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const renderDecisionTrace = (trace: string | undefined) => {
-  const entries = (trace || "")
-    .split(';')
-    .map(point => point.trim())
-    .filter(Boolean);
-  const method = entries.find(point => point.startsWith("Evaluated using"));
-  const driverOrder = [/immediate threat|liberty/i, /severity offence/i, /societal impact/i, /precedential complexity/i, /pending|litigation duration|case pending/i, /sections implicated|procedure codes cited/i, /criminal case|civil case/i];
-  const drivers = entries
-    .filter(point => !point.startsWith("Evaluated using"))
-    .sort((a, b) => {
-      const rankA = driverOrder.findIndex(pattern => pattern.test(a));
-      const rankB = driverOrder.findIndex(pattern => pattern.test(b));
-      return (rankA < 0 ? driverOrder.length : rankA) - (rankB < 0 ? driverOrder.length : rankB);
-    })
-    .slice(0, 3);
-
-  return (
-    <div>
-      {drivers.length > 0 ? (
-        <ul style={{ margin: '6px 0 0', paddingLeft: '20px' }}>
-          {drivers.map((point, index) => <li key={index} style={{ marginBottom: '4px' }}>{point}</li>)}
-        </ul>
-      ) : <p style={{ margin: '6px 0', color: '#94a3b8' }}>No additional priority signals were detected.</p>}
-      {method && <p style={{ margin: '6px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>Scoring method: {method.replace("Evaluated using ", "")}</p>}
-    </div>
-  );
-};
-
 const isRuleBasedTrace = (trace: string | undefined) =>
   Boolean(trace?.includes("baseline Rule-Based framework"));
 
 const renderPriorityComponents = (r: CaseResult) => (
-  <div style={{ marginTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '8px' }}>
-    <strong style={{ display: 'block', marginBottom: '6px', color: '#cbd5e1' }}>
-      {isRuleBasedTrace(r.priority_explanation) ? 'Priority Score Components:' : 'Model Feature Attributions:'}
-    </strong>
-    {isRuleBasedTrace(r.priority_explanation) && (
-      <p style={{ margin: '0 0 8px', fontSize: '0.78rem', color: '#94a3b8' }}>
-        Score = (severity / 10 * 3.5) + (impact / 5 * 2.5) + (threat * 3) + recency; capped at 10. Values shown are score points.
-      </p>
-    )}
-    {renderContributions(r.contributions)}
+  <div className="score-attributions">
+    <strong className="score-attributions-title">Priority score formula</strong>
+    <p className="score-attributions-note">
+      min(10, severity used ÷ 10 × 3.5 + societal impact ÷ 5 × 2.5 + immediate threat × 3 + recency)
+    </p>
+    <p className="score-attributions-note">
+      Severity used is capped at 4 for civil cases. Recency = max(0, 1 − case age in days ÷ 3650); when age is unavailable, the formula uses 0.5.
+    </p>
+    <div className="priority-feature-grid">
+      <div><span>Case type</span><b>{r.priority_features?.case_type || r.case_type || 'Unavailable'}{(r.priority_features?.case_type || r.case_type)?.toLowerCase() === 'civil' ? ' (civil cap applies)' : ''}</b></div>
+      <div><span>Severity (raw / 10)</span><b>{r.priority_features?.max_severity_score ?? r.severity ?? 'Unavailable'}</b></div>
+      <div><span>Societal impact (raw / 5)</span><b>{r.priority_features?.societal_impact_score ?? 'Unavailable'}</b></div>
+      <div><span>Immediate threat (0/1)</span><b>{r.priority_features?.immediate_threat_flag ?? 'Unavailable'}</b></div>
+      <div><span>Case age (days)</span><b>{r.priority_features?.case_age_days ?? 'Unavailable'}</b></div>
+    </div>
+    <div className="priority-score-result">
+      <span>Final priority score</span><b>{Number.isFinite(r.priority_score) ? `${r.priority_score?.toFixed(2)} / 10` : 'Unavailable'}</b>
+    </div>
+    <p className="score-attributions-note">
+      {isRuleBasedTrace(r.priority_explanation)
+        ? 'This formula produces the displayed score.'
+        : 'The displayed score is the XGBoost model prediction. This formula is the rule-based reference used to create training labels; it does not calculate the model prediction.'}
+    </p>
   </div>
 );
 
-const renderBiasCard = (r: CaseResult) => (
+const renderExplainability = (r: CaseResult) => (
+  <>
+    {renderPriorityComponents(r)}
+  </>
+);
+
+const renderSimilarCases = (cases: CaseResult[] | undefined) => (
+  <section className="upload-similar-cases" aria-label="Similar cases for uploaded document">
+    <div className="similar-cases-heading">
+      <div>
+        <h4>🔎 Similar Cases</h4>
+        <p>Top results ranked by semantic similarity</p>
+      </div>
+      {cases?.length ? <span className="similar-cases-count">{cases.length} found</span> : null}
+    </div>
+    {cases?.length ? (
+      <div className="similar-case-list">
+        {cases.slice(0, 3).map((similarCase, index) => (
+          <article className="similar-case-item" key={`${similarCase.case_id}-${index}`}>
+            <span className="similar-case-rank">{index + 1}</span>
+            <div className="similar-case-body">
+              <h5>{similarCase.case_id.replace(/_/g, ' ')}</h5>
+              <div className="similar-case-meta">
+                <span>{similarCase.date || 'Date unknown'}</span>
+                {similarCase.case_type && <span>{similarCase.case_type}</span>}
+                {Number.isFinite(similarCase.severity) && <span>Severity {similarCase.severity}</span>}
+                {Number.isFinite(similarCase.priority_score) && <span>Priority {similarCase.priority_score?.toFixed(1)}</span>}
+              </div>
+              {similarCase.summary && similarCase.summary !== 'AI Synopsis Pending Processing.' && (
+                <p>{similarCase.summary.replace(/\s+/g, ' ').slice(0, 260)}{similarCase.summary.length > 260 ? '…' : ''}</p>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <p className="similar-cases-empty">No similar cases were returned for this document.</p>
+    )}
+    <p className="similar-cases-note">Rank indicates retrieval order, not a relevance probability.</p>
+  </section>
+);
+
+const renderBiasCard = (r: CaseResult) => {
+  const hasLanguageFlag = Boolean(r.bias_flags?.length) || (r.bias_score !== null && r.bias_score !== undefined && r.bias_score < 0.85);
+  return (
   <div className="agent-card" style={{ gridColumn: 'span 2' }}>
     <div className="agent-card-title">
-      ⚖️ Bias & Fairness Scan 
+      ⚖️ Demographic Language Screen
       {r.bias_score === null || r.bias_score === undefined ? (
-        <span className="badge-orange" style={{ marginLeft: '8px' }}>Pending Audit</span>
+        hasLanguageFlag ? (
+          <span className="badge-red" style={{ marginLeft: '8px' }}>Language Flag</span>
+        ) : (
+          <span className="badge-orange" style={{ marginLeft: '8px' }}>No Result</span>
+        )
       ) : (
-        <span className={`badge-${r.bias_score >= 0.85 ? 'green' : 'red'}`} style={{ marginLeft: '8px' }}>
-          {r.bias_score >= 0.85 ? 'Neutral' : 'Profiling Alert'}
+        <span className={`badge-${hasLanguageFlag ? 'red' : 'green'}`} style={{ marginLeft: '8px' }}>
+          {hasLanguageFlag ? 'Language Flag' : 'No Language Flag'}
         </span>
       )}
     </div>
     <div className="agent-card-content">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        <strong>Demographic Neutrality Index:</strong>
-        <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: r.bias_score === null || r.bias_score === undefined ? '#94a3b8' : (r.bias_score >= 0.85 ? '#86efac' : '#fca5a5') }}>
-          {r.bias_score === null || r.bias_score === undefined ? 'N/A' : `${(r.bias_score * 100).toFixed(0)}%`}
+        <strong>Automated language-screen score (not ranking fairness):</strong>
+        <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: r.bias_score === null || r.bias_score === undefined ? '#94a3b8' : (hasLanguageFlag ? '#fca5a5' : '#86efac') }}>
+          {r.bias_score === null || r.bias_score === undefined ? 'N/A' : `${r.bias_score.toFixed(2)} / 1.00`}
         </span>
       </div>
       <div style={{ height: '8px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
         <div style={{ 
           width: r.bias_score === null || r.bias_score === undefined ? '0%' : `${r.bias_score * 100}%`, 
           height: '100%', 
-          background: r.bias_score === null || r.bias_score === undefined ? '#475569' : (r.bias_score >= 0.85 ? '#10b981' : '#ef4444'), 
+          background: r.bias_score === null || r.bias_score === undefined ? '#475569' : (hasLanguageFlag ? '#ef4444' : '#10b981'),
           borderRadius: '4px' 
         }} />
       </div>
@@ -168,7 +160,8 @@ const renderBiasCard = (r: CaseResult) => (
       )}
     </div>
   </div>
-);
+  );
+};
 
 const renderReconciliationCard = (
   r: CaseResult,
@@ -180,7 +173,7 @@ const renderReconciliationCard = (
     return (
       <div className="agent-card" style={{ gridColumn: 'span 2', background: 'rgba(99, 102, 241, 0.05)', border: '1px dashed rgba(99, 102, 241, 0.3)', textAlign: 'center', padding: '16px' }}>
         <p style={{ fontSize: '0.88rem', color: '#c7d2fe', marginBottom: '10px' }}>
-          🏛️ <strong>LangGraph Judicial Review & Reconciliation Agent</strong> is ready to audit this docket record.
+          🏛️ <strong>Automated Reconciliation Workflow</strong> is ready to review this docket record. Its outputs are triage assistance for human review.
         </p>
         <button
           className="search-btn"
@@ -191,7 +184,7 @@ const renderReconciliationCard = (
           }}
           disabled={isAuditing}
         >
-          {isAuditing ? "⚡ Running LangGraph State Machine..." : "⚡ Run LangGraph Judicial Audit"}
+          {isAuditing ? "⚡ Running reconciliation workflow..." : "⚡ Run Automated Reconciliation"}
         </button>
       </div>
     );
@@ -200,24 +193,24 @@ const renderReconciliationCard = (
   const { status, reconciled_score, conflict_detected, conflict_reasons, deliberation_notes, memo, recommendation } = r.reconciliation;
   const statusColor = status === "APPROVED" ? "#10b981" : status === "ADJUSTED" ? "#f59e0b" : "#ef4444";
   const statusBg = status === "APPROVED" ? "rgba(16, 185, 129, 0.15)" : status === "ADJUSTED" ? "rgba(245, 158, 11, 0.15)" : "rgba(239, 68, 68, 0.15)";
-  const statusBadgeText = status === "APPROVED" ? "Validated (Consistent)" : status === "ADJUSTED" ? `Adjusted to ${reconciled_score?.toFixed(1)}` : "Flagged for Bench Caution";
+  const statusBadgeText = status === "APPROVED" ? "No Automated Conflict Detected" : status === "ADJUSTED" ? `Score Adjusted to ${reconciled_score?.toFixed(1)} · Human Review` : "Flagged for Human Review";
 
   return (
     <div className="agent-card" style={{ gridColumn: 'span 2', borderLeft: `3px solid ${statusColor}`, background: 'rgba(255, 255, 255, 0.03)' }}>
       <div className="agent-card-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-        <span>🏛️ Judicial Review & Reconciliation Agent <span style={{ fontSize: '0.75rem', opacity: 0.7, fontWeight: 'normal' }}>(LangGraph State Machine)</span></span>
+        <span>🏛️ Automated Reconciliation <span style={{ fontSize: '0.75rem', opacity: 0.7, fontWeight: 'normal' }}>(LangGraph workflow)</span></span>
         <span style={{ fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px', background: statusBg, color: statusColor, fontWeight: 600, border: `1px solid ${statusColor}40` }}>
           {statusBadgeText}
         </span>
       </div>
       <div className="agent-card-content" style={{ marginTop: '10px' }}>
         <div style={{ marginBottom: '10px', padding: '8px 12px', borderRadius: '6px', background: 'rgba(99, 102, 241, 0.12)', border: '1px solid rgba(99, 102, 241, 0.25)', fontSize: '0.85rem', color: '#c7d2fe' }}>
-          <strong>Scheduling Directive:</strong> {recommendation || "Standard Docket Scheduling"}
+          <strong>Illustrative Scheduling Suggestion:</strong> {recommendation || "Human review required"}
         </div>
 
         {conflict_detected && conflict_reasons && conflict_reasons.length > 0 && (
           <div style={{ marginBottom: '10px', padding: '10px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-            <strong style={{ color: '#fca5a5', fontSize: '0.82rem', display: 'block', marginBottom: '6px' }}>⚠️ Reconciled Contradictions:</strong>
+            <strong style={{ color: '#fca5a5', fontSize: '0.82rem', display: 'block', marginBottom: '6px' }}>⚠️ Automated Review Flags:</strong>
             {conflict_reasons.map((reason, idx) => (
               <p key={idx} style={{ fontSize: '0.8rem', color: '#fecaca', margin: '3px 0' }}>• {reason}</p>
             ))}
@@ -232,7 +225,7 @@ const renderReconciliationCard = (
 
         {memo && (
           <div style={{ marginTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '10px' }}>
-            <strong style={{ fontSize: '0.82rem', color: '#cbd5e1', display: 'block', marginBottom: '6px' }}>📋 Bench Triage Memo:</strong>
+            <strong style={{ fontSize: '0.82rem', color: '#cbd5e1', display: 'block', marginBottom: '6px' }}>📋 Illustrative Automated Triage Draft:</strong>
             <p style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.5, whiteSpace: 'pre-line' }}>{memo}</p>
           </div>
         )}
@@ -409,6 +402,7 @@ function App() {
         priority_score: data.priority_score,
         case_type: data.case_type,
         priority_explanation: data.priority_explanation,
+        priority_features: data.priority_features,
         similar_cases: data.similar_cases,
         contributions: data.contributions,
         bias_score: data.bias_score,
@@ -586,6 +580,8 @@ function App() {
                         <ReactMarkdown>{uploadResult.summary}</ReactMarkdown>
                       </div>
 
+                      {renderSimilarCases(uploadResult.similar_cases)}
+
                       <p style={{ marginBottom: '10px' }}><strong><span style={{ fontSize: '1.1rem', color: '#818cf8'}}>⚙️ Multi-Agent Intelligence Scan</span></strong></p>
                       <div className="agent-grid">
                         <div className="agent-card">
@@ -593,14 +589,12 @@ function App() {
                           <div className="agent-card-content">
                             <strong>Score:</strong> {uploadResult.priority_score?.toFixed(2)} / 10.0<br/>
                             <strong>Category:</strong> {getPriorityCategory(uploadResult.priority_score)}
-                            {renderPriorityComponents(uploadResult)}
                           </div>
                         </div>
                         <div className="agent-card">
                           <div className="agent-card-title">🔍 Explainability Agent <span className="badge-green">Active</span></div>
                           <div className="agent-card-content">
-                            <strong>Key Reasons:</strong>
-                            {renderDecisionTrace(uploadResult.priority_explanation)}
+                            {renderExplainability(uploadResult)}
                           </div>
                         </div>
                         {renderBiasCard(uploadResult)}
@@ -646,14 +640,12 @@ function App() {
                           <div className="agent-card-content">
                             <strong>Score:</strong> {r.priority_score?.toFixed(2)} / 10.0<br/>
                             <strong>Category:</strong> {getPriorityCategory(r.priority_score)}
-                            {renderPriorityComponents(r)}
                           </div>
                         </div>
                         <div className="agent-card">
                           <div className="agent-card-title">🔍 Explainability Agent <span className="badge-green">Active</span></div>
                           <div className="agent-card-content">
-                            <strong>Key Reasons:</strong>
-                            {renderDecisionTrace(r.priority_explanation)}
+                            {renderExplainability(r)}
                           </div>
                         </div>
                         {renderBiasCard(r)}
@@ -738,14 +730,12 @@ function App() {
                               <strong>Queue Priority Rank:</strong> #{r.rank}<br/>
                               <strong>Score:</strong> {r.priority_score?.toFixed(2)} / 10.0<br/>
                               <strong>Category:</strong> {getPriorityCategory(r.priority_score)}
-                              {renderPriorityComponents(r)}
                             </div>
                           </div>
                           <div className="agent-card">
                             <div className="agent-card-title">🔍 Explainability Agent <span className="badge-green">Active</span></div>
                             <div className="agent-card-content">
-                              <strong>Key Reasons:</strong>
-                              {renderDecisionTrace(r.priority_explanation)}
+                              {renderExplainability(r)}
                             </div>
                           </div>
                           {renderBiasCard(r)}
@@ -837,14 +827,12 @@ function App() {
                               <div className="agent-card-content">
                                 <strong>Score:</strong> {r.priority_score?.toFixed(2)} / 10.0<br/>
                                 <strong>Category:</strong> {getPriorityCategory(r.priority_score)}
-                                {renderPriorityComponents(r)}
                               </div>
                             </div>
                             <div className="agent-card">
                               <div className="agent-card-title">🔍 Explainability Agent <span className="badge-green">Active</span></div>
                               <div className="agent-card-content">
-                                <strong>Key Reasons:</strong>
-                                {renderDecisionTrace(r.priority_explanation)}
+                                {renderExplainability(r)}
                               </div>
                             </div>
                             {renderBiasCard(r)}

@@ -286,6 +286,13 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 "priority_score": result[5],
                 "case_type": result[6],
                 "priority_explanation": explanation,
+                "priority_features": {
+                    "case_type": result[6],
+                    "max_severity_score": result[1],
+                    "societal_impact_score": result[16],
+                    "immediate_threat_flag": result[15],
+                    "case_age_days": result[14],
+                },
                 "similar_cases": similar_cases,
                 "contributions": contributions,
                 "bias_score": result[7],
@@ -420,16 +427,20 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         
         if not exists:
             cur.execute("""
-                INSERT INTO cases (case_id, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type, bias_score, bias_details, bias_flags, content_hash) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (filename_id, severity, regime, ipc_str, bns_str, priority_score, case_type, bias_score, bias_details, bias_flags_str, content_hash))
+                INSERT INTO cases (case_id, max_severity_score, legal_regime, ipc_sections, bns_sections, priority_score, case_type, bias_score, bias_details, bias_flags, content_hash,
+                                   num_ipc_sections, num_cpc_sections, num_precedents, total_words, case_age_days, case_date)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (filename_id, severity, regime, ipc_str, bns_str, priority_score, case_type, bias_score, bias_details, bias_flags_str, content_hash,
+                  len(ipc_sections_list), len(cpc_sections_list), num_precedents, len(text.split()), case_age_val, date_str))
         
         cur.execute("""
             UPDATE cases 
             SET case_summary = %s, max_severity_score = %s, legal_regime = %s, ipc_sections = %s, bns_sections = %s, priority_score = %s, case_type = %s,
-                immediate_threat_flag = %s, societal_impact_score = %s, bias_score = %s, bias_details = %s, bias_flags = %s, content_hash = %s
+                immediate_threat_flag = %s, societal_impact_score = %s, bias_score = %s, bias_details = %s, bias_flags = %s, content_hash = %s,
+                num_ipc_sections = %s, num_cpc_sections = %s, num_precedents = %s, total_words = %s, case_age_days = %s, case_date = %s
             WHERE case_id = %s
-        """, (raw_summary_string, severity, regime, ipc_str, bns_str, priority_score, case_type, immediate_threat, societal_impact, bias_score, bias_details, bias_flags_str, content_hash, filename_id))
+        """, (raw_summary_string, severity, regime, ipc_str, bns_str, priority_score, case_type, immediate_threat, societal_impact, bias_score, bias_details, bias_flags_str, content_hash,
+              len(ipc_sections_list), len(cpc_sections_list), num_precedents, len(text.split()), case_age_val, date_str, filename_id))
         
         # Retrieve similar cases using text embedding of uploaded PDF
         similar_cases = []
@@ -510,6 +521,13 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             "priority_score": priority_score,
             "case_type": case_type,
             "priority_explanation": explanation,
+            "priority_features": {
+                "case_type": case_type,
+                "max_severity_score": float(severity),
+                "societal_impact_score": societal_impact,
+                "immediate_threat_flag": immediate_threat,
+                "case_age_days": case_age_val,
+            },
             "similar_cases": similar_cases,
             "contributions": contributions,
             "bias_score": bias_score,
@@ -638,6 +656,13 @@ async def search_cases(req: SearchRequest):
                 "priority_score": r[7] if r[7] is not None else 0.0,
                 "case_type": r[8] if r[8] else "Unknown",
                 "priority_explanation": exp,
+                "priority_features": {
+                    "case_type": r[8],
+                    "max_severity_score": r[3],
+                    "societal_impact_score": r[14],
+                    "immediate_threat_flag": r[13],
+                    "case_age_days": r[12],
+                },
                 "contributions": contributions,
                 "bias_score": r[16],
                 "bias_details": r[17] if r[17] is not None else "Automated audit unavailable.",
@@ -764,6 +789,13 @@ async def get_pending_priority_queue(
                 "bns_sections": r[7] if r[7] else "",
                 "ipc_sections": r[8] if r[8] else "",
                 "priority_explanation": exp,
+                "priority_features": {
+                    "case_type": r[2],
+                    "max_severity_score": r[5],
+                    "societal_impact_score": r[14],
+                    "immediate_threat_flag": r[13],
+                    "case_age_days": r[12],
+                },
                 "contributions": contributions,
                 "bias_score": r[16],
                 "bias_details": r[17] if r[17] is not None else "Automated audit unavailable.",

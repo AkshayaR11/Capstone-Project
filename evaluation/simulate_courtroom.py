@@ -36,7 +36,7 @@ WORKLOADS = {
     "NEAR_CAPACITY": 6.0,
     "ABOVE_CAPACITY": 8.0,
 }
-POLICIES = ["FIFO", "SEVERITY_ONLY", "AGING_ONLY", "AI_PRIORITY"]
+POLICIES = ["FIFO", "THREAT_FIRST", "SEVERITY_ONLY", "AGING_ONLY", "AI_PRIORITY"]
 
 # Illustrative service targets chosen for scenario analysis, not official standards.
 URGENT_WAIT_TARGET_DAYS = 5
@@ -180,6 +180,10 @@ class CourtroomSimulation:
             # Sort available queue by policy
             if policy_name == "FIFO":
                 available.sort(key=lambda x: x["filing_day"])
+            elif policy_name == "THREAT_FIRST":
+                # Scenario-urgent cases first; FIFO breaks ties. This isolates
+                # the effect of the urgency flag from the composite AI score.
+                available.sort(key=lambda x: (-int(bool(x["scenario_urgent"])), x["filing_day"]))
             elif policy_name == "SEVERITY_ONLY":
                 available.sort(key=lambda x: (-x["severity"], x["filing_day"]))
             elif policy_name == "AGING_ONLY":
@@ -256,6 +260,19 @@ class CourtroomSimulation:
         def quantile_or_nan(values, q):
             return float(np.quantile(values, q)) if len(values) else np.nan
 
+        # Pending waits are right-censored at the simulation horizon.
+        all_cases_df = pd.DataFrame(docket)
+        all_cases_df["wait_through_horizon"] = [
+            c["wait_time"] if c["wait_time"] is not None
+            else max(0, self.simulation_days - c["filing_day"])
+            for c in docket
+        ]
+        civil_all = all_cases_df[all_cases_df["case_type"].str.lower() == "civil"]
+        criminal_all = all_cases_df[all_cases_df["case_type"].str.lower() == "criminal"]
+        urgent_all = all_cases_df[all_cases_df["scenario_urgent"].astype(bool)]
+        initial_backlog = all_cases_df[~all_cases_df["is_bootstrap_arrival"]]
+        new_arrivals = all_cases_df[all_cases_df["is_bootstrap_arrival"]]
+
         urgent_total = len(urgent_resolved) + len(urgent_unresolved)
         older_total = len(older_resolved) + len(older_unresolved)
 
@@ -276,6 +293,16 @@ class CourtroomSimulation:
             "overall_wait_mean": mean_or_nan(overall_waits),
             "civil_wait_mean": mean_or_nan(civil_waits),
             "criminal_wait_mean": mean_or_nan(criminal_waits),
+            "wait_through_horizon_mean": mean_or_nan(waits(all_cases_df, "wait_through_horizon")),
+            "civil_wait_through_horizon_mean": mean_or_nan(waits(civil_all, "wait_through_horizon")),
+            "criminal_wait_through_horizon_mean": mean_or_nan(waits(criminal_all, "wait_through_horizon")),
+            "urgent_wait_through_horizon_mean": mean_or_nan(waits(urgent_all, "wait_through_horizon")),
+            "backlog_total": len(initial_backlog),
+            "backlog_resolved": int(initial_backlog["resolved_day"].notna().sum()),
+            "backlog_unresolved": int(initial_backlog["resolved_day"].isna().sum()),
+            "new_arrivals_total": len(new_arrivals),
+            "new_arrivals_resolved": int(new_arrivals["resolved_day"].notna().sum()),
+            "new_arrivals_unresolved": int(new_arrivals["resolved_day"].isna().sum()),
             "older_total": older_total,
             "older_resolved": len(older_resolved),
             "older_unresolved": len(older_unresolved),
@@ -295,6 +322,10 @@ METRICS = [
     "urgent_wait_mean", "urgent_wait_median", "urgent_wait_p90", "urgent_wait_p95",
     "urgent_target_miss_count", "urgent_target_miss_pct",
     "overall_wait_mean", "civil_wait_mean", "criminal_wait_mean",
+    "wait_through_horizon_mean", "civil_wait_through_horizon_mean",
+    "criminal_wait_through_horizon_mean", "urgent_wait_through_horizon_mean",
+    "backlog_total", "backlog_resolved", "backlog_unresolved",
+    "new_arrivals_total", "new_arrivals_resolved", "new_arrivals_unresolved",
     "older_total", "older_resolved", "older_unresolved", "older_wait_mean",
     "older_wait_p90", "older_target_miss_count", "older_target_miss_pct",
 ]
@@ -380,30 +411,38 @@ def run_experiment_and_plot():
     summary_df = pd.DataFrame(summary_rows)
 
     # Paired differences use the exact same seed/docket within each workload.
-    paired_rows = []
     paired_metrics = [
         "urgent_wait_mean", "urgent_wait_p90", "urgent_unresolved",
-        "urgent_target_miss_count", "overall_wait_mean", "civil_wait_mean",
-        "criminal_wait_mean", "older_wait_p90", "older_target_miss_count",
+        "urgent_target_miss_count", "wait_through_horizon_mean",
+        "civil_wait_through_horizon_mean", "criminal_wait_through_horizon_mean",
+        "backlog_unresolved", "new_arrivals_unresolved", "older_wait_p90", "older_target_miss_count",
     ]
-    for workload in WORKLOADS:
-        cohort = raw_df[raw_df["workload"] == workload]
-        fifo = cohort[cohort["policy"] == "FIFO"].set_index("seed")
-        for policy in POLICIES:
-            if policy == "FIFO":
-                continue
-            candidate = cohort[cohort["policy"] == policy].set_index("seed")
-            row = {"workload": workload, "policy_vs_fifo": policy, "paired_replications": len(fifo)}
-            for metric in paired_metrics:
-                delta = candidate[metric] - fifo[metric]
-                mean, low, high = mean_ci95(delta)
-                row[f"{metric}_difference_mean"] = mean
-                row[f"{metric}_difference_ci95_low"] = low
-                row[f"{metric}_difference_ci95_high"] = high
-            paired_rows.append(row)
-    paired_df = pd.DataFrame(paired_rows)
-    paired_path = PROJECT_ROOT / "evaluation" / "simulation_paired_vs_fifo.csv"
-    paired_df.to_csv(paired_path, index=False)
+    paired_outputs = {}
+    for baseline in ("FIFO", "THREAT_FIRST"):
+        paired_rows = []
+        for workload in WORKLOADS:
+            cohort = raw_df[raw_df["workload"] == workload]
+            baseline_rows = cohort[cohort["policy"] == baseline].set_index("seed")
+            for policy in POLICIES:
+                if policy == baseline:
+                    continue
+                candidate = cohort[cohort["policy"] == policy].set_index("seed")
+                row = {
+                    "workload": workload,
+                    f"policy_vs_{baseline.lower()}": policy,
+                    "paired_replications": len(baseline_rows),
+                }
+                for metric in paired_metrics:
+                    delta = candidate[metric] - baseline_rows[metric]
+                    mean, low, high = mean_ci95(delta)
+                    row[f"{metric}_difference_mean"] = mean
+                    row[f"{metric}_difference_ci95_low"] = low
+                    row[f"{metric}_difference_ci95_high"] = high
+                paired_rows.append(row)
+        paired_df = pd.DataFrame(paired_rows)
+        paired_path = PROJECT_ROOT / "evaluation" / f"simulation_paired_vs_{baseline.lower()}.csv"
+        paired_df.to_csv(paired_path, index=False)
+        paired_outputs[baseline] = paired_path
 
     # Compact table: group means with approximate 95% CIs, with trade-offs visible.
     def ci_text(row, metric, digits=1):
@@ -417,13 +456,15 @@ def run_experiment_and_plot():
         table_rows.append({
             "Workload (arrivals/day)": f"{row['workload']} ({row['arrival_rate_per_day']:g})",
             "Policy": row["policy"],
-            "Resolved (mean)": ci_text(row, "total_resolved"),
+            "Backlog pending (mean)": ci_text(row, "backlog_unresolved"),
+            "New arrivals (mean)": ci_text(row, "new_arrivals_total"),
+            "New arrivals pending (mean)": ci_text(row, "new_arrivals_unresolved"),
             "Urgent wait p90, days [95% CI]": ci_text(row, "urgent_wait_p90"),
             "Urgent unresolved (mean)": ci_text(row, "urgent_unresolved"),
             "Urgent target misses (mean)": ci_text(row, "urgent_target_miss_count"),
-            "Overall wait, days [95% CI]": ci_text(row, "overall_wait_mean"),
-            "Civil wait, days [95% CI]": ci_text(row, "civil_wait_mean"),
-            "Criminal wait, days [95% CI]": ci_text(row, "criminal_wait_mean"),
+            "Mean wait through horizon, days [95% CI]": ci_text(row, "wait_through_horizon_mean"),
+            "Civil wait through horizon, days [95% CI]": ci_text(row, "civil_wait_through_horizon_mean"),
+            "Criminal wait through horizon, days [95% CI]": ci_text(row, "criminal_wait_through_horizon_mean"),
             "Older-case p90, days [95% CI]": ci_text(row, "older_wait_p90"),
             "Older target misses (mean)": ci_text(row, "older_target_miss_count"),
         })
@@ -436,7 +477,8 @@ def run_experiment_and_plot():
         tex_path,
         index=False,
         caption=("Illustrative paired-seed courtroom simulation. Urgency and service targets are scenario assumptions; "
-                 "arrivals are bootstrap samples of existing case profiles. Cells report means and approximate 95\\% CIs."),
+                 "arrivals are bootstrap samples of existing case profiles. Pending waits are censored at the horizon. "
+                 "Cells report means and approximate 95\\% CIs."),
         label="tab:simulation_results",
         escape=True,
     )
@@ -445,13 +487,14 @@ def run_experiment_and_plot():
     print(table_df.to_string(index=False))
     print(f"\nSaved replication rows: {raw_path}")
     print(f"Saved summary: {summary_path}")
-    print(f"Saved paired differences vs FIFO: {paired_path}")
+    for baseline, path in paired_outputs.items():
+        print(f"Saved paired differences vs {baseline}: {path}")
     print(f"Saved LaTeX table: {tex_path}")
 
     # Plot urgent tail waits by workload with between-seed confidence intervals.
-    colors = {"FIFO": "#64748b", "SEVERITY_ONLY": "#8b5cf6", "AGING_ONLY": "#f59e0b", "AI_PRIORITY": "#10b981"}
+    colors = {"FIFO": "#64748b", "THREAT_FIRST": "#ef4444", "SEVERITY_ONLY": "#8b5cf6", "AGING_ONLY": "#f59e0b", "AI_PRIORITY": "#10b981"}
     x = np.arange(len(WORKLOADS))
-    width = 0.19
+    width = 0.15
     fig, ax = plt.subplots(figsize=(11, 6))
     for idx, policy in enumerate(POLICIES):
         rows = summary_df[summary_df["policy"] == policy].set_index("workload").loc[list(WORKLOADS)]
@@ -459,7 +502,7 @@ def run_experiment_and_plot():
         lows = rows["urgent_wait_p90_ci95_low"].to_numpy(dtype=float)
         highs = rows["urgent_wait_p90_ci95_high"].to_numpy(dtype=float)
         errors = np.vstack([np.maximum(0, means - lows), np.maximum(0, highs - means)])
-        ax.bar(x + (idx - 1.5) * width, means, width, yerr=errors, capsize=3,
+        ax.bar(x + (idx - 2) * width, means, width, yerr=errors, capsize=3,
                label=policy, color=colors[policy], edgecolor="#1e293b", linewidth=.5)
     ax.set_xticks(x, [f"{name.replace('_', ' ').title()}\nλ={rate:g}/day" for name, rate in WORKLOADS.items()])
     ax.set_ylabel("Urgent-case 90th percentile wait (days)")
@@ -478,7 +521,7 @@ def run_experiment_and_plot():
         lows = rows["urgent_unresolved_ci95_low"].to_numpy(dtype=float)
         highs = rows["urgent_unresolved_ci95_high"].to_numpy(dtype=float)
         errors = np.vstack([np.maximum(0, means - lows), np.maximum(0, highs - means)])
-        ax.bar(x + (idx - 1.5) * width, means, width, yerr=errors, capsize=3,
+        ax.bar(x + (idx - 2) * width, means, width, yerr=errors, capsize=3,
                label=policy, color=colors[policy], edgecolor="#1e293b", linewidth=.5)
     ax.set_xticks(x, [f"{name.replace('_', ' ').title()}\nλ={rate:g}/day" for name, rate in WORKLOADS.items()])
     ax.set_ylabel("Urgent cases unresolved at horizon (mean)")
