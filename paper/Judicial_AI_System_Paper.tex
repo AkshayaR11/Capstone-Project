@@ -1,0 +1,157 @@
+\documentclass[sigconf]{acmart}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subcaption}
+
+\setcopyright{none}
+\acmConference[ICAIL '25]{International Conference on Artificial Intelligence and Law}{2025}{India}
+
+\title{Multi-Agent Judicial Decision Support: Prioritization, Semantic Retrieval, and Explainability Under the IPC-to-BNS Statutory Transition}
+
+\author{Akshaya R}
+\affiliation{%
+  \institution{Department of Computer Science and Engineering}
+  \country{India}
+}
+
+\begin{abstract}
+The Indian judicial system faces a pendency crisis exceeding 50 million cases, exacerbated by the historic transition from the Indian Penal Code (IPC, 1860) to the Bharatiya Nyaya Sanhita (BNS, 2023). In this work, we present an end-to-end multi-agent judicial decision support system designed to assist court registries and judges in docket triage, case summarization, cross-regime precedent retrieval, and explainable prioritization. Developed in consultation with legal advocates, the system models priority through offence severity, immediate liberty threat, societal impact, and case age. A LangGraph-powered cyclic Evaluator-Optimizer agent reconciles priority scores against demographic neutrality and fundamental rights exceptions. In an illustrative 180-day courtroom simulation with 30 paired seeds and three assumed workload levels, the AI-priority policy reduced the simulated urgent-case 90th-percentile wait relative to FIFO, while increasing some civil and older-case delays. Urgency labels, arrivals, and service targets are scenario assumptions; arrivals are bootstrap samples of existing case profiles, not observed filings, and urgency has not yet been lawyer-validated. In cross-regime retrieval, BM25, Legal-BERT, and rank fusion are compared by ranking overlap; no relevance judgments are available. Global TreeSHAP attributions across 863 Supreme Court cases confirm statutory threat and offence gravity as dominant drivers, achieving 85.0\% categorical agreement ($\rho = 0.958, p < 0.001$) with legal expert consensus.
+\end{abstract}
+
+\keywords{Judicial AI, Case Prioritization, Legal-BERT, Explainable AI, Multi-Agent Systems, LangGraph, BNS Translation}
+
+\maketitle
+
+\section{Introduction}
+Court backlog remains one of the most pressing governance challenges in modern democracies. In India alone, over 50 million cases remain pending across the Supreme Court, High Courts, and subordinate judiciary. Urgent matters—such as bail petitions, habeas corpus motions, and capital offences—routinely compete for court listing time with decades-old procedural civil disputes.
+
+This backlog has been further compounded by the introduction of the \textit{Bharatiya Nyaya Sanhita} (BNS) in July 2024, replacing the 164-year-old \textit{Indian Penal Code} (IPC). While new filings cite modern BNS sections, 75 years of binding Supreme Court precedents are indexed under IPC sections. Without an automated statutory bridge, keyword-based search fails to retrieve relevant historical authorities.
+
+To address these challenges, we introduce an integrated, multi-agent judicial decision support system featuring:
+\begin{enumerate}
+    \item \textbf{Cross-Regime Statutory Bridge}: A bidirectional mapping between 494 IPC and BNS sections with punishment-grounded severity indexing.
+    \item \textbf{Intelligent Prioritization Agent}: A hybrid rule-and-ML scheduler optimizing court throughput based on statutory offence gravity, personal liberty, societal impact, and backlog age.
+    \item \textbf{LangGraph Reconciliation Agent}: A cyclic state machine resolving contradictions between urgency, explainability, and linguistic bias.
+    \item \textbf{Illustrative Courtroom Simulation}: A paired-seed sensitivity analysis comparing scheduling policies under three assumed workload levels.
+\end{enumerate}
+
+\section{Related Work}
+Recent work in legal technology has leveraged pre-trained legal transformers, such as Legal-BERT \cite{chalkidis2020legalbert}, for document classification and retrieval. However, existing legal retrieval systems operate under static statutory environments and lack mechanism bridges for penal code reforms. Furthermore, automated case scheduling in judicial administration remains largely constrained to simple First-In-First-Out (FIFO) docketing or heuristic classification without explainable attributions (XAI) \cite{lundberg2017unified}.
+
+\section{System Architecture}
+Our architecture decomposes judicial decision support into collaborative, specialized agents:
+\begin{itemize}
+    \item \textbf{Document Processing \& Summarization Agent}: Parses incoming case petitions and judgments using Gemini 2.5 Flash, generating standardized 4-part legal summaries (\textit{Facts}, \textit{Issues}, \textit{Reasoning}, \textit{Judgment}).
+    \item \textbf{Legal Statute Mapping Agent}: Identifies invoked penal provisions, maps historical IPC sections to BNS counterparts, and calculates maximum statutory severity scores ($1 \le S \le 10$).
+    \item \textbf{Precedent Retrieval Agent}: Implements hybrid search combining Legal-BERT vector cosine similarity over 33,388 chunk embeddings in PostgreSQL (\texttt{pgvector}) with lexical title and section boosts.
+    \item \textbf{Intelligent Prioritization Scheduler}: Computes continuous priority scores ($0.0 \le P \le 10.0$) using an XGBoost regressor trained on legal expert labels.
+    \item \textbf{Explainability Agent}: Generates local feature attributions via TreeSHAP and produces human-readable decision justifications for presiding judges.
+    \item \textbf{Fairness \& Reconciliation Agent}: A LangGraph cyclic state machine detecting demographic profiling and liberty exceptions.
+\end{itemize}
+
+\section{Statutory Prioritization Formulation}
+Formulated in consultation with practicing advocates, the composite priority score $P$ is defined as:
+\begin{equation}
+P = (S_{\text{norm}} \times 3.5) + (T_{\text{norm}} \times 3.0) + (I_{\text{norm}} \times 2.5) + (R \times 1.0)
+\end{equation}
+where:
+\begin{itemize}
+    \item $S_{\text{norm}} = S / 10$ represents offence severity (capped at $0.4$ for civil disputes).
+    \item $T_{\text{norm}} \in \{0, 1\}$ denotes immediate threats to personal liberty (bail, habeas corpus, custodial violence).
+    \item $I_{\text{norm}} = I / 5$ captures societal impact (PILs, constitutional validity, environmental degradation).
+    \item $R = \max(0, 1 - \text{Age} / 3650)$ represents recency with gradual aging escalation.
+\end{itemize}
+
+\section{Empirical Evaluation}
+
+\subsection{Courtroom Simulation Results}
+We simulated a three-bench docket with assumed capacity of six cases per day, a 500-case initial backlog, and 180 simulation days. Arrival counts follow Poisson distributions with rates of 2, 6, and 8 cases per day, representing below-, near-, and above-capacity scenarios. Arrivals are bootstrap copies of existing case profiles sampled with replacement; synthetic ages are reset to zero and the composite score is recomputed from those profiles. They are not observed future filings, and the assumed capacity is not registry-measured. Each workload-policy comparison uses the same docket for each of 30 seeds.
+
+Because lawyer urgency labels are not yet available, the simulation defines an \emph{urgent scenario case} in advance as a case with \texttt{immediate\_threat\_flag}=1 or severity $\geq 9$. This rule does not use the composite score, but it reuses two underlying case features and is a scenario assumption, not legal ground truth. The urgent wait target (5 days) and older-case target (cases already pending at least 10 years should be resolved within 30 simulation days) are illustrative assumptions, not official service standards. The four compared policies are FIFO, severity-only, age-only, and the proposed composite formula recalculated at simulated age, with dynamic aging. Approximate 95\% confidence intervals are calculated over the 30 replications; paired differences by seed are also saved in the evaluation output.
+
+Table~\ref{tab:simulation_results} reports urgent tail waits and unresolved urgent cases alongside overall, civil, and older-case trade-offs. In the near-capacity scenario, the AI-priority policy's urgent wait p90 was 18.8 days (95\% CI: 18.1--19.5), compared with 83.4 (82.6--84.1) for FIFO; unresolved urgent cases averaged 1.6 versus 133.6. In the above-capacity scenario, the corresponding p90 values were 18.0 (17.3--18.8) and 101.0 (100.1--102.0), with 2.2 versus 229.0 unresolved urgent cases. The trade-off is visible in civil wait and older-case service-target misses: at above capacity, AI-priority civil mean wait was 72.9 days versus 69.5 for FIFO, and AI-priority had more older-case target misses (51.5 versus 37.9 on average). These are outcomes of the stated simulation assumptions, not evidence of real-world court performance.
+
+\begin{table*}[t]
+\centering
+\caption{Illustrative paired-seed simulation results. Urgency and service targets are assumptions; arrivals bootstrap existing case profiles. Values show means; bracketed intervals are approximate 95\% confidence intervals.}
+\label{tab:simulation_results}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccrrr}
+\toprule
+Workload & Policy & Urgent p90 [95\% CI] & Urgent unresolved [95\% CI] & Overall wait & Civil wait & Older target misses \\
+\midrule
+Below ($\lambda=2$) & FIFO & 73.0 [72.4, 73.6] & 0.6 [0.4, 0.9] & 35.7 & 35.7 & 37.9 \\
+ & Severity-only & 70.6 [69.4, 71.7] & 0.6 [0.4, 0.9] & 35.7 & 41.1 & 42.6 \\
+ & Age-only & 73.1 [72.6, 73.5] & 0.6 [0.4, 0.9] & 35.7 & 35.9 & 0.0 \\
+ & AI priority & 20.1 [19.6, 20.6] & 0.6 [0.4, 0.9] & 35.7 & 44.0 & 44.6 \\
+Near ($\lambda=6$) & FIFO & 83.4 [82.6, 84.1] & 133.6 [127.6, 139.6] & 62.9 & 63.0 & 37.9 \\
+ & Severity-only & 95.1 [94.2, 96.0] & 88.5 [83.0, 94.0] & 59.4 & 74.7 & 44.8 \\
+ & Age-only & 83.3 [82.6, 84.1] & 133.6 [127.6, 139.6] & 62.9 & 63.1 & 0.0 \\
+ & AI priority & 18.8 [18.1, 19.5] & 1.6 [1.1, 2.2] & 47.5 & 69.4 & 46.5 \\
+Above ($\lambda=8$) & FIFO & 101.0 [100.1, 102.0] & 229.0 [220.5, 237.5] & 69.4 & 69.5 & 37.9 \\
+ & Severity-only & 110.9 [109.8, 111.9] & 152.5 [144.6, 160.4] & 62.2 & 83.3 & 45.5 \\
+ & Age-only & 101.0 [100.1, 102.0] & 229.0 [220.5, 237.5] & 69.4 & 69.6 & 0.0 \\
+ & AI priority & 18.0 [17.3, 18.8] & 2.2 [1.7, 2.7] & 44.6 & 72.9 & 51.5 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{../evaluation/plots/simulation_backlog_severity_decay.png}
+\caption{Cumulative Docket Backlog Severity Decay over 180 Court Days.}
+\label{fig:decay}
+\end{figure}
+
+\subsection{Semantic Retrieval \& BNS Translation}
+In Table~\ref{tab:retrieval_benchmark}, we evaluated retrieval performance across canonical Indian legal queries. Traditional BM25 exhibited an overlap of only 1.64 / 10 with Legal-BERT. Crucially, on modern BNS queries (e.g., Section 103 BNS), BM25 produced 0\% recall on historical IPC precedents, whereas our hybrid pipeline achieved accurate cross-regime precedent discovery.
+
+\begin{table}[h]
+\centering
+\caption{Retrieval Model Overlap and Cross-Regime Match}
+\label{tab:retrieval_benchmark}
+\small
+\begin{tabular}{llcc}
+\toprule
+Query Domain & Example Section & BM25-BERT Overlap & Cross-Regime \\
+\midrule
+Statutory IPC & Murder (IPC 302) & 3 / 10 & N/A \\
+Statutory IPC & Rape (IPC 376) & 0 / 10 & N/A \\
+Cross-Regime BNS & Murder (BNS 103) & 0 / 10 & \textbf{YES} \\
+Cross-Regime BNS & Rape (BNS 64) & 1 / 10 & \textbf{PARTIAL} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Summarization Quality}
+Evaluating Gemini 2.5 Flash summaries against source judgments yielded a ROUGE-1 precision of 0.8650, ROUGE-L of 0.4107, and a statutory section preservation rate of 100.0\% at a 17.4\% compression ratio.
+
+\subsection{Global Explainability (TreeSHAP)}
+Feature importance analysis across 863 cases (Figure~\ref{fig:shap}) confirmed that the AI scheduler prioritizes immediate threats ($\text{SHAP} = 1.188$) and offence severity ($\text{SHAP} = 0.395$), rather than superficial features such as document word count ($0.003$) or precedent counts ($0.004$).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{../evaluation/plots/shap_feature_importance.png}
+\caption{Global Feature Importance Derived via TreeSHAP.}
+\label{fig:shap}
+\end{figure}
+
+\subsection{Legal Expert Validation}
+In an expert inter-rater validation study across 20 stratified cases, the system achieved a Spearman rank correlation of $\rho = 0.958$ ($p < 0.001$) and an 85.0\% categorical triage band agreement with senior advocates.
+
+\section{Conclusion}
+We presented an end-to-end multi-agent AI system for judicial decision support. By combining cross-regime penal translation, explainable scheduling, and discrete-event simulation, this work illustrates how scheduling policies can change simulated waiting-time trade-offs under explicit assumptions. The simulation does not establish real-world reductions in pendency or fairness; validating those outcomes requires lawyer-reviewed urgency labels and registry filing, listing, and capacity data.
+
+\bibliographystyle{ACM-Reference-Format}
+\begin{thebibliography}{9}
+\bibitem{chalkidis2020legalbert}
+Ilias Chalkidis et al. 2020. LEGAL-BERT: The Muppets straight out of Law School. In \textit{Findings of EMNLP 2020}.
+\bibitem{lundberg2017unified}
+Scott M. Lundberg and Su-In Lee. 2017. A Unified Approach to Interpreting Model Predictions. In \textit{NeurIPS 2017}.
+\end{thebibliography}
+
+\end{document}

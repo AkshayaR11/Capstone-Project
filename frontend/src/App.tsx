@@ -656,8 +656,14 @@ function App() {
               {results.map((r, index) => (
                 <div key={r.case_id} className="result-card glass" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="card-header" style={{ flexWrap: 'wrap', gap: '8px' }}>
+<<<<<<< HEAD
                     <span className="similarity-badge">Vector similarity: {Math.min((r.score || 0) * 100, 90).toFixed(1)}%</span>
                     {r.relevance_label && <span className="similarity-badge">Legal relevance: {r.relevance_label}</span>}
+=======
+                    <span className={`severity-badge level-${r.severity > 7 ? 'high' : r.severity > 4 ? 'med' : 'low'}`}>
+                      Severity {r.severity}
+                    </span>
+>>>>>>> 65530d42773e933c3c766b1d884f59139677bac1
                     <span className="case-type-badge">{r.case_type}</span>
                     <span className={`priority-badge ${getPriorityClass(r.priority_score)}`}>
                       Priority: {r.priority_score?.toFixed(1)} ({getPriorityCategory(r.priority_score)})

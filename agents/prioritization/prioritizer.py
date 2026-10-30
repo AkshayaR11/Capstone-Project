@@ -68,11 +68,14 @@ class PrioritizationAgent:
 
     def compute_priority_score(
         self,
-        severity: int,
-        societal_impact: int,
-        immediate_threat: int,
-        case_age_days: float | None,
-        case_type: str
+        severity: int | float | None = None,
+        societal_impact: int | None = None,
+        immediate_threat: int | None = None,
+        case_age_days: float | None = None,
+        case_type: str = "civil",
+        bns_sections: str = "",
+        ipc_sections: str = "",
+        text: str = ""
     ) -> float:
         """
         Calculate composite priority score (0-10) using legal weights:
@@ -81,8 +84,35 @@ class PrioritizationAgent:
         - Immediate threat: 30%
         - Recency: 10%
         """
-        sev_norm = severity / 10.0
-        impact_norm = societal_impact / 5.0
+        if immediate_threat is None:
+            immediate_threat = self.check_immediate_threat(text)
+            
+        if societal_impact is None:
+            societal_impact = self.calculate_societal_impact(text)
+
+        if severity is None:
+            case_type_clean = (case_type or "civil").lower()
+            if case_type_clean == "criminal":
+                all_secs = f"{ipc_sections} {bns_sections}".lower()
+                if any(s in all_secs for s in ["302", "376", "396", "364a", "103"]):
+                    severity = 10
+                elif any(s in all_secs for s in ["304", "304b", "366a"]):
+                    severity = 9
+                elif any(s in all_secs for s in ["307", "395", "120b", "201", "109"]):
+                    severity = 8
+                elif any(s in all_secs for s in ["326", "392", "354", "498a", "85"]):
+                    severity = 6
+                elif any(s in all_secs for s in ["420", "406", "409", "316", "318"]):
+                    severity = 5
+                elif any(s in all_secs for s in ["379", "323", "427", "504", "303"]):
+                    severity = 3
+                else:
+                    severity = 4
+            else:
+                severity = 3
+
+        sev_norm = float(severity) / 10.0
+        impact_norm = float(societal_impact) / 5.0
         threat_norm = float(immediate_threat)
 
         if self.is_valid_age(case_age_days):
@@ -90,7 +120,7 @@ class PrioritizationAgent:
         else:
             recency = 0.5
 
-        if case_type == "civil":
+        if (case_type or "civil").lower() == "civil":
             sev_norm = min(sev_norm, 0.4)
 
         raw = (sev_norm * 3.5) + (impact_norm * 2.5) + (threat_norm * 3.0) + (recency * 1.0)

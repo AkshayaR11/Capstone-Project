@@ -12,10 +12,12 @@ import pdfplumber
 import json
 import re
 import os
+from pathlib import Path
 
-IPC_BNS_PDF   = "../ipcbnsmapping.pdf"
-CPC_PDF       = "../cpcsections.pdf"
-OUTPUT_PATH   = "data"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+IPC_BNS_PDF   = PROJECT_ROOT / "ipcbnsmapping.pdf"
+CPC_PDF       = PROJECT_ROOT / "cpcsections.pdf"
+OUTPUT_PATH   = PROJECT_ROOT / "data" / "mappings.json"
 
 
 def clean(val):
@@ -23,10 +25,11 @@ def clean(val):
     return str(val).strip().replace("\n", " ") if val else ""
 
 
-def parse_ipc_bns(pdf_path: str) -> dict:
+def parse_ipc_bns_entries(pdf_path: str) -> dict[str, set[str]]:
     """
-    The PDF has columns: BNS Section | Subject | IPC Section | Summary
-    We want a dict: {ipc_section: bns_section}
+    The PDF has columns: BNS Section | Subject | IPC Section | Summary.
+    Keep every explicit IPC section listed in a cell (some rows list multiple
+    IPC sections, e.g. "29 and 29A") as a key in {ipc_section: bns_section}.
     """
     mapping = {}
 
@@ -44,7 +47,7 @@ def parse_ipc_bns(pdf_path: str) -> dict:
                         ipc_candidate = parts[-1]
                         if re.match(r'^\d+[A-Za-z]?$', bns_candidate) and \
                            re.match(r'^\d+[A-Za-z]?$', ipc_candidate):
-                            mapping[ipc_candidate] = bns_candidate
+                            mapping.setdefault(ipc_candidate, set()).add(bns_candidate)
                 continue
 
             for row in rows:
@@ -56,15 +59,27 @@ def parse_ipc_bns(pdf_path: str) -> dict:
 
                 # Normalise section numbers:  "2(3)" -> "2", "103A" -> "103A"
                 bns_num = re.match(r'^(\d+[A-Za-z]?)', bns_raw)
-                ipc_num = re.match(r'^(\d+[A-Za-z]?)', ipc_raw)
+                # Parenthesized numbers are IPC subsections, not separate
+                # IPC sections. The cases table stores section numbers only,
+                # so strip subsection numbers before extracting the keys.
+                ipc_for_sections = re.sub(r'\bclauses?[-\s]*\d+\b', '', ipc_raw, flags=re.IGNORECASE)
+                ipc_for_sections = re.sub(r'\(\s*\d+\s*\)', '', ipc_for_sections)
+                ipc_for_sections = re.sub(r'(\d)\s*[-–]\s*([A-Za-z])', r'\1\2', ipc_for_sections)
+                ipc_nums = re.findall(r'\d+[A-Za-z]?', ipc_for_sections)
 
-                if bns_num and ipc_num:
-                    ipc_key = ipc_num.group(1)
+                if bns_num and ipc_nums:
                     bns_val = bns_num.group(1)
-                    # Skip if IPC and BNS are identical (just renamed)
-                    mapping[ipc_key] = bns_val
+                    for ipc_key in ipc_nums:
+                        mapping.setdefault(ipc_key, set()).add(bns_val)
 
     return mapping
+
+
+def parse_ipc_bns(pdf_path: str) -> dict:
+    """Return only unambiguous IPC section -> BNS section mappings."""
+    entries = parse_ipc_bns_entries(pdf_path)
+    return {ipc: next(iter(bns_values)) for ipc, bns_values in entries.items()
+            if len(bns_values) == 1}
 
 
 def parse_cpc_sections(pdf_path: str) -> list:
@@ -81,7 +96,11 @@ def parse_cpc_sections(pdf_path: str) -> list:
             for f in found:
                 if 1 <= int(re.sub(r'[A-Za-z]', '', f) or 0) <= 160:
                     sections.add(f)
-    return sorted(sections, key=lambda x: int(re.sub(r'[A-Za-z]', '', x)))
+    return sorted(sections, key=lambda x: (
+        int(re.sub(r'[A-Za-z]', '', x)),
+        re.sub(r'\d', '', x).lower(),
+        x
+    ))
 
 
 def main():
@@ -90,13 +109,18 @@ def main():
     print("=" * 60)
 
     # 1. IPC -> BNS mapping
-    if not os.path.exists(IPC_BNS_PDF):
+    if not IPC_BNS_PDF.exists():
         print(f"ERROR: '{IPC_BNS_PDF}' not found in project root. Aborting.")
         return
 
     print(f"\n[1/2] Parsing {IPC_BNS_PDF}...")
-    ipc_to_bns = parse_ipc_bns(IPC_BNS_PDF)
+    ipc_entries = parse_ipc_bns_entries(IPC_BNS_PDF)
+    ipc_to_bns = {ipc: next(iter(bns_values)) for ipc, bns_values in ipc_entries.items()
+                  if len(bns_values) == 1}
+    ambiguous_ipc_to_bns = {ipc: sorted(bns_values) for ipc, bns_values in ipc_entries.items()
+                            if len(bns_values) > 1}
     print(f"      [OK] Extracted {len(ipc_to_bns)} IPC -> BNS mappings")
+    print(f"      [INFO] {len(ambiguous_ipc_to_bns)} IPC sections have multiple BNS candidates")
 
     # Preview first 10
     for k, v in list(ipc_to_bns.items())[:10]:
@@ -104,7 +128,7 @@ def main():
 
     # 2. CPC sections
     cpc_sections = []
-    if os.path.exists(CPC_PDF):
+    if CPC_PDF.exists():
         print(f"\n[2/2] Parsing {CPC_PDF}...")
         cpc_sections = parse_cpc_sections(CPC_PDF)
         print(f"      [OK] Extracted {len(cpc_sections)} CPC section references")
@@ -114,11 +138,12 @@ def main():
     # 3. Save
     output = {
         "IPC_TO_BNS": ipc_to_bns,
+        "IPC_TO_BNS_AMBIGUOUS": ambiguous_ipc_to_bns,
         "CPC_SECTIONS": cpc_sections
     }
 
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with OUTPUT_PATH.open("w", encoding="utf-8") as f:
         json.dump(output, f, indent=4)
 
     print(f"\n[DONE] Saved to {OUTPUT_PATH}")

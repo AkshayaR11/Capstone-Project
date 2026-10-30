@@ -8,8 +8,11 @@ import torch.nn.functional as F
 import os
 import sys
 import re
+import json
 import hashlib
 from datetime import datetime
+from pathlib import Path
+from rank_bm25 import BM25Okapi
 
 # Ensure parent directory is in sys.path for config and agent imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -166,6 +169,83 @@ def retrieve_hybrid_candidates(query_text: str, year_filter: str, top_k: int):
             "bias_flags": record[18].split(",") if (record[18] and record[18].strip()) else [],
         })
     return results
+
+# BM25 over the same chunks used to generate the pgvector embeddings.
+BM25_RRF_K = 60
+BM25_RRF_POOL_SIZE = 100
+BM25_INDEX = None
+BM25_CHUNK_CASE_IDS = []
+
+
+def build_bm25_index():
+    """Build a case-linked BM25 index from the persisted chunk files."""
+    global BM25_INDEX, BM25_CHUNK_CASE_IDS
+
+    chunks_dir = Path(__file__).resolve().parents[1] / "data" / "chunks"
+    chunk_texts = []
+    chunk_case_ids = []
+
+    for chunk_file in sorted(chunks_dir.glob("*_chunks.json")):
+        try:
+            with chunk_file.open("r", encoding="utf-8") as f:
+                chunk_data = json.load(f)
+            case_id = chunk_data.get("case_id") or chunk_file.name[:-len("_chunks.json")]
+            for chunk in chunk_data.get("chunks", []):
+                text = chunk.get("text", "").strip()
+                if text:
+                    chunk_texts.append(text.lower().split())
+                    chunk_case_ids.append(case_id)
+        except (OSError, json.JSONDecodeError) as exc:
+            print(f"⚠️ Skipping unreadable BM25 chunk file {chunk_file.name}: {exc}")
+
+    if not chunk_texts:
+        BM25_INDEX = None
+        BM25_CHUNK_CASE_IDS = []
+        print(f"⚠️ No chunk text found for BM25 index in {chunks_dir}")
+        return
+
+    BM25_INDEX = BM25Okapi(chunk_texts)
+    BM25_CHUNK_CASE_IDS = chunk_case_ids
+    print(f"BM25 index ready: {len(chunk_texts)} chunks across {len(set(chunk_case_ids))} cases.")
+
+
+@app.on_event("startup")
+async def initialize_bm25_index():
+    build_bm25_index()
+
+
+def search_bm25_legalbert_rrf(query_text, vector_records, top_k):
+    """Fuse BM25 chunk ranks with per-case Legal-BERT vector ranks using RRF."""
+    if BM25_INDEX is None:
+        raise HTTPException(status_code=503, detail="BM25 retrieval index is unavailable")
+
+    record_by_case = {record[0]: record for record in vector_records}
+    available_case_ids = set(record_by_case)
+
+    vector_ranked = [
+        record[0]
+        for record in sorted(vector_records, key=lambda record: float(record[1]))[:BM25_RRF_POOL_SIZE]
+    ]
+
+    bm25_chunk_scores = BM25_INDEX.get_scores(query_text.lower().split())
+    bm25_case_scores = {}
+    for case_id, score in zip(BM25_CHUNK_CASE_IDS, bm25_chunk_scores):
+        if case_id in available_case_ids:
+            bm25_case_scores[case_id] = max(bm25_case_scores.get(case_id, float("-inf")), float(score))
+
+    bm25_ranked = sorted(
+        (case_id for case_id, score in bm25_case_scores.items() if score > 0),
+        key=bm25_case_scores.get,
+        reverse=True
+    )[:BM25_RRF_POOL_SIZE]
+
+    fused_scores = {}
+    for ranked in (bm25_ranked, vector_ranked):
+        for rank, case_id in enumerate(ranked, start=1):
+            fused_scores[case_id] = fused_scores.get(case_id, 0.0) + 1.0 / (BM25_RRF_K + rank)
+
+    fused_case_ids = sorted(fused_scores, key=fused_scores.get, reverse=True)[:top_k]
+    return [(fused_scores[case_id], record_by_case[case_id]) for case_id in fused_case_ids]
 
 @app.post("/summarize_upload")
 async def process_pdf_upload(file: UploadFile = File(...)):
@@ -575,33 +655,103 @@ async def search_cases(req: SearchRequest):
     if not EXPLAINABILITY_AGENT:
         from agents.explainability.explainability_agent import ExplainabilityAgent
         EXPLAINABILITY_AGENT = ExplainabilityAgent()
-    if not PRECEDENT_SEARCH_AGENT:
-        from agents.corrective_precedent_search import CorrectivePrecedentSearch
-        PRECEDENT_SEARCH_AGENT = CorrectivePrecedentSearch()
 
+    if not BIAS_AGENT:
+        from agents.fairness.bias_agent import BiasAgent
+        BIAS_AGENT = BiasAgent()
+        
+    conn = None
+    cur = None
     try:
-        initial_results = retrieve_hybrid_candidates(req.query, req.yearFilter, req.topK)
-        workflow_result = PRECEDENT_SEARCH_AGENT.search(
-            query=req.query,
-            initial_candidates=initial_results,
-            retrieve_fn=lambda rewritten_query: retrieve_hybrid_candidates(
-                rewritten_query, req.yearFilter, req.topK
-            ),
-            top_k=max(1, min(req.topK, 50)),
-        )
-        return {
-            "results": workflow_result["results"],
-            "retrieval": {
-                "retried": workflow_result["retried"],
-                "retry_recommended": workflow_result["retry_recommended"],
-                "candidate_count": workflow_result["candidate_count"],
-                "rewritten_query": workflow_result["rewritten_query"],
-                "rewrite_status": workflow_result["rewrite_status"],
-                "retry_retrieval_status": workflow_result["retry_retrieval_status"],
-                "grading_method": workflow_result["grading_method"],
-                "returned_count": workflow_result["returned_count"],
-            },
-        }
+        conn = psycopg2.connect(DATABASE_URL)
+        cur = conn.cursor()
+        
+        # Retrieve per-case Legal-BERT vector distances. BM25 ranks the same
+        # persisted case chunks; the two ranked lists are fused below with RRF.
+        if req.yearFilter:
+            sql = """
+                SELECT 
+                    c.case_id, 
+                    MIN(cc.embedding <=> %s::vector) AS min_dist,
+                    c.case_date, c.max_severity_score, c.case_summary,
+                    c.bns_sections, c.ipc_sections, c.priority_score, c.case_type,
+                    c.num_ipc_sections, c.num_cpc_sections, c.num_precedents,
+                    c.case_age_days, c.immediate_threat_flag, c.societal_impact_score,
+                    c.total_words, c.bias_score, c.bias_details, c.bias_flags
+                FROM case_chunks cc
+                JOIN cases c ON cc.case_id = c.case_id
+                WHERE c.case_date LIKE %s OR c.case_id LIKE %s
+                GROUP BY c.case_id, c.case_date, c.max_severity_score, c.case_summary, c.bns_sections, c.ipc_sections, c.priority_score, c.case_type, c.num_ipc_sections, c.num_cpc_sections, c.num_precedents, c.case_age_days, c.immediate_threat_flag, c.societal_impact_score, c.total_words, c.bias_score, c.bias_details, c.bias_flags;
+            """
+            year_param = f"%{req.yearFilter}%"
+            cur.execute(sql, (query_emb.tolist(), year_param, year_param))
+        else:
+            sql = """
+                SELECT 
+                    c.case_id, 
+                    MIN(cc.embedding <=> %s::vector) AS min_dist,
+                    c.case_date, c.max_severity_score, c.case_summary,
+                    c.bns_sections, c.ipc_sections, c.priority_score, c.case_type,
+                    c.num_ipc_sections, c.num_cpc_sections, c.num_precedents,
+                    c.case_age_days, c.immediate_threat_flag, c.societal_impact_score,
+                    c.total_words, c.bias_score, c.bias_details, c.bias_flags
+                FROM case_chunks cc
+                JOIN cases c ON cc.case_id = c.case_id
+                GROUP BY c.case_id, c.case_date, c.max_severity_score, c.case_summary, c.bns_sections, c.ipc_sections, c.priority_score, c.case_type, c.num_ipc_sections, c.num_cpc_sections, c.num_precedents, c.case_age_days, c.immediate_threat_flag, c.societal_impact_score, c.total_words, c.bias_score, c.bias_details, c.bias_flags;
+            """
+            cur.execute(sql, (query_emb.tolist(),))
+
+        records = cur.fetchall()
+
+        top_records = search_bm25_legalbert_rrf(req.query, records, req.topK)
+
+        results = []
+        for score, r in top_records:
+            # Generate dynamic explanation trace
+            exp = PRIORITIZATION_AGENT.generate_explanation(
+                case_type=r[8] if r[8] else "Unknown",
+                num_ipc_sections=r[9] if r[9] is not None else 0,
+                num_cpc_sections=r[10] if r[10] is not None else 0,
+                case_age_days=r[12] if r[12] is not None else None,
+                num_precedents=r[11] if r[11] is not None else 0,
+                severity=float(r[3]) if r[3] is not None else 3.0,
+                immediate_threat=r[13] if r[13] is not None else 0,
+                societal_impact=r[14] if r[14] is not None else 1,
+                case_date=r[2] if r[2] else None
+            )
+
+            # Generate Explainability attributions
+            features_for_explain = {
+                "case_type": r[8] if r[8] else "civil",
+                "num_ipc_sections": r[9] if r[9] is not None else 0,
+                "num_cpc_sections": r[10] if r[10] is not None else 0,
+                "num_precedents": r[11] if r[11] is not None else 0,
+                "total_words": r[15] if r[15] is not None else 1000,
+                "case_age_days": r[12] if r[12] is not None else 365.0,
+                "max_severity_score": r[3] if r[3] is not None else 3.0,
+                "immediate_threat_flag": r[13] if r[13] is not None else 0,
+                "societal_impact_score": r[14] if r[14] is not None else 1
+            }
+            contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
+            
+            results.append({
+                "case_id": r[0],
+                "score": round(float(score), 6),
+                "date": r[2] if r[2] else "Unknown",
+                "severity": r[3],
+                "summary": r[4] if r[4] else "AI Synopsis Pending Processing.",
+                "bns_sections": r[5] if r[5] else "",
+                "ipc_sections": r[6] if r[6] else "",
+                "priority_score": r[7] if r[7] is not None else 0.0,
+                "case_type": r[8] if r[8] else "Unknown",
+                "priority_explanation": exp,
+                "contributions": contributions,
+                "bias_score": r[16],
+                "bias_details": r[17] if r[17] is not None else "Automated audit unavailable.",
+                "bias_flags": r[18].split(",") if (r[18] and r[18].strip()) else []
+            })
+            
+        return {"results": results}
     except Exception as e:
         print(f"Precedent search failed: {e}")
         raise HTTPException(status_code=500, detail="Precedent search failed")

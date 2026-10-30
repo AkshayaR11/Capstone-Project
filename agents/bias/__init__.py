@@ -1,3 +1,5 @@
-# Bias Scanner Package
+# Bias & Fairness Package Bridge
 from .bias_detector import BiasDetector
-from .bias_agent import BiasAgent
+from agents.fairness.bias_agent import BiasAgent
+
+__all__ = ["BiasDetector", "BiasAgent"]
