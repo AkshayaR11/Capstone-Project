@@ -17,7 +17,7 @@
 }
 
 \begin{abstract}
-The Indian judicial system faces a pendency crisis exceeding 50 million cases, exacerbated by the historic transition from the Indian Penal Code (IPC, 1860) to the Bharatiya Nyaya Sanhita (BNS, 2023). In this work, we present an end-to-end multi-agent judicial decision support system designed to assist court registries and judges in docket triage, case summarization, cross-regime precedent retrieval, and explainable prioritization. Developed in consultation with legal advocates, the system models priority through offence severity, immediate liberty threat, societal impact, and case age. A LangGraph-powered cyclic Evaluator-Optimizer agent reconciles priority scores against demographic neutrality and fundamental rights exceptions. In an illustrative 180-day courtroom simulation with 30 paired seeds and three assumed workload levels, the AI-priority policy reduced the simulated urgent-case 90th-percentile wait relative to FIFO, while increasing some civil and older-case delays. Urgency labels, arrivals, and service targets are scenario assumptions; arrivals are bootstrap samples of existing case profiles, not observed filings, and urgency has not yet been lawyer-validated. In cross-regime retrieval, BM25, Legal-BERT, and rank fusion are compared by ranking overlap; no relevance judgments are available. Global TreeSHAP attributions across 863 Supreme Court cases confirm statutory threat and offence gravity as dominant drivers, achieving 85.0\% categorical agreement ($\rho = 0.958, p < 0.001$) with legal expert consensus.
+The Indian judicial system faces a pendency crisis exceeding 50 million cases, exacerbated by the historic transition from the Indian Penal Code (IPC, 1860) to the Bharatiya Nyaya Sanhita (BNS, 2023). We present a judicial decision-support prototype for docket triage, case summarization, cross-regime precedent retrieval, and explainable prioritization. Priority labels are generated from a predefined scoring formula and used to train an XGBoost approximation; they are not lawyer-adjudicated urgency labels. A LangGraph workflow with a conditional LLM deliberation step reviews priority signals and generates an illustrative triage draft for human review. In an illustrative 180-day courtroom scenario analysis with 30 paired seeds and three assumed workload levels, both the composite priority policy and a direct threat-first baseline reduced simulated scenario-urgent waits relative to FIFO; the composite did not outperform threat-first on urgent-tail waits. Urgency labels, arrivals, and service targets are scenario assumptions; arrivals are bootstrap samples of existing case profiles, not observed filings, and urgency has not yet been lawyer-validated. In cross-regime retrieval, BM25, Legal-BERT, and rank fusion are compared by ranking overlap; no relevance judgments are available. Model attribution results describe how the model reproduces the constructed labels and do not establish agreement with legal experts.
 \end{abstract}
 
 \keywords{Judicial AI, Case Prioritization, Legal-BERT, Explainable AI, Multi-Agent Systems, LangGraph, BNS Translation}
@@ -33,7 +33,7 @@ To address these challenges, we introduce an integrated, multi-agent judicial de
 \begin{enumerate}
     \item \textbf{Cross-Regime Statutory Bridge}: A bidirectional mapping between 494 IPC and BNS sections with punishment-grounded severity indexing.
     \item \textbf{Intelligent Prioritization Agent}: A hybrid rule-and-ML scheduler optimizing court throughput based on statutory offence gravity, personal liberty, societal impact, and backlog age.
-    \item \textbf{LangGraph Reconciliation Agent}: A cyclic state machine resolving contradictions between urgency, explainability, and linguistic bias.
+    \item \textbf{LangGraph Reconciliation Agent}: A workflow with a conditional LLM deliberation step that flags priority, explainability, and demographic-language review signals.
     \item \textbf{Illustrative Courtroom Simulation}: A paired-seed sensitivity analysis comparing scheduling policies under three assumed workload levels.
 \end{enumerate}
 
@@ -46,9 +46,9 @@ Our architecture decomposes judicial decision support into collaborative, specia
     \item \textbf{Document Processing \& Summarization Agent}: Parses incoming case petitions and judgments using Gemini 2.5 Flash, generating standardized 4-part legal summaries (\textit{Facts}, \textit{Issues}, \textit{Reasoning}, \textit{Judgment}).
     \item \textbf{Legal Statute Mapping Agent}: Identifies invoked penal provisions, maps historical IPC sections to BNS counterparts, and calculates maximum statutory severity scores ($1 \le S \le 10$).
     \item \textbf{Precedent Retrieval Agent}: Implements hybrid search combining Legal-BERT vector cosine similarity over 33,388 chunk embeddings in PostgreSQL (\texttt{pgvector}) with lexical title and section boosts.
-    \item \textbf{Intelligent Prioritization Scheduler}: Computes continuous priority scores ($0.0 \le P \le 10.0$) using an XGBoost regressor trained on legal expert labels.
+    \item \textbf{Intelligent Prioritization Scheduler}: Computes continuous priority scores ($0.0 \le P \le 10.0$) using an XGBoost regressor trained to approximate labels generated by a predefined scoring formula.
     \item \textbf{Explainability Agent}: Generates local feature attributions via TreeSHAP and produces human-readable decision justifications for presiding judges.
-    \item \textbf{Fairness \& Reconciliation Agent}: A LangGraph cyclic state machine detecting demographic profiling and liberty exceptions.
+    \item \textbf{Demographic-Language Screen \& Reconciliation Agent}: A LangGraph workflow with a conditional LLM deliberation step that flags demographic-language and liberty-related review signals; it does not evaluate ranking fairness or precedent relevance.
 \end{itemize}
 
 \section{Statutory Prioritization Formulation}
@@ -67,34 +67,39 @@ where:
 \section{Empirical Evaluation}
 
 \subsection{Courtroom Simulation Results}
-We simulated a three-bench docket with assumed capacity of six cases per day, a 500-case initial backlog, and 180 simulation days. Arrival counts follow Poisson distributions with rates of 2, 6, and 8 cases per day, representing below-, near-, and above-capacity scenarios. Arrivals are bootstrap copies of existing case profiles sampled with replacement; synthetic ages are reset to zero and the composite score is recomputed from those profiles. They are not observed future filings, and the assumed capacity is not registry-measured. Each workload-policy comparison uses the same docket for each of 30 seeds.
+We simulated a three-bench docket with assumed capacity of six cases per day, a 500-case initial backlog, and 180 simulation days. Arrival counts follow Poisson distributions with rates of 2, 6, and 8 cases per day, representing below-, near-, and above-capacity scenarios. Arrivals are bootstrap copies of existing case profiles sampled with replacement; synthetic ages are reset to zero and the composite score is recomputed from those profiles. This run used 860 profiles from the labeled-case CSV fallback because the local PostgreSQL connection was unavailable. These bootstrap arrivals are not observed future filings, and the assumed capacity is not registry-measured. Each workload-policy comparison uses the same docket for each of 30 seeds.
 
-Because lawyer urgency labels are not yet available, the simulation defines an \emph{urgent scenario case} in advance as a case with \texttt{immediate\_threat\_flag}=1 or severity $\geq 9$. This rule does not use the composite score, but it reuses two underlying case features and is a scenario assumption, not legal ground truth. The urgent wait target (5 days) and older-case target (cases already pending at least 10 years should be resolved within 30 simulation days) are illustrative assumptions, not official service standards. The four compared policies are FIFO, severity-only, age-only, and the proposed composite formula recalculated at simulated age, with dynamic aging. Approximate 95\% confidence intervals are calculated over the 30 replications; paired differences by seed are also saved in the evaluation output.
+Because lawyer urgency labels are not yet available, the simulation defines an \emph{urgent scenario case} in advance as a case with \texttt{immediate\_threat\_flag}=1 or severity $\geq 9$. This rule reuses two underlying features in the composite priority formula and is therefore not an independent measure of real urgency. To expose this circularity, we add a \texttt{THREAT\_FIRST} baseline that serves scenario-urgent cases first and uses FIFO to break ties. The other policies are FIFO, severity-only, age-only, and the proposed composite formula recalculated at simulated age, with dynamic aging. The urgent wait target (5 days) and older-case target (cases already pending at least 10 years should be resolved within 30 simulation days) are illustrative assumptions, not official service standards. Approximate 95\% confidence intervals are calculated over the 30 replications; paired differences by seed are saved against both FIFO and \texttt{THREAT\_FIRST}.
 
-Table~\ref{tab:simulation_results} reports urgent tail waits and unresolved urgent cases alongside overall, civil, and older-case trade-offs. In the near-capacity scenario, the AI-priority policy's urgent wait p90 was 18.8 days (95\% CI: 18.1--19.5), compared with 83.4 (82.6--84.1) for FIFO; unresolved urgent cases averaged 1.6 versus 133.6. In the above-capacity scenario, the corresponding p90 values were 18.0 (17.3--18.8) and 101.0 (100.1--102.0), with 2.2 versus 229.0 unresolved urgent cases. The trade-off is visible in civil wait and older-case service-target misses: at above capacity, AI-priority civil mean wait was 72.9 days versus 69.5 for FIFO, and AI-priority had more older-case target misses (51.5 versus 37.9 on average). These are outcomes of the stated simulation assumptions, not evidence of real-world court performance.
+The priority formula is retained as designed: the immediate-threat flag contributes positively to the score, but the system does not impose an automatic minimum score of 6.0 for every flagged case. This is a documented formula choice, not a finding that the resulting scores meet lawyers' expectations; lawyer review is needed to validate that policy.
+
+Table~\ref{tab:simulation_results} reports urgent-tail waits, unresolved cases, and waits accumulated through the 180-day horizon. Pending cases' waits are censored at day 180, so these means are observed-wait summaries rather than estimates of eventual time to hearing. It also separates unresolved cases from the original 500-case backlog and from bootstrap arrivals. At near capacity, both urgency-aware policies had substantially lower scenario-urgent p90 waits than FIFO (16.8 days for \texttt{THREAT\_FIRST} and 19.4 for AI priority, versus 83.3 for FIFO); urgent unresolved cases averaged 1.7 under each urgency-aware policy, versus 129.1 under FIFO. At above capacity, their urgent p90 waits were 16.4 and 18.4 days versus 101.0 for FIFO, with 2.1 urgent cases unresolved under either urgency-aware policy versus 224.4 under FIFO. This supports only the scenario-level observation that urgency-aware triage beats FIFO under the chosen urgency definition. The composite score did not improve urgent-tail waits over direct threat-first ordering. These outcomes do not validate the urgency flag or establish real-world court performance; that requires independent lawyer labels and registry data.
 
 \begin{table*}[t]
 \centering
-\caption{Illustrative paired-seed simulation results. Urgency and service targets are assumptions; arrivals bootstrap existing case profiles. Values show means; bracketed intervals are approximate 95\% confidence intervals.}
+\caption{Illustrative paired-seed simulation results. Urgency and service targets are assumptions; arrivals bootstrap existing case profiles. Pending waits are censored at day 180. Values show means; bracketed intervals are approximate 95\% confidence intervals.}
 \label{tab:simulation_results}
 \scriptsize
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llccrrr}
+\begin{tabular}{llrrrrr}
 \toprule
-Workload & Policy & Urgent p90 [95\% CI] & Urgent unresolved [95\% CI] & Overall wait & Civil wait & Older target misses \\
+Workload & Policy & Urgent p90 [95\% CI] & Urgent unresolved (mean) & Mean wait through horizon [95\% CI] & Backlog pending (mean) & New arrivals pending (mean) \\
 \midrule
-Below ($\lambda=2$) & FIFO & 73.0 [72.4, 73.6] & 0.6 [0.4, 0.9] & 35.7 & 35.7 & 37.9 \\
- & Severity-only & 70.6 [69.4, 71.7] & 0.6 [0.4, 0.9] & 35.7 & 41.1 & 42.6 \\
- & Age-only & 73.1 [72.6, 73.5] & 0.6 [0.4, 0.9] & 35.7 & 35.9 & 0.0 \\
- & AI priority & 20.1 [19.6, 20.6] & 0.6 [0.4, 0.9] & 35.7 & 44.0 & 44.6 \\
-Near ($\lambda=6$) & FIFO & 83.4 [82.6, 84.1] & 133.6 [127.6, 139.6] & 62.9 & 63.0 & 37.9 \\
- & Severity-only & 95.1 [94.2, 96.0] & 88.5 [83.0, 94.0] & 59.4 & 74.7 & 44.8 \\
- & Age-only & 83.3 [82.6, 84.1] & 133.6 [127.6, 139.6] & 62.9 & 63.1 & 0.0 \\
- & AI priority & 18.8 [18.1, 19.5] & 1.6 [1.1, 2.2] & 47.5 & 69.4 & 46.5 \\
-Above ($\lambda=8$) & FIFO & 101.0 [100.1, 102.0] & 229.0 [220.5, 237.5] & 69.4 & 69.5 & 37.9 \\
- & Severity-only & 110.9 [109.8, 111.9] & 152.5 [144.6, 160.4] & 62.2 & 83.3 & 45.5 \\
- & Age-only & 101.0 [100.1, 102.0] & 229.0 [220.5, 237.5] & 69.4 & 69.6 & 0.0 \\
- & AI priority & 18.0 [17.3, 18.8] & 2.2 [1.7, 2.7] & 44.6 & 72.9 & 51.5 \\
+Below ($\lambda=2$) & FIFO & 72.9 [72.1, 73.7] & 0.6 & 35.6 [35.3, 35.8] & 0 & 2.1 \\
+ & Threat-first & 18.4 [18.1, 18.7] & 0.6 & 35.6 [35.3, 35.8] & 0 & 2.1 \\
+ & Severity-only & 70.7 [69.6, 71.8] & 0.6 & 35.6 [35.3, 35.8] & 0 & 2.1 \\
+ & Age-only & 73.2 [72.7, 73.7] & 0.6 & 35.6 [35.3, 35.8] & 0 & 2.1 \\
+ & AI priority & 20.0 [19.7, 20.4] & 0.6 & 35.6 [35.3, 35.8] & 0 & 2.1 \\
+Near ($\lambda=6$) & FIFO & 83.3 [82.6, 84.0] & 129.1 & 55.8 [55.4, 56.3] & 0 & 499.4 \\
+ & Threat-first & 16.8 [16.4, 17.2] & 1.7 & 55.8 [55.4, 56.3] & 0 & 499.4 \\
+ & Severity-only & 95.5 [94.4, 96.5] & 87.0 & 55.8 [55.4, 56.3] & 0 & 499.4 \\
+ & Age-only & 83.3 [82.6, 84.0] & 129.1 & 55.8 [55.4, 56.3] & 0 & 499.4 \\
+ & AI priority & 19.4 [18.7, 20.0] & 1.7 & 55.8 [55.4, 56.3] & 78.4 & 421.1 \\
+Above ($\lambda=8$) & FIFO & 101.0 [99.9, 102.1] & 224.4 & 62.2 [61.8, 62.5] & 0 & 856.7 \\
+ & Threat-first & 16.4 [15.9, 16.8] & 2.1 & 62.2 [61.8, 62.5] & 0 & 856.7 \\
+ & Severity-only & 111.0 [110.1, 111.9] & 151.0 & 62.2 [61.8, 62.5] & 0 & 856.7 \\
+ & Age-only & 101.0 [99.9, 102.1] & 224.4 & 62.2 [61.8, 62.5] & 0 & 856.7 \\
+ & AI priority & 18.4 [17.8, 19.0] & 2.1 & 62.2 [61.8, 62.5] & 113.8 & 742.8 \\
 \bottomrule
 \end{tabular}
 }
@@ -131,7 +136,7 @@ Cross-Regime BNS & Rape (BNS 64) & 1 / 10 & \textbf{PARTIAL} \\
 Evaluating Gemini 2.5 Flash summaries against source judgments yielded a ROUGE-1 precision of 0.8650, ROUGE-L of 0.4107, and a statutory section preservation rate of 100.0\% at a 17.4\% compression ratio.
 
 \subsection{Global Explainability (TreeSHAP)}
-Feature importance analysis across 863 cases (Figure~\ref{fig:shap}) confirmed that the AI scheduler prioritizes immediate threats ($\text{SHAP} = 1.188$) and offence severity ($\text{SHAP} = 0.395$), rather than superficial features such as document word count ($0.003$) or precedent counts ($0.004$).
+Feature attribution analysis across 863 cases (Figure~\ref{fig:shap}) shows that the learned model relies most on the immediate-threat flag ($\text{mean absolute SHAP} = 1.188$), followed by offence severity ($0.395$). Since the training targets are generated from a formula that uses these features, these attributions describe reproduction of that formula; they do not independently validate legal priority.
 
 \begin{figure}[h]
 \centering
@@ -140,8 +145,8 @@ Feature importance analysis across 863 cases (Figure~\ref{fig:shap}) confirmed t
 \label{fig:shap}
 \end{figure}
 
-\subsection{Legal Expert Validation}
-In an expert inter-rater validation study across 20 stratified cases, the system achieved a Spearman rank correlation of $\rho = 0.958$ ($p < 0.001$) and an 85.0\% categorical triage band agreement with senior advocates.
+\subsection{Priority-Score Validation Limits}
+The priority model is evaluated as an approximation of programmatically generated labels, not against independent lawyer judgments. Correlation between severity and priority is not independent validation because severity contributes directly to the label formula. Lawyer-adjudicated urgency labels on a held-out set are required before claiming legal validity or expert agreement.
 
 \section{Conclusion}
 We presented an end-to-end multi-agent AI system for judicial decision support. By combining cross-regime penal translation, explainable scheduling, and discrete-event simulation, this work illustrates how scheduling policies can change simulated waiting-time trade-offs under explicit assumptions. The simulation does not establish real-world reductions in pendency or fairness; validating those outcomes requires lawyer-reviewed urgency labels and registry filing, listing, and capacity data.

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <title>Courtroom Simulation Dashboard</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --surface: #111a2e;
+      --surface-2: #18243c;
+      --stroke: rgba(169, 190, 228, .13);
+      --text: #edf3ff;
+      --muted: #9cabc5;
+      --purple: #9b8cff;
+      --mint: #54e0ba;
+      --blue: #62a7ff;
+      --orange: #ffbd72;
+      --rose: #ff7893;
+      --shadow: 0 22px 70px rgba(0,0,0,.24);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      background: radial-gradient(ellipse at 15% -15%, rgba(87,105,209,.24), transparent 36%),
+                  radial-gradient(ellipse at 100% 30%, rgba(113,70,178,.14), transparent 30%), var(--bg);
+      font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, select { font: inherit; }
+    button:focus-visible, select:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 48px; }
+    .topline { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom: 28px; }
+    .brand { display:flex; align-items:center; gap:11px; color:#c9d4eb; font-size:13px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; }
+    .brand-mark { width:32px; height:32px; display:grid; place-items:center; border-radius:11px; color:#10172a; background:linear-gradient(140deg,var(--mint),#8ebcff); font-weight:900; box-shadow:0 5px 20px #54e0ba33; }
+    .run-tag { border:1px solid var(--stroke); color:#b8c5dd; background:#ffffff05; padding:7px 11px; border-radius:999px; font-size:12px; }
+    .hero { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin: 0 0 25px; }
+    .eyebrow { color:var(--mint); font-size:11px; letter-spacing:.16em; font-weight:800; text-transform:uppercase; }
+    h1 { margin:7px 0 8px; font-size:clamp(30px,5vw,48px); line-height:1.08; letter-spacing:-.045em; }
+    .subtitle { max-width:690px; margin:0; color:var(--muted); }
+    .scenario-note { max-width:270px; color:#b5c2d8; font-size:12px; padding:12px 14px; border-left:2px solid var(--orange); background:linear-gradient(90deg,#ffbd7210,transparent); }
+    .controls { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px; margin-bottom:17px; border:1px solid var(--stroke); border-radius:18px; background:#111a2ec9; box-shadow:var(--shadow); }
+    .control-label { display:block; margin-bottom:7px; color:#9cabc5; font-size:11px; font-weight:750; letter-spacing:.1em; text-transform:uppercase; }
+    .workloads { display:flex; flex-wrap:wrap; gap:7px; }
+    .workload-btn { cursor:pointer; color:#b3c0d7; background:#ffffff05; border:1px solid var(--stroke); border-radius:11px; padding:9px 13px; font-size:13px; font-weight:700; transition:background .18s,border-color .18s,color .18s,transform .18s; }
+    .workload-btn:hover { transform:translateY(-1px); color:var(--text); border-color:#9b8cff66; }
+    .workload-btn[aria-pressed="true"] { color:#e4deff; background:#9b8cff19; border-color:#9b8cff8c; box-shadow:inset 0 0 0 1px #9b8cff22; }
+    .select-wrap { min-width:220px; }
+    select { width:100%; color:var(--text); border:1px solid var(--stroke); background:var(--surface-2); border-radius:11px; padding:10px 34px 10px 12px; }
+    .stat-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; margin-bottom:17px; }
+    .stat { min-height:115px; position:relative; overflow:hidden; padding:17px 18px; border:1px solid var(--stroke); border-radius:17px; background:linear-gradient(145deg,#17233a,#10182a); }
+    .stat::after { content:""; position:absolute; width:110px; height:110px; border-radius:50%; right:-42px; top:-47px; background:var(--glow,#9b8cff); opacity:.12; filter:blur(3px); }
+    .stat-label { color:var(--muted); font-size:12px; }
+    .stat-value { margin-top:8px; font-size:29px; line-height:1; font-weight:800; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
+    .stat-detail { color:#aab9d0; margin-top:7px; font-size:12px; }
+    .stat.purple { --glow:var(--purple); } .stat.mint { --glow:var(--mint); } .stat.blue { --glow:var(--blue); }
+    .content-grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(270px,.8fr); gap:15px; }
+    .panel { border:1px solid var(--stroke); border-radius:18px; background:linear-gradient(150deg,#131e33f2,#0f1729f2); box-shadow:var(--shadow); }
+    .chart-panel { padding:20px 21px 17px; min-height:355px; }
+    .panel-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:17px; }
+    h2 { margin:0; font-size:17px; letter-spacing:-.02em; }
+    .panel-sub { color:var(--muted); margin-top:4px; font-size:12px; }
+    .unit-pill { white-space:nowrap; color:#c6bfff; background:#9b8cff16; border:1px solid #9b8cff35; border-radius:999px; padding:5px 9px; font-size:11px; }
+    .bar-chart { display:grid; gap:14px; padding:9px 0 0; }
+    .bar-row { display:grid; grid-template-columns:116px minmax(70px,1fr) 82px; align-items:center; gap:12px; }
+    .policy-name { color:#d7e1f3; font-size:12px; font-weight:700; }
+    .bar-track { height:13px; overflow:hidden; background:#202b41; border-radius:99px; }
+    .bar-fill { height:100%; border-radius:inherit; width:0; transition:width .4s cubic-bezier(.2,.8,.2,1); background:var(--bar,var(--purple)); box-shadow:0 0 13px color-mix(in srgb, var(--bar,var(--purple)) 45%, transparent); }
+    .bar-number { color:#e8efff; text-align:right; font-variant-numeric:tabular-nums; font-size:12px; }
+    .scale { display:flex; justify-content:space-between; margin:13px 94px 0 128px; color:#71809b; font-size:10px; }
+    .key { display:flex; gap:13px; flex-wrap:wrap; margin-top:20px; color:#aebbd2; font-size:11px; }
+    .key span { display:flex; align-items:center; gap:6px; }
+    .dot { width:7px; height:7px; border-radius:50%; background:var(--dot); }
+    .side-panel { padding:20px; }
+    .side-panel h2 { margin-bottom:4px; }
+    .split-row { margin-top:19px; }
+    .split-title { display:flex; justify-content:space-between; gap:12px; color:#dbe5f7; font-size:12px; font-weight:700; margin-bottom:8px; }
+    .split-title small { color:var(--muted); font-weight:500; }
+    .split-track { display:flex; height:12px; overflow:hidden; border-radius:20px; background:#25314a; }
+    .split-backlog { width:0; background:var(--purple); transition:width .4s; }
+    .split-arrivals { width:0; background:var(--orange); transition:width .4s; }
+    .split-legend { display:flex; flex-wrap:wrap; gap:13px; margin-top:7px; color:#9cabc5; font-size:11px; }
+    .legend-square { width:8px; height:8px; border-radius:3px; display:inline-block; margin-right:5px; background:var(--c); }
+    .side-callout { margin-top:21px; padding:12px; border-radius:12px; background:#54e0ba0d; color:#bdd4d7; font-size:12px; }
+    .side-callout strong { color:var(--mint); }
+    .table-panel { margin-top:15px; overflow:hidden; }
+    .table-head { display:flex; justify-content:space-between; align-items:center; padding:18px 20px 12px; gap:12px; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:12px; white-space:nowrap; }
+    th { text-align:right; color:#8494b1; font-weight:700; text-transform:uppercase; letter-spacing:.07em; font-size:10px; padding:10px 14px; background:#ffffff04; }
+    th:first-child, td:first-child { text-align:left; padding-left:20px; }
+    td { border-top:1px solid #ffffff0a; padding:12px 14px; text-align:right; color:#c8d4e8; font-variant-numeric:tabular-nums; }
+    tr[data-policy="AI_PRIORITY"] { background:#54e0ba08; }
+    tr[data-policy="THREAT_FIRST"] { background:#9b8cff08; }
+    .policy-cell { display:flex; align-items:center; gap:8px; color:#e2eaff; font-weight:750; }
+    .policy-mark { width:7px; height:7px; border-radius:50%; background:var(--bar); }
+    .footer { display:flex; justify-content:space-between; align-items:center; gap:12px; color:#7f8da7; padding:14px 3px 0; font-size:11px; }
+    .footer b { color:#aebbd2; font-weight:650; }
+    @media(max-width:800px) { .hero { align-items:flex-start; flex-direction:column; } .scenario-note { max-width:none; } .content-grid { grid-template-columns:1fr; } .controls { align-items:flex-start; flex-direction:column; } .select-wrap { width:100%; } }
+    @media(max-width:600px) { .shell { width:calc(100% - 24px); padding-top:20px; } .topline { margin-bottom:22px; } .stat-grid { grid-template-columns:1fr; gap:9px; } .stat { min-height:96px; } .chart-panel,.side-panel { padding:16px; } .bar-row { grid-template-columns:92px minmax(55px,1fr) 69px; gap:8px; } .policy-name,.bar-number { font-size:11px; } .scale { margin-left:100px; margin-right:77px; } .run-tag { font-size:10px; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; transition:none !important; animation:none !important; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topline">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">⌁</span> Courtroom Lab <span style="color:#65748f">/</span> Simulation</div>
+      <div class="run-tag">30 paired runs · 180 days · illustrative</div>
+    </div>
+
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Policy playground</div>
+        <h1>What happens when<br>the queue gets busy?</h1>
+        <p class="subtitle">Compare five scheduling policies across the same simulated docket. Change the workload to see how urgent-case waits and unresolved cases shift.</p>
+      </div>
+      <div class="scenario-note">Scenario urgency = immediate-threat flag <b>or</b> severity ≥ 9. It is a simulation assumption, not lawyer-validated ground truth.</div>
+    </header>
+
+    <section class="controls" aria-label="Simulation controls">
+      <div>
+        <span class="control-label">Choose workload</span>
+        <div class="workloads" role="group" aria-label="Workload scenario">
+          <button class="workload-btn" type="button" data-workload="BELOW_CAPACITY" aria-pressed="false">Easy · λ 2/day</button>
+          <button class="workload-btn" type="button" data-workload="NEAR_CAPACITY" aria-pressed="true">Busy · λ 6/day</button>
+          <button class="workload-btn" type="button" data-workload="ABOVE_CAPACITY" aria-pressed="false">Overloaded · λ 8/day</button>
+        </div>
+      </div>
+      <label class="select-wrap">
+        <span class="control-label">Compare by</span>
+        <select id="metric-select" aria-label="Metric shown in policy comparison chart">
+          <option value="urgent_wait_p90_mean">Urgent-case p90 wait</option>
+          <option value="urgent_unresolved_mean">Urgent cases unresolved</option>
+          <option value="urgent_target_miss_count_mean">Urgent target misses</option>
+          <option value="wait_through_horizon_mean_mean">Mean wait through day 180</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="stat-grid" aria-label="Selected scenario summary" aria-live="polite">
+      <article class="stat purple"><div class="stat-label">AI priority · urgent p90</div><div class="stat-value" id="ai-p90">—</div><div class="stat-detail" id="ai-p90-detail">Days until hearing, 90th percentile</div></article>
+      <article class="stat mint"><div class="stat-label">Urgent cases unresolved</div><div class="stat-value" id="urgent-open">—</div><div class="stat-detail" id="urgent-open-detail">AI priority · mean across paired runs</div></article>
+      <article class="stat blue"><div class="stat-label">Cases still waiting at horizon</div><div class="stat-value" id="pending-total">—</div><div class="stat-detail" id="pending-detail">AI priority · backlog + new arrivals</div></article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel chart-panel">
+        <div class="panel-head"><div><h2 id="chart-title">Urgent-case p90 wait</h2><div class="panel-sub" id="chart-subtitle">Lower is shorter wait · bars show mean outcomes</div></div><span class="unit-pill" id="unit-pill">days</span></div>
+        <div id="bar-chart" class="bar-chart" role="img" aria-label="Policy metric comparison chart"></div>
+        <div id="chart-scale" class="scale" aria-hidden="true"></div>
+        <div class="key" aria-label="Policy key"><span><i class="dot" style="--dot:#73819a"></i>FIFO</span><span><i class="dot" style="--dot:#9b8cff"></i>Threat-first</span><span><i class="dot" style="--dot:#ffbd72"></i>Severity-only</span><span><i class="dot" style="--dot:#62a7ff"></i>Aging-only</span><span><i class="dot" style="--dot:#54e0ba"></i>AI priority</span></div>
+      </article>
+
+      <aside class="panel side-panel" aria-live="polite">
+        <h2>Who is still waiting?</h2>
+        <div class="panel-sub">Unresolved at day 180, by policy</div>
+        <div id="pending-splits"></div>
+        <div class="split-legend"><span><i class="legend-square" style="--c:#9b8cff"></i>Initial backlog</span><span><i class="legend-square" style="--c:#ffbd72"></i>Simulated arrivals</span></div>
+        <div class="side-callout" id="scenario-callout"></div>
+      </aside>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="table-head"><div><h2>Policy results</h2><div class="panel-sub">Means over 30 paired seeds; urgent p90 includes 95% confidence interval.</div></div><span class="unit-pill" id="workload-caption">Busy workload</span></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Policy</th><th>Urgent p90 · days [95% CI]</th><th>Urgent unresolved</th><th>Urgent target misses</th><th>Mean wait through horizon · days</th><th>Backlog pending</th><th>New arrivals</th><th>Arrivals pending</th></tr></thead>
+        <tbody id="results-body"></tbody>
+      </table></div>
+    </section>
+
+    <footer class="footer"><span>Capacity <b>6 cases/day</b> · starting backlog <b>500 cases</b> · arrivals are bootstrap copies</span><span>Pending waits are censored at day 180</span></footer>
+  </main>
+
+  <script>
+    const rows = [
+      {w:"BELOW_CAPACITY",l:2,p:"FIFO",p90:72.87,lo:72.08,hi:73.66,u:0.57,m:187.13,wait:35.57,b:500,bp:0,a:355.13,ap:2.13},
+      {w:"BELOW_CAPACITY",l:2,p:"THREAT_FIRST",p90:18.40,lo:18.11,hi:18.69,u:0.57,m:108.93,wait:35.57,b:500,bp:0,a:355.13,ap:2.13},
+      {w:"BELOW_CAPACITY",l:2,p:"SEVERITY_ONLY",p90:70.66,lo:69.56,hi:71.76,u:0.57,m:135.37,wait:35.57,b:500,bp:0,a:355.13,ap:2.13},
+      {w:"BELOW_CAPACITY",l:2,p:"AGING_ONLY",p90:73.20,lo:72.71,hi:73.69,u:0.57,m:187.37,wait:35.57,b:500,bp:0,a:355.13,ap:2.13},
+      {w:"BELOW_CAPACITY",l:2,p:"AI_PRIORITY",p90:20.00,lo:19.65,hi:20.35,u:0.57,m:102.47,wait:35.57,b:500,bp:0,a:355.13,ap:2.13},
+      {w:"NEAR_CAPACITY",l:6,p:"FIFO",p90:83.29,lo:82.57,hi:84.02,u:129.10,m:400.23,wait:55.84,b:500,bp:0,a:1079.43,ap:499.43},
+      {w:"NEAR_CAPACITY",l:6,p:"THREAT_FIRST",p90:16.81,lo:16.45,hi:17.16,u:1.67,m:136.83,wait:55.84,b:500,bp:0,a:1079.43,ap:499.43},
+      {w:"NEAR_CAPACITY",l:6,p:"SEVERITY_ONLY",p90:95.46,lo:94.40,hi:96.53,u:87.03,m:259.03,wait:55.84,b:500,bp:0,a:1079.43,ap:499.43},
+      {w:"NEAR_CAPACITY",l:6,p:"AGING_ONLY",p90:83.29,lo:82.57,hi:84.02,u:129.10,m:400.47,wait:55.84,b:500,bp:0,a:1079.43,ap:499.43},
+      {w:"NEAR_CAPACITY",l:6,p:"AI_PRIORITY",p90:19.35,lo:18.71,hi:20.00,u:1.67,m:115.20,wait:55.84,b:500,bp:78.37,a:1079.43,ap:421.07},
+      {w:"ABOVE_CAPACITY",l:8,p:"FIFO",p90:100.99,lo:99.91,hi:102.06,u:224.43,m:493.40,wait:62.16,b:500,bp:0,a:1436.67,ap:856.67},
+      {w:"ABOVE_CAPACITY",l:8,p:"THREAT_FIRST",p90:16.37,lo:15.92,hi:16.83,u:2.07,m:153.87,wait:62.16,b:500,bp:0,a:1436.67,ap:856.67},
+      {w:"ABOVE_CAPACITY",l:8,p:"SEVERITY_ONLY",p90:111.01,lo:110.13,hi:111.88,u:151.03,m:312.87,wait:62.16,b:500,bp:0,a:1436.67,ap:856.67},
+      {w:"ABOVE_CAPACITY",l:8,p:"AGING_ONLY",p90:100.99,lo:99.91,hi:102.06,u:224.43,m:493.63,wait:62.16,b:500,bp:0,a:1436.67,ap:856.67},
+      {w:"ABOVE_CAPACITY",l:8,p:"AI_PRIORITY",p90:18.36,lo:17.75,hi:18.98,u:2.07,m:123.33,wait:62.16,b:500,bp:113.83,a:1436.67,ap:742.83}
+    ];
+    const policyOrder = ["FIFO","THREAT_FIRST","SEVERITY_ONLY","AGING_ONLY","AI_PRIORITY"];
+    const policyNames = {FIFO:"FIFO",THREAT_FIRST:"Threat-first",SEVERITY_ONLY:"Severity-only",AGING_ONLY:"Aging-only",AI_PRIORITY:"AI priority"};
+    const colors = {FIFO:"#73819a",THREAT_FIRST:"#9b8cff",SEVERITY_ONLY:"#ffbd72",AGING_ONLY:"#62a7ff",AI_PRIORITY:"#54e0ba"};
+    const metrics = {
+      urgent_wait_p90_mean:{key:"p90",label:"Urgent-case p90 wait",unit:"days",subtitle:"Lower is shorter wait · 90th-percentile scenario-urgent wait"},
+      urgent_unresolved_mean:{key:"u",label:"Urgent cases unresolved",unit:"cases",subtitle:"Mean number of scenario-urgent cases still pending at day 180"},
+      urgent_target_miss_count_mean:{key:"m",label:"Urgent target misses",unit:"cases",subtitle:"Mean urgent cases over the illustrative 5-day target or still pending"},
+      wait_through_horizon_mean_mean:{key:"wait",label:"Mean wait through day 180",unit:"days",subtitle:"Observed waits, including unresolved cases censored at the horizon"}
+    };
+    let selectedWorkload = "NEAR_CAPACITY";
+    const fmt = n => Number(n).toLocaleString("en-US",{maximumFractionDigits:1,minimumFractionDigits:0});
+    const selectedRows = () => policyOrder.map(p => rows.find(r => r.w === selectedWorkload && r.p === p));
+    function render() {
+      const vals = selectedRows();
+      const ai = vals.find(r => r.p === "AI_PRIORITY"), fifo = vals.find(r => r.p === "FIFO"), threat = vals.find(r => r.p === "THREAT_FIRST");
+      const workload = selectedWorkload === "BELOW_CAPACITY" ? "Easy workload" : selectedWorkload === "NEAR_CAPACITY" ? "Busy workload" : "Overloaded workload";
+      document.getElementById("workload-caption").textContent = `${workload} · λ ${ai.l}/day`;
+      document.getElementById("ai-p90").textContent = `${fmt(ai.p90)} days`;
+      document.getElementById("ai-p90-detail").textContent = `FIFO ${fmt(fifo.p90)} · Threat-first ${fmt(threat.p90)} days`;
+      document.getElementById("urgent-open").textContent = fmt(ai.u);
+      document.getElementById("urgent-open-detail").textContent = `AI priority · mean pending at day 180 across 30 runs`;
+      document.getElementById("pending-total").textContent = fmt(ai.bp + ai.ap);
+      document.getElementById("pending-detail").textContent = `${fmt(ai.bp)} initial backlog · ${fmt(ai.ap)} simulated arrivals`;
+      document.getElementById("scenario-callout").innerHTML = `<strong>Same docket, different order.</strong> Arrivals average ${fmt(ai.a)} over 180 days; AI priority leaves ${fmt(ai.bp)} initial cases and ${fmt(ai.ap)} arrivals unresolved.`;
+      renderChart(vals);
+      renderSplits(vals);
+      renderTable(vals);
+    }
+    function renderChart(vals) {
+      const metric = metrics[document.getElementById("metric-select").value];
+      document.getElementById("chart-title").textContent = metric.label;
+      document.getElementById("chart-subtitle").textContent = metric.subtitle;
+      document.getElementById("unit-pill").textContent = metric.unit;
+      const max = Math.max(...vals.map(r => r[metric.key])) || 1;
+      document.getElementById("bar-chart").innerHTML = vals.map(r => {
+        const val = r[metric.key], pct = Math.max(val === 0 ? 0 : 2, val/max*100);
+        const label = `${policyNames[r.p]}: ${fmt(val)} ${metric.unit}`;
+        return `<div class="bar-row" aria-label="${label}"><span class="policy-name">${policyNames[r.p]}</span><div class="bar-track"><div class="bar-fill" style="--bar:${colors[r.p]};width:${pct}%"></div></div><span class="bar-number">${fmt(val)} ${metric.unit}</span></div>`;
+      }).join("");
+      document.getElementById("chart-scale").innerHTML = `<span>0</span><span>${fmt(max/2)}</span><span>${fmt(max)} ${metric.unit}</span>`;
+    }
+    function renderSplits(vals) {
+      const max = Math.max(...vals.map(r => r.bp+r.ap), 1);
+      document.getElementById("pending-splits").innerHTML = vals.map(r => {
+        const backlogPct = r.bp/max*100, arrivalPct = r.ap/max*100;
+        return `<div class="split-row"><div class="split-title"><span>${policyNames[r.p]}</span><small>${fmt(r.bp+r.ap)} pending</small></div><div class="split-track" role="img" aria-label="${policyNames[r.p]}: ${fmt(r.bp)} backlog and ${fmt(r.ap)} new arrivals pending"><div class="split-backlog" style="width:${backlogPct}%"></div><div class="split-arrivals" style="width:${arrivalPct}%"></div></div></div>`;
+      }).join("");
+    }
+    function renderTable(vals) {
+      document.getElementById("results-body").innerHTML = vals.map(r => `<tr data-policy="${r.p}"><td><span class="policy-cell"><i class="policy-mark" style="--bar:${colors[r.p]}"></i>${policyNames[r.p]}</span></td><td>${fmt(r.p90)} [${fmt(r.lo)}, ${fmt(r.hi)}]</td><td>${fmt(r.u)}</td><td>${fmt(r.m)}</td><td>${fmt(r.wait)}</td><td>${fmt(r.bp)}</td><td>${fmt(r.a)}</td><td>${fmt(r.ap)}</td></tr>`).join("");
+    }
+    document.querySelectorAll(".workload-btn").forEach(btn => btn.addEventListener("click", () => {
+      selectedWorkload = btn.dataset.workload;
+      document.querySelectorAll(".workload-btn").forEach(b => b.setAttribute("aria-pressed",String(b === btn)));
+      render();
+    }));
+    document.getElementById("metric-select").addEventListener("change", render);
+    render();
+  </script>
+</body>
+</html>
