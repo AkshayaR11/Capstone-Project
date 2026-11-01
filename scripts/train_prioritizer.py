@@ -143,7 +143,7 @@ def main():
     y = df["priority_score"]
 
     print("\nTraining...")
-    model = train_model(X, y)
+    train_model(X, y)
 
     print("\nDONE")
 

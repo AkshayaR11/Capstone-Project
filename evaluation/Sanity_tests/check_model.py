@@ -9,7 +9,7 @@ encoder = joblib.load("data/prioritization/models/encoders.pkl")
 
 print("=== MODEL INFO ===")
 print(f"Features: {model.feature_names_in_.tolist()}")
-print(f"\nFeature importances:")
+print("\nFeature importances:")
 for feat, imp in sorted(
     zip(model.feature_names_in_, model.feature_importances_),
     key=lambda x: -x[1]

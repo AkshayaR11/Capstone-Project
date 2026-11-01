@@ -4,7 +4,6 @@ Migrate local data (CSV, PKL, NPY) into PostgreSQL database using pgvector
 
 import os
 import sys
-import json
 import numpy as np
 import pandas as pd
 import pickle

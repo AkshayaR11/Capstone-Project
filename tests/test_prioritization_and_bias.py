@@ -4,9 +4,7 @@ import os
 
 # Ensure project root is in sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from unittest.mock import patch
 from agents.prioritization.prioritizer import PrioritizationAgent
-from agents.explainability.explainability_agent import ExplainabilityAgent
 from agents.fairness.bias_agent import BiasAgent
 from agents.reconciliation.reconciliation_agent import JudicialReconciliationAgent
 
@@ -26,13 +24,12 @@ class TestJudicialDecisionSupportSystem(unittest.TestCase):
             case_age_days=365.0,
             case_type="civil"
         )
-        # Civil severity capped at 0.4.
-        # sev_norm = min(3/10, 0.4) = 0.3 -> 0.3 * 3.5 = 1.05
+        # Civil severity capped at 0.45; severity 3 gives 0.3 * 3.5 = 1.05.
         # impact = 1/5 * 2.5 = 0.50
         # threat = 0.0
-        # aging = 365/3650 = 0.1 -> 0.1 * 1.0 = 0.10
-        # Total = 1.05 + 0.50 + 0.0 + 0.10 = 1.65
-        self.assertAlmostEqual(score, 1.65, places=2)
+        # One-year age adjustment = 0.15 + (1 * 0.065) = 0.215.
+        # Total = 1.05 + 0.50 + 0.0 + 0.215 = 1.765 -> 1.77.
+        self.assertAlmostEqual(score, 1.77, places=2)
         self.assertEqual(self.prioritizer.assign_category(score), "Low")
 
     def test_priority_score_calculation_criminal_critical(self):
@@ -47,9 +44,9 @@ class TestJudicialDecisionSupportSystem(unittest.TestCase):
         # sev_norm = 1.0 -> 3.5
         # impact = 3/5 * 2.5 = 1.5
         # threat = 1 * 3.0 = 3.0
-        # aging = (180/3650) * 1.0 ~= 0.05
-        # Total = 3.5 + 1.5 + 3.0 + 0.05 ~= 8.05
-        self.assertTrue(score >= 8.0)
+        # Age adjustment = 0.15 + ((180/365) * 0.065) ~= 0.182.
+        # Total ~= 3.5 + 1.5 + 3.0 + 0.182 = 8.18.
+        self.assertAlmostEqual(score, 8.18, places=2)
         self.assertEqual(self.prioritizer.assign_category(score), "Critical")
 
     def test_immediate_threat_detection(self):
@@ -115,12 +112,20 @@ class TestJudicialDecisionSupportSystem(unittest.TestCase):
         self.assertIn("recommendation", res)
         self.assertTrue(res["conflict_detected"])  # Should flag liberty exception!
         self.assertIn("memo", res)
-    def test_model_feature_order(self):
-        # would have caught the 6-vs-9 feature mismatch
-        expected = ['case_type','num_ipc_sections','num_cpc_sections','num_precedents',
-                    'total_words','case_age_days','max_severity_score',
-                    'immediate_threat_flag','societal_impact_score']
-        self.assertEqual(self.prioritizer.model.feature_names_in_.tolist(), expected)
+    def test_priority_uses_deterministic_policy(self):
+        self.assertIsNone(self.prioritizer.model)
+        self.assertIsNone(self.prioritizer.encoder)
+        rule_score = self.prioritizer.compute_priority_score(
+            severity=8,
+            societal_impact=3,
+            immediate_threat=1,
+            case_age_days=730,
+            case_type="criminal"
+        )
+        compatibility_score = self.prioritizer.predict_ml_priority(
+            "criminal", 2, 0, 5, 2000, 730, 8, 1, 3
+        )
+        self.assertEqual(compatibility_score, rule_score)
 
     def test_ml_priority_bounded(self):
         s = self.prioritizer.predict_ml_priority("criminal", 3, 0, 5, 2000, None, 10, 1, 5)

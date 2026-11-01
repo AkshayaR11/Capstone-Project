@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import './index.css'
 
@@ -358,11 +358,10 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    if (activeTab === 'queue') {
-      fetchPendingQueue(queueCaseType);
-    }
-  }, [activeTab, queueCaseType]);
+  const handleQueueCaseTypeChange = (caseType: string) => {
+    setQueueCaseType(caseType);
+    void fetchPendingQueue(caseType);
+  };
 
   // Handle Semantic Search
   const handleSearch = async (e: React.FormEvent) => {
@@ -497,7 +496,10 @@ function App() {
         </button>
         <button 
           className={`tab-btn ${activeTab === 'queue' ? 'active' : ''}`}
-          onClick={() => setActiveTab('queue')}
+          onClick={() => {
+            setActiveTab('queue');
+            void fetchPendingQueue(queueCaseType);
+          }}
         >
           📋 Pending Priority Queue
         </button>
@@ -714,7 +716,7 @@ function App() {
               <select 
                 className="filter-select" 
                 value={queueCaseType}
-                onChange={(e) => setQueueCaseType(e.target.value)}
+                onChange={(e) => handleQueueCaseTypeChange(e.target.value)}
               >
                 <option value="all">All Case Types</option>
                 <option value="criminal">Criminal Cases</option>
@@ -736,7 +738,7 @@ function App() {
                     {queueCaseType !== 'all' ? 'Try All Case Types to see the full queue.' : 'No cases are currently available in the queue.'}
                   </p>
                   {queueCaseType !== 'all' && (
-                    <button className="summary-btn" onClick={() => setQueueCaseType('all')}>
+                    <button className="summary-btn" onClick={() => handleQueueCaseTypeChange('all')}>
                       Show all case types
                     </button>
                   )}

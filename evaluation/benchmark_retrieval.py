@@ -14,7 +14,6 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModel
 from rank_bm25 import BM25Okapi
-import numpy as np
 import pandas as pd
 
 # Ensure parent directory is in sys.path

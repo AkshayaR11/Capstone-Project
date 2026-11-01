@@ -10,7 +10,7 @@ from pathlib import Path
 
 # Ensure parent directory is in sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from scripts.extract_features import compute_priority_score, check_immediate_threat, calculate_societal_impact
+from scripts.extract_features import compute_priority_score
 
 INPUT_FILE = "data/prioritization/case_features.csv"
 OUTPUT_FILE = "data/prioritization/labeled_cases.csv"

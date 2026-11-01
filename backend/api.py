@@ -7,7 +7,6 @@ import torch
 import torch.nn.functional as F
 import os
 import sys
-import re
 import json
 import hashlib
 import math
@@ -71,7 +70,10 @@ PRECEDENT_SEARCH_AGENT = None
 
 def retrieve_hybrid_candidates(query_text: str, year_filter: str, top_k: int):
     """Run the existing Legal-BERT + pgvector + lexical precedent retrieval."""
-    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT
+    global PRIORITIZATION_AGENT
+    if PRIORITIZATION_AGENT is None:
+        from agents.prioritization.prioritizer import PrioritizationAgent
+        PRIORITIZATION_AGENT = PrioritizationAgent()
 
     encoded_input = tokenizer([query_text.lower()], padding=True, truncation=True, max_length=512, return_tensors='pt')
     with torch.no_grad():
@@ -156,7 +158,6 @@ def retrieve_hybrid_candidates(query_text: str, year_filter: str, top_k: int):
             "immediate_threat_flag": record[13] if record[13] is not None else 0,
             "societal_impact_score": record[14] if record[14] is not None else 1,
         }
-        contributions = EXPLAINABILITY_AGENT._fallback_attributions(features)
         current_priority_score = PRIORITIZATION_AGENT.compute_priority_score(
             severity=features["max_severity_score"],
             societal_impact=features["societal_impact_score"],
@@ -176,7 +177,13 @@ def retrieve_hybrid_candidates(query_text: str, year_filter: str, top_k: int):
             "case_type": record[8] or "Unknown",
             "legal_regime": record[19] or "Unknown",
             "priority_explanation": explanation,
-            "contributions": contributions,
+            "priority_features": {
+                "case_type": features["case_type"],
+                "max_severity_score": features["max_severity_score"],
+                "societal_impact_score": features["societal_impact_score"],
+                "immediate_threat_flag": features["immediate_threat_flag"],
+                "case_age_days": features["case_age_days"],
+            },
             "bias_score": record[16],
             "bias_details": record[17] if record[17] is not None else "Automated audit unavailable.",
             "bias_flags": record[18].split(",") if (record[18] and record[18].strip()) else [],
@@ -661,13 +668,21 @@ async def process_pdf_upload(file: UploadFile = File(...)):
 
 @app.post("/search")
 async def search_cases(req: SearchRequest):
-    global PRIORITIZATION_AGENT
+    global PRIORITIZATION_AGENT, PRECEDENT_SEARCH_AGENT
     if not req.query:
         raise HTTPException(status_code=400, detail="Query cannot be empty")
 
     if not PRIORITIZATION_AGENT:
         from agents.prioritization.prioritizer import PrioritizationAgent
         PRIORITIZATION_AGENT = PrioritizationAgent()
+
+    encoded_input = tokenizer(
+        [req.query.lower()], padding=True, truncation=True, max_length=512, return_tensors="pt"
+    )
+    with torch.no_grad():
+        query_output = model(**encoded_input)
+    query_emb = mean_pooling(query_output, encoded_input["attention_mask"])
+    query_emb = F.normalize(query_emb, p=2, dim=1).numpy()[0]
 
     conn = None
     cur = None
@@ -716,6 +731,20 @@ async def search_cases(req: SearchRequest):
 
         results = []
         for score, r in top_records:
+            features_for_explain = {
+                "case_type": r[8] or "civil",
+                "max_severity_score": float(r[3]) if r[3] is not None else 3.0,
+                "societal_impact_score": r[14] if r[14] is not None else 1,
+                "immediate_threat_flag": r[13] if r[13] is not None else 0,
+                "case_age_days": resolve_case_age_days(r[12], r[2]),
+            }
+            current_priority_score = PRIORITIZATION_AGENT.compute_priority_score(
+                severity=features_for_explain["max_severity_score"],
+                societal_impact=features_for_explain["societal_impact_score"],
+                immediate_threat=features_for_explain["immediate_threat_flag"],
+                case_age_days=features_for_explain["case_age_days"],
+                case_type=features_for_explain["case_type"],
+            )
             # Generate dynamic explanation trace
             exp = PRIORITIZATION_AGENT.generate_explanation(
                 case_type=r[8] if r[8] else "Unknown",
@@ -960,6 +989,13 @@ async def reconcile_case_by_id(case_id: str):
             "immediate_threat_flag": r[13] if r[13] is not None else 0,
             "societal_impact_score": r[14] if r[14] is not None else 1
         }
+        current_priority_score = PRIORITIZATION_AGENT.compute_priority_score(
+            severity=features_for_explain["max_severity_score"],
+            societal_impact=features_for_explain["societal_impact_score"],
+            immediate_threat=features_for_explain["immediate_threat_flag"],
+            case_age_days=features_for_explain["case_age_days"],
+            case_type=features_for_explain["case_type"],
+        )
         contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
         # Retrieve similar precedents
         similar_cases = []

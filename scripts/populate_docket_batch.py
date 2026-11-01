@@ -10,7 +10,6 @@ import json
 import time
 import argparse
 import psycopg2
-from dotenv import load_dotenv
 
 # Ensure parent directory is in sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -19,9 +18,9 @@ from agents.summarization.summarizer import SummarizationAgent
 from agents.fairness.bias_agent import BiasAgent
 
 def run_batch_population(target_count=50, sleep_delay=4.0):
-    print(f"\n========================================================")
+    print("\n========================================================")
     print(f"  JUDICIAL AI DOCKET POPULATION PIPELINE (Target: {target_count})")
-    print(f"========================================================\n")
+    print("========================================================\n")
 
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
@@ -41,7 +40,7 @@ def run_batch_population(target_count=50, sleep_delay=4.0):
         conn.close()
         return
 
-    print(f"[INFO] Initializing SummarizationAgent and BiasAgent...")
+    print("[INFO] Initializing SummarizationAgent and BiasAgent...")
     summarizer = SummarizationAgent()
     bias_agent = BiasAgent()
 
@@ -116,9 +115,9 @@ def run_batch_population(target_count=50, sleep_delay=4.0):
             conn.rollback()
 
     conn.close()
-    print(f"\n========================================================")
+    print("\n========================================================")
     print(f"  BATCH POPULATION COMPLETE: {successful}/{total} cases updated")
-    print(f"========================================================\n")
+    print("========================================================\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Batch populate case summaries and bias audits.")

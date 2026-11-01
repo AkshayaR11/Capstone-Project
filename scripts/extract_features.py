@@ -664,7 +664,7 @@ def extract_all_features():
     print(f"Saved to: {OUTPUT_FILE}")
     print(f"\nCase type breakdown:\n{df['case_type'].value_counts()}")
     print(f"\nLegal regime breakdown:\n{df['legal_regime'].value_counts()}")
-    print(f"\nPriority score distribution:")
+    print("\nPriority score distribution:")
     print(df["priority_score"].describe().round(2))
 
     return df
