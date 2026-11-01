@@ -12,5 +12,8 @@ def create_gemini_client():
     api_key = os.getenv("GEMINI_API_KEY")
     return genai.Client(api_key=api_key) if api_key else None
 
-def generate_gemini_content(client, prompt):
-    return client.models.generate_content(model=GEMINI_MODEL_NAME, contents=prompt)
+def generate_gemini_content(client, prompt, config=None):
+    kwargs = {"model": GEMINI_MODEL_NAME, "contents": prompt}
+    if config is not None:
+        kwargs["config"] = config
+    return client.models.generate_content(**kwargs)

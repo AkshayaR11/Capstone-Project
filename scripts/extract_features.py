@@ -391,6 +391,22 @@ def count_precedents(text: str) -> int:
 # DATE EXTRACTION
 # ==============================
 def extract_date(text: str) -> str | None:
+    # Case IDs and docket numbers can contain date-shaped values (for example,
+    # 84-00-0541). Prefer the explicit decision date in the opening case-title
+    # lines before falling back to general date scanning.
+    header_lines = (text or "").splitlines()[:40]
+    title_date = (
+        r"(?:\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*,?\s*\d{4}"
+        r"|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}\s*,?\s*\d{4}"
+        r"|\d{1,2}[./-]\d{1,2}[./-]\d{4}|\d{4}-\d{1,2}-\d{1,2})"
+    )
+    for index, line in enumerate(header_lines):
+        if re.search(r"\b(?:vs|versus)\b\.?", line, flags=re.IGNORECASE):
+            title_context = " ".join(header_lines[index:index + 3])
+            match = re.search(rf"\bon\s+({title_date})", title_context, flags=re.IGNORECASE)
+            if match:
+                return match.group(1)
+
     patterns = [
         r'\d{1,2}/\d{1,2}/\d{4}',
         r'\d{1,2}-\d{1,2}-\d{4}',

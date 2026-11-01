@@ -435,6 +435,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                     "case_type": case_type,
                     "legal_regime": regime,
                     "summary": result[0],
+                    "source_text": text,
                     "priority_score": priority_score,
                     "severity": float(severity),
                     "contributions": contributions,
@@ -612,6 +613,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 "case_type": case_type,
                 "legal_regime": regime,
                 "summary": raw_summary_string,
+                "source_text": text,
                 "priority_score": float(priority_score) if priority_score is not None else 5.0,
                 "severity": float(severity) if severity is not None else 3.0,
                 "contributions": contributions,
@@ -791,7 +793,22 @@ async def search_cases(req: SearchRequest):
                 "bias_flags": r[18].split(",") if (r[18] and r[18].strip()) else []
             })
             
-        return {"results": results}
+        if not PRECEDENT_SEARCH_AGENT:
+            from agents.corrective_precedent_search import CorrectivePrecedentSearch
+            PRECEDENT_SEARCH_AGENT = CorrectivePrecedentSearch()
+
+        corrective_result = PRECEDENT_SEARCH_AGENT.search(
+            query=req.query,
+            initial_candidates=results,
+            retrieve_fn=lambda rewritten_query: retrieve_hybrid_candidates(
+                rewritten_query, req.yearFilter, req.topK
+            ),
+            top_k=max(1, min(req.topK, 50)),
+        )
+        return {
+            "results": corrective_result.pop("results", results),
+            "retrieval": corrective_result,
+        }
     except Exception as e:
         print(f"Precedent search failed: {e}")
         raise HTTPException(status_code=500, detail="Precedent search failed")
@@ -847,6 +864,19 @@ async def get_pending_priority_queue(
         """
         cur.execute(query_sql, params)
         db_records = cur.fetchall()
+
+        regime_case_type_counts = {}
+        if legal_regime and legal_regime.lower() != "all":
+            cur.execute(
+                """
+                SELECT COALESCE(NULLIF(LOWER(case_type), ''), 'unknown'), COUNT(*)
+                FROM cases
+                WHERE LOWER(COALESCE(legal_regime, '')) = %s
+                GROUP BY 1
+                """,
+                (legal_regime.lower(),),
+            )
+            regime_case_type_counts = {case_type: count for case_type, count in cur.fetchall()}
 
         ranked_records = []
         for record in db_records:
@@ -932,6 +962,7 @@ async def get_pending_priority_queue(
             "critical_count": critical_count,
             "high_count": high_count,
             "avg_priority": avg_priority,
+            "regime_case_type_counts": regime_case_type_counts,
             "results": results
         }
     except Exception as e:
@@ -1022,6 +1053,7 @@ async def reconcile_case_by_id(case_id: str):
             "case_type": r[2] if r[2] else "civil",
             "legal_regime": r[3] if r[3] else "ipc",
             "summary": r[6] if r[6] else "",
+            "source_text": r[6] if r[6] else "",
             "priority_score": current_priority_score,
             "severity": float(r[5]) if r[5] is not None else 3.0,
             "contributions": contributions,

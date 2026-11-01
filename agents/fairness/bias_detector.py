@@ -73,20 +73,20 @@ class BiasDetector:
         return {
             "case_id": priority_result.get("case_id", "unknown"),
             "final_priority": final_score,
-            "fairness_score": round(fairness_score * 100, 1),
+            "checklist_consistency_score": round(fairness_score * 100, 1),
             "bias_flags": bias_flags,
             "recommendation": recommendation
         }
 
     def compute_systemic_fairness(self, cases_data: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Computes cross-docket systemic fairness metrics (Jurisdictional Disparity)
-        across civil and criminal case streams to ensure balanced court scheduling.
+        Describes high-priority selection-rate differences between civil and
+        criminal case types. This is not a demographic fairness or equalized
+        odds measure and should not be interpreted as a fairness guarantee.
         """
         if not cases_data:
             return {
-                "jurisdictional_parity_difference": 0.0,
-                "demographic_parity_difference": 0.0,
+                "case_type_selection_rate_gap": 0.0,
                 "status": "No data available"
             }
             
@@ -111,11 +111,10 @@ class BiasDetector:
             "total_cases_analyzed": len(cases_data),
             "civil_high_priority_rate": round(civil_rate * 100, 2),
             "criminal_high_priority_rate": round(criminal_rate * 100, 2),
-            "jurisdictional_parity_difference": round(diff * 100, 2),
-            "demographic_parity_difference": round(diff * 100, 2),  # Backward compatibility
+            "case_type_selection_rate_gap": round(diff * 100, 2),
             "systemic_skew_detected": bias_detected,
             "recommendation": (
-                "Systemic distribution between civil and criminal dockets is balanced." if not bias_detected else
-                "Noticeable systemic skew detected between Civil and Criminal priority distributions. Evaluate baseline heuristic calibration."
+                "Civil/criminal high-priority selection rates are within the configured gap threshold; this does not establish fairness." if not bias_detected else
+                "Civil/criminal high-priority selection rates exceed the configured gap threshold. Review policy effects; this descriptive gap does not by itself establish unfairness."
             )
         }

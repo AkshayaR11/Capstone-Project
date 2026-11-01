@@ -13,7 +13,7 @@ To process cases efficiently, the system is divided into collaborative AI agents
   * **Action:** Cleans the text, removes boilerplate, and extracts two main components: **Synopsis of the Case** (facts) and **Judgment Passed**.
 * **Agent 2: Legal Statute Mapping Agent (The Bridge)**
   * **Role:** Resolves the IPC vs. BNS conflict and handles CPC.
-  * **Action:** Scans documents for sections. If it finds IPC (in historical documents), it maps it to the equivalent BNS section. It also assigns a **Severity Score** based on the referenced crimes.
+  * **Action:** Scans documents for statutory sections and adds available IPC/BNS cross-references. Treat mappings as candidate cross-references: some provisions may be split, merged, changed in scope, or have no direct counterpart. It also assigns a heuristic **Severity Score** based on the referenced provisions.
 * **Agent 3: Precedent Retrieval Agent (RAG)**
   * **Role:** Finds similar historical cases.
   * **Action:** Uses Legal-BERT to embed the current case facts and sections, returning the top $K$ most similar historical cases.
@@ -34,7 +34,7 @@ Since your 75-year-old dataset uses the **Indian Penal Code (IPC)** and modern c
 
 ### The Strategy: Data Enrichment via Mapping Dictionary
 1. **Create a Mapping Dictionary:** Create a JSON or CSV file mapping IPC sections to BNS sections (e.g., `IPC 302` -> `BNS 103` [Murder]). Include a "Severity Score" (1-10) for each.
-2. **Enrich Historical Data:** When your `extract_features.py` script processes the Indian Kanoon dataset, have it find IPC mentions. For every IPC mention, artificially inject the equivalent BNS tag into the metadata and text chunks *before* passing them to Legal-BERT.
+2. **Enrich Historical Data:** When `extract_features.py` processes the Indian Kanoon dataset, find IPC mentions and attach available BNS cross-reference metadata to chunks. Do not present every pair as legally equivalent; retain source/provenance and mark ambiguous or unmapped provisions explicitly.
 3. **Future-Proof Querying:** When a judge inputs a new criminal case today (which will use BNS), the Legal-BERT embeddings will successfully match the modern BNS terms against the enriched historical dataset.
 4. **Civil Cases:** For civil cases, the system cleanly branches off and relies on the Code of Civil Procedure (CPC) and other relevant acts. 
 
@@ -75,5 +75,5 @@ Use this structure for your B.Tech CSE final paper:
    * Describe the Courtroom Simulation parameters.
 6. **Results & Evaluation:**
    * Graphs comparing FIFO / LIFO vs Priority Scheduling.
-   * Precision/Recall for semantic search retrieval.
+   * If human relevance labels are available, report per-query Precision/Recall and ranking metrics. Without labels, report ranking overlap only and do not describe it as retrieval accuracy.
 7. **Conclusion & Future Scope:** How this system assists (doesn't replace) judges.

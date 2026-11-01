@@ -77,17 +77,17 @@ class TestReconciliationSafety(unittest.TestCase):
         self.assertIn("not a pass or proof of neutrality", result["memo"])
 
     @patch("agents.reconciliation.reconciliation_agent.GEMINI_MODEL", FakeGemini(99.0))
-    def test_llm_score_cannot_break_liberty_floor_or_upper_bound(self):
+    def test_llm_cannot_change_deterministic_liberty_floor(self):
         result = self.agent.reconcile({
             "case_id": "habeas_case",
             "summary": "Habeas corpus petition concerning unlawful custody.",
             "priority_score": 4.2,
             "bias_score": None,
         })
-        self.assertEqual(result["reconciled_score"], 6.2)
+        self.assertEqual(result["reconciled_score"], 6.0)
 
     @patch("agents.reconciliation.reconciliation_agent.GEMINI_MODEL", FakeGemini(-99.0))
-    def test_llm_score_change_is_bounded_without_liberty_signal(self):
+    def test_llm_cannot_change_score_for_structured_flag_without_text_evidence(self):
         result = self.agent.reconcile({
             "case_id": "threat_signal_case",
             "summary": "Ordinary filing.",
@@ -95,9 +95,9 @@ class TestReconciliationSafety(unittest.TestCase):
             "bias_score": None,
             "contributions": {"immediate_threat_flag": 2.5},
         })
-        self.assertEqual(result["reconciled_score"], 4.0)
+        self.assertEqual(result["reconciled_score"], 5.0)
 
-    def test_precedents_use_rank_not_percentage_match(self):
+    def test_precedents_preserve_retrieval_order_and_do_not_show_probability(self):
         result = synthesize_judicial_memo_node({
             "case_id": "memo_case",
             "case_type": "civil",
@@ -116,8 +116,8 @@ class TestReconciliationSafety(unittest.TestCase):
             "case_summary": "A supplied summary.",
         })
         memo = result["reconciliation_memo"]
-        self.assertIn("Rank 1: higher similarity", memo)
-        self.assertIn("Rank 2: lower score", memo)
+        self.assertIn("Rank 1: lower score", memo)
+        self.assertIn("Rank 2: higher similarity", memo)
         self.assertNotIn("% match", memo.lower())
         self.assertNotIn("0.99", memo)
 

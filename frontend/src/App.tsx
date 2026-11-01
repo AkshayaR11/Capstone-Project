@@ -17,10 +17,17 @@ interface RetrievalInfo {
   retry_recommended: boolean;
   candidate_count: number;
   rewritten_query: string;
+  expanded_query?: string;
   rewrite_status: string;
   retry_retrieval_status: string;
   grading_method: string;
   returned_count: number;
+  requested_count?: number;
+  available_candidate_count?: number;
+  steps?: number;
+  statute_expanded?: boolean;
+  planner_model?: string;
+  actions?: Array<{ tool: string; status: string; candidate_count?: number }>;
 }
 
 interface CaseResult {
@@ -50,6 +57,7 @@ interface CaseResult {
   bias_flags?: string[];
   reconciliation?: ReconciliationData;
   relevance_score?: number;
+  relevance_grade?: number | null;
   relevance_label?: string;
   relevance_reason?: string;
 }
@@ -121,6 +129,8 @@ const renderSimilarCases = (cases: CaseResult[] | undefined) => (
 
 const renderBiasCard = (r: CaseResult) => {
   const hasLanguageFlag = Boolean(r.bias_flags?.length) || (r.bias_score !== null && r.bias_score !== undefined && r.bias_score < 0.85);
+  const completedWithoutScore = (r.bias_score === null || r.bias_score === undefined)
+    && Boolean(r.bias_details?.startsWith('Local lexical scan completed'));
   return (
   <div className="agent-card" style={{ gridColumn: 'span 2' }}>
     <div className="agent-card-title">
@@ -128,6 +138,8 @@ const renderBiasCard = (r: CaseResult) => {
       {r.bias_score === null || r.bias_score === undefined ? (
         hasLanguageFlag ? (
           <span className="badge-red" style={{ marginLeft: '8px' }}>Language Flag</span>
+        ) : completedWithoutScore ? (
+          null
         ) : (
           <span className="badge-orange" style={{ marginLeft: '8px' }}>No Result</span>
         )
@@ -138,20 +150,24 @@ const renderBiasCard = (r: CaseResult) => {
       )}
     </div>
     <div className="agent-card-content">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        <strong>Automated language-screen score (not ranking fairness):</strong>
-        <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: r.bias_score === null || r.bias_score === undefined ? '#94a3b8' : (hasLanguageFlag ? '#fca5a5' : '#86efac') }}>
-          {r.bias_score === null || r.bias_score === undefined ? 'N/A' : `${r.bias_score.toFixed(2)} / 1.00`}
-        </span>
-      </div>
-      <div style={{ height: '8px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
-        <div style={{ 
-          width: r.bias_score === null || r.bias_score === undefined ? '0%' : `${r.bias_score * 100}%`, 
-          height: '100%', 
-          background: r.bias_score === null || r.bias_score === undefined ? '#475569' : (hasLanguageFlag ? '#ef4444' : '#10b981'),
-          borderRadius: '4px' 
-        }} />
-      </div>
+      {r.bias_score !== null && r.bias_score !== undefined && (
+        <>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <strong>Automated language-screen score:</strong>
+            <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: hasLanguageFlag ? '#fca5a5' : '#86efac' }}>
+              {`${r.bias_score.toFixed(2)} / 1.00`}
+            </span>
+          </div>
+          <div style={{ height: '8px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
+            <div style={{
+              width: `${r.bias_score * 100}%`,
+              height: '100%',
+              background: hasLanguageFlag ? '#ef4444' : '#10b981',
+              borderRadius: '4px'
+            }} />
+          </div>
+        </>
+      )}
       <strong>Audit Log:</strong> {r.bias_details || "Automated audit unavailable. Manual review recommended."}
       {r.bias_flags && r.bias_flags.length > 0 && (
         <div style={{ marginTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
@@ -264,7 +280,6 @@ function App() {
   const [queueResults, setQueueResults] = useState<CaseResult[]>([]);
   const [queueLoading, setQueueLoading] = useState(false);
   const [queueCaseType, setQueueCaseType] = useState<string>('all');
-  const [queueRegime, setQueueRegime] = useState<string>('all');
 
   // Tab 3: Batch Upload State
   const [batchFiles, setBatchFiles] = useState<FileList | null>(null);
@@ -325,13 +340,12 @@ function App() {
   }
 
   // Fetch Pending Queue
-  const fetchPendingQueue = async (cType = queueCaseType, lRegime = queueRegime) => {
+  const fetchPendingQueue = async (cType = queueCaseType) => {
     setQueueLoading(true);
     setError(null);
     try {
       let url = `http://localhost:8000/cases/pending?limit=50`;
       if (cType !== 'all') url += `&case_type=${cType}`;
-      if (lRegime !== 'all') url += `&legal_regime=${lRegime}`;
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch pending queue");
@@ -346,9 +360,9 @@ function App() {
 
   useEffect(() => {
     if (activeTab === 'queue') {
-      fetchPendingQueue(queueCaseType, queueRegime);
+      fetchPendingQueue(queueCaseType);
     }
-  }, [activeTab, queueCaseType, queueRegime]);
+  }, [activeTab, queueCaseType]);
 
   // Handle Semantic Search
   const handleSearch = async (e: React.FormEvent) => {
@@ -551,21 +565,19 @@ function App() {
                 <strong>Corrective precedent search:</strong>{' '}
                 {retrievalInfo.candidate_count === 0
                   ? 'No precedent candidates were retrieved for this query.'
+                  : retrievalInfo.returned_count < (retrievalInfo.requested_count ?? topK)
+                  ? `Showing ${retrievalInfo.returned_count} of ${retrievalInfo.requested_count ?? topK} requested cases; only ${retrievalInfo.available_candidate_count ?? retrievalInfo.candidate_count} unique candidates were available.`
                   : retrievalInfo.returned_count === 0
-                  ? 'Cases were retrieved, but none met the relevance threshold. Try a more specific or broader legal query.'
-                  : retrievalInfo.grading_method.includes('Lexical fallback grader')
-                  ? 'Gemini was unavailable; showing the original retrieval results. Relevance labels use the local lexical fallback.'
-                  : retrievalInfo.retry_retrieval_status === 'completed'
-                  ? `Initial results were weak, so a rewritten query was searched once: "${retrievalInfo.rewritten_query}".`
+                  ? 'No cases are available to display for this query.'
                   : retrievalInfo.retry_retrieval_status === 'failed'
-                  ? 'A revised query was produced, but the retry search failed; showing the original results.'
-                  : retrievalInfo.retry_recommended && retrievalInfo.rewrite_status === 'failed'
-                    ? 'First-pass results graded weak; Gemini could not produce a revised query. Check the backend log for the API error.'
-                    : retrievalInfo.retry_recommended && retrievalInfo.rewrite_status === 'unchanged'
-                      ? 'First-pass results graded weak; Gemini returned the original query, so no retry ran.'
-                      : retrievalInfo.retry_recommended
-                        ? 'First-pass results graded weak; Gemini query rewriting was not configured, so the original results are shown.'
-                        : 'The first-pass results met the relevance threshold; no retry was needed.'}
+                  ? 'A bounded corrective search failed; available first-pass candidates are shown.'
+                  : retrievalInfo.grading_method.includes('Lexical fallback grader')
+                  ? `Showing retrieval results with local lexical signals. ${retrievalInfo.statute_expanded ? 'Mapped statute terms were also searched.' : ''}`
+                  : retrievalInfo.retried
+                  ? `The planner used a bounded corrective search${retrievalInfo.statute_expanded ? ' with mapped statute terms' : ''}: "${retrievalInfo.rewritten_query}".`
+                  : retrievalInfo.statute_expanded
+                  ? 'The planner expanded statute references from the project mapping table; the first-pass results are shown.'
+                  : 'The planner kept the initial retrieval results.'}
               </div>
             )}
 
@@ -643,10 +655,6 @@ function App() {
                 <div key={r.case_id} className="result-card glass" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="card-header" style={{ flexWrap: 'wrap', gap: '8px' }}>
                     <span className="similarity-badge">Vector similarity: {Math.min((r.score || 0) * 100, 90).toFixed(1)}%</span>
-                    {r.relevance_label && <span className="similarity-badge">Legal relevance: {r.relevance_label}</span>}
-                    <span className={`severity-badge level-${r.severity > 7 ? 'high' : r.severity > 4 ? 'med' : 'low'}`}>
-                      Severity {r.severity}
-                    </span>
                     <span className="case-type-badge">{r.case_type}</span>
                     <span className={`priority-badge ${getPriorityClass(r.priority_score)}`}>
                       Priority: {r.priority_score?.toFixed(1)} ({getPriorityCategory(r.priority_score)})
@@ -668,7 +676,7 @@ function App() {
                       </div>
                       {r.relevance_reason && (
                         <div style={{ marginBottom: '16px', padding: '10px 12px', borderRadius: '6px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', fontSize: '0.85rem' }}>
-                          <strong>Precedent relevance ({Math.round(Math.min((r.relevance_score || 0) * 100, 90))}%):</strong> {r.relevance_reason}
+                          <strong>System relevance note:</strong> {r.relevance_reason}
                         </div>
                       )}
 
@@ -713,15 +721,6 @@ function App() {
                 <option value="civil">Civil Cases</option>
               </select>
 
-              <select 
-                className="filter-select" 
-                value={queueRegime}
-                onChange={(e) => setQueueRegime(e.target.value)}
-              >
-                <option value="all">All Legal Regimes</option>
-                <option value="ipc">IPC Regime</option>
-                <option value="bns">BNS Regime</option>
-              </select>
             </div>
 
             {queueLoading ? (
@@ -730,6 +729,19 @@ function App() {
                 <p style={{ marginTop: '15px', color: '#94a3b8' }}>Ordering pending docket cases by priority score...</p>
               </div>
             ) : (
+              queueResults.length === 0 ? (
+                <div className="upload-container glass" style={{ marginTop: '18px', padding: '20px', color: '#cbd5e1' }}>
+                  <strong>No cases match the selected queue filters.</strong>
+                  <p style={{ marginTop: '8px', color: '#94a3b8' }}>
+                    {queueCaseType !== 'all' ? 'Try All Case Types to see the full queue.' : 'No cases are currently available in the queue.'}
+                  </p>
+                  {queueCaseType !== 'all' && (
+                    <button className="summary-btn" onClick={() => setQueueCaseType('all')}>
+                      Show all case types
+                    </button>
+                  )}
+                </div>
+              ) : (
               <div className="results-grid">
                 {queueResults.map((r) => (
                   <div key={r.case_id} className="result-card glass" style={{ opacity: 1, transform: 'none' }}>
@@ -785,6 +797,7 @@ function App() {
                   </div>
                 ))}
               </div>
+              )
             )}
           </div>
         )}

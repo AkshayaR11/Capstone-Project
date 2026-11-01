@@ -11,6 +11,7 @@ Enhanced, legally grounded priority scoring that reflects real Indian Court List
 import math
 import re
 from typing import Any
+from agents.prioritization.urgency_signals import find_urgency_evidence
 
 def _finite_number(value: Any, fallback: float) -> float:
     try:
@@ -21,22 +22,7 @@ def _finite_number(value: Any, fallback: float) -> float:
 
 def check_immediate_threat(text: str) -> int:
     """Return 1 for urgent life/liberty/custody triggers."""
-    value = re.sub(r"\s+", " ", (text or "").lower())
-    patterns = [
-        r"\b(?:anticipatory|regular|interim|default|statutory)?\s*bail\s+(?:application|petition|plea)s?\b",
-        r"\bapplication\s+(?:for|seeking)\s+(?:anticipatory\s+|regular\s+|interim\s+)?bail\b",
-        r"\b(?:seeks?|prays?\s+for|applies?\s+for)\s+(?:anticipatory\s+|regular\s+|interim\s+|default\s+|statutory\s+)?bail\b",
-        r"\bunder[- ]?trial\s+(?:detention|custody|incarceration|prisoner)\b",
-        r"\bhabeas\s+corpus\b",
-        r"\bcustodial\s+(?:violence|torture|death|assault)\b",
-        r"\b(?:police|custody|custodial)\s+torture\b",
-        r"\b(?:immediate|imminent|physical)\s+threat\s+to\s+(?:life|safety|person)\b",
-        r"\bthreat\s+to\s+life\b|\blife\s+in\s+danger\b|\bimminent\s+danger\b",
-        r"\b(?:stay|suspend(?:ing)?|postpon(?:e|ement)|defer(?:ring)?)\b.{0,100}\b(?:execution|death\s+penalty|capital\s+punishment)\b",
-        r"\b(?:execution|death\s+penalty|capital\s+punishment)\b.{0,100}\b(?:stay|suspend(?:ed|ing)?|postpon(?:ed|ement)|defer(?:red|ring)?)\b",
-        r"\b(?:stay|suspend(?:ing)?)\b.{0,100}\bdemolition\b|\bdemolition\b.{0,100}\b(?:stay|suspend(?:ed|ing)?)\b",
-    ]
-    return int(any(re.search(pattern, value) for pattern in patterns))
+    return int(bool(find_urgency_evidence(text)))
 
 def calculate_societal_impact(text: str) -> int:
     """Comprehensive societal and public impact score (1 to 5 scale)."""

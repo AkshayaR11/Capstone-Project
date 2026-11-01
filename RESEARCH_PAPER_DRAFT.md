@@ -1,114 +1,59 @@
-# Judicial Decision Support System (JDSS): Multi-Agent Architecture for Backlog Triage and Precedent Retrieval
+# Judicial Decision Support System (JDSS): A Research Prototype for Triage and Cross-Regime Precedent Retrieval
 
 **Authors / Capstone Project ID:** Project 97  
 **Department:** Computer Science and Engineering  
-**Supervisor:** Dr. Saritha P  
-
----
+**Supervisor:** Dr. Saritha P
 
 ## Abstract
-The Indian judicial system faces a systemic bottleneck with over 40 million pending cases across various tiers of the judiciary. Traditional case listing follows First-In-First-Out (FIFO) or ad-hoc recency-biased (LIFO) scheduling, often causing high-severity, life-and-liberty cases to linger for months alongside low-impact disputes. Additionally, legal research is complicated by India's transition from the colonial **Indian Penal Code (IPC)** to the modern **Bharatiya Nyaya Sanhita (BNS)**. 
 
-In this work, we propose an **Agentic AI-Driven Judicial Decision Support System** powered by a multi-agent orchestration architecture utilizing **LangGraph**, **Legal-BERT**, and explainable machine learning (XGBoost + SHAP). Our system integrates:
-1. Bidirectional statute translation bridging IPC and BNS.
-2. Corrective Precedent Retrieval (Corrective RAG) using semantic embeddings and self-evaluating LLM agents.
-3. Multi-objective prioritization balancing statutory gravity, age backlog, and immediate liberty threats.
-4. Algorithmic bias and fairness auditing across civil and criminal dockets.
-5. A LangGraph-based Judicial Reconciliation Agent that deliberates upon cross-module conflicts to assist the bench.
+We present a human-in-the-loop judicial decision-support prototype for case triage, precedent retrieval across India's IPC-to-BNS transition, and case summarization. The system combines a deterministic, weighted priority policy, a bounded corrective retrieval workflow, PostgreSQL with `pgvector`, and a LangGraph review workflow. An experimental XGBoost model approximates programmatically generated priority labels; it is not the active docket scorer and its SHAP attributions explain reproduction of those labels rather than legal validity.
 
-Simulated on a dataset of Supreme Court judgements, our proposed AI triage reduces average resolution time for critical/high-severity cases by **74.45%** compared to traditional FIFO scheduling without causing docket starvation.
-
----
+We evaluate scheduling through an illustrative 180-day discrete-event simulation with three assumed workload levels and 30 paired random seeds. Under the selected scenario urgency definition, both a direct threat-first policy and the composite JDSS policy reduce urgent-case waiting relative to FIFO. JDSS does not outperform threat-first on urgent-tail waits, and prioritization shifts some unresolved cases into the pre-existing backlog. Arrivals are bootstrap samples of case profiles and capacity/service targets are assumptions, so these results are scenario comparisons rather than forecasts of court performance. The retrieval benchmark compares BM25, Legal-BERT, a hybrid ranker, and reciprocal-rank fusion on a small query set using ranking overlap and section-hit proxies. It has no human relevance judgments and does not measure NDCG, Recall, or statistical significance. We describe these findings as prototype behavior and identify data and evaluation requirements for future validation.
 
 ## 1. Introduction
-Court pendency severely hampers access to timely justice. A major reason for this delay is unranked scheduling, where a routine procedural boundary dispute receives the same docket scheduling weight as urgent bail hearings or violent criminal matters.
 
-Furthermore, legal practitioners and judges must map 75+ years of jurisprudence decided under the **Indian Penal Code (IPC 1860)** and **Code of Civil Procedure (CPC 1908)** to the recently enacted **Bharatiya Nyaya Sanhita (BNS 2023)**.
+Court pendency makes timely access to justice a major administrative challenge. This project explores whether an explainable assistive tool can help clerks and judges inspect triage signals while preserving human control over listing decisions. It also addresses a search problem created by the July 2024 commencement of the Bharatiya Nyaya Sanhita (BNS): historical judgments commonly cite IPC provisions, while newer matters may cite BNS provisions.
 
-To solve both challenges simultaneously, we designed an explainable, human-in-the-loop multi-agent architecture.
+Our contribution is an integrated prototype: a statute cross-reference layer, precedent retrieval, deterministic priority scoring, screening and reconciliation workflows, and a scenario-based scheduling simulator. We do not claim that the prototype establishes a legally correct case order or predicts operational court outcomes.
 
----
+## 2. System Architecture
 
-## 2. System Architecture & Multi-Agent Design
+The backend uses FastAPI and PostgreSQL/`pgvector`; the interface includes a React application and a Streamlit analytics dashboard. Modules include:
 
-The system is organized into modular agents orchestrated with **LangGraph** and supported by PostgreSQL with `pgvector`:
+1. **Document and statute processing:** extracts case metadata and statutory references and attaches available IPC/BNS cross-references.
+2. **Precedent search:** retrieves case chunks using Legal-BERT embeddings and lexical/metadata signals. A bounded LangGraph plan–act–observe workflow can expand statute references from the project table and make at most two additional retrieval calls using issue-level synonyms. The final ordinal grader (0–3) evaluates candidates against the original query. Grades are uncalibrated and do not determine whether a precedent remains good law.
+3. **Priority scoring:** the active scoring path is deterministic. It combines severity, immediate-threat flag, societal-impact score, age, and selected textual listing adjustments, with a civil-severity cap. The weights and keyword rules are policy choices in code, not learned or empirically optimized parameters.
+4. **Experimental XGBoost and SHAP:** the training script fits a regressor to labels generated by the scoring formula. This is a surrogate experiment; it does not independently establish priority quality. The active `PrioritizationAgent` does not load this model for docket scores.
+5. **Screening and reconciliation:** deterministic rules inspect the full source text for life/liberty signals and attach matching spans and offsets. A deterministic floor may adjust the score; an optional bounded LLM step can draft a review note but cannot change the score or status. These outputs are advisory and require human interpretation.
 
-```
-                 [Case PDF / Ingestion]
-                            │
-                            ▼
-              ┌───────────────────────────┐
-              │ Module 1: Parser & Bridge │
-              │ (IPC <-> BNS Mapping)     │
-              └─────────────┬─────────────┘
-                            │
-             ┌──────────────┴──────────────┐
-             ▼                             ▼
- ┌──────────────────────┐      ┌────────────────────────┐
- │ Module 2A: Precedent │      │ Module 3: Priority &   │
- │ Retrieval (LangGraph │      │ Fairness Engine        │
- │ Corrective RAG)      │      │ (XGBoost + SHAP + Bias)│
- └───────────┬──────────┘      └───────────┬────────────┘
-             │                             │
-             └──────────────┬──────────────┘
-                            ▼
-              ┌───────────────────────────┐
-              │ LangGraph Reconciliation  │
-              │ Evaluator-Optimizer Agent │
-              └─────────────┬─────────────┘
-                            ▼
-             [Interactive Judicial Bench]
-             (React UI & Streamlit App)
-```
+The current systemic audit compares the share of civil and criminal cases above a priority threshold. It is a case-type distribution check, not a demographic fairness or equalized-odds evaluation. The single-case detector also checks score consistency and unusual case-type/age signals; its “fairness score” should be interpreted as a heuristic checklist result, not a statistical fairness guarantee.
 
-### 2.1 Agent Roles:
-1. **Document Processing & Statute Mapping Agent:** Extracts procedural facts, parses statutory mentions, and maps IPC sections to equivalent BNS counterparts with baseline severity weightings (1–10).
-2. **Corrective Precedent Search Agent (LangGraph):**
-   - Employs `nlpaueb/legal-bert-base-uncased` to generate 768-dimensional embeddings stored in `pgvector`.
-   - Uses a StateGraph with nodes `grade_first_pass`, `rewrite_query`, `retrieve_rewritten`, and `grade_retry` to ensure retrieved precedents meet the strict relevance threshold ($\ge 0.65$).
-3. **Intelligent Prioritizer & Explainability Agent:**
-   - Multi-factor formulation scoring:
-     $$\text{Priority} = w_1 \cdot \text{Severity} + w_2 \cdot \text{Threat} + w_3 \cdot \text{Societal Impact} + w_4 \cdot \text{Normalized Age}$$
-   - Augmented by XGBoost regression and SHAP local feature attributions.
-4. **Bias & Fairness Auditor:** Evaluates demographic neutrality, checks for demographic parity differences across case types, and alerts against systemic skew.
-5. **Reconciliation Agent (LangGraph):**
-   - Intercepts dossiers where the priority score clashes with fundamental liberties (e.g., habeas corpus, custody) or where bias flags are active.
-   - Executes LLM deliberation to synthesize a final bench recommendation and triage memo (`APPROVED`, `ADJUSTED`, `FLAGGED_FOR_BENCH`).
+## 3. Scoring Policy
 
----
+The active implementation computes a score from weighted contributions: severity (weight 3.5 on a 0–1 normalized scale), societal impact (2.5), immediate threat (3.0), and age contribution (approximately 0.15–1.30), plus rule-based listing adjustments, clipped to 1–10. Civil severity is capped at 0.45 before weighting. Textual threat detection, impact categories, and special adjustments are heuristic. This formula is a transparent policy baseline; its values are not estimates learned from an independent priority ground truth.
 
-## 3. Simulation & Empirical Evaluation
+## 4. Evaluation
 
-To evaluate the real-world utility of the proposed triage scheduler, we conducted a courtroom simulation over **860 Supreme Court cases** with **3 Virtual Judges** (daily throughput = 6 cases/day).
+### 4.1 Scheduling simulation
 
-### 3.1 Baselines:
-- **FIFO (First-In, First-Out):** Strict chronological listing according to case filing date.
-- **LIFO (Last-In, First-Out):** Recency-biased listing.
-- **Random / Unprioritized:** Simulated unweighted docket assignment.
-- **AI Agent Prioritization (Proposed):** Dynamic ordering using the multi-agent priority scores.
+The current paired simulation uses a 500-case initial backlog, a 180-day horizon, three judges with an assumed capacity of six cases per day, Poisson arrival rates of 2, 6, and 8 cases/day, and 30 shared seeds per workload-policy comparison. New arrivals are bootstrap copies of existing case profiles, with synthetic age reset to zero. The selected scenario-urgent class is defined by `immediate_threat_flag == 1` or severity at least 9; this definition reuses features that influence the composite score. A direct `THREAT_FIRST` baseline is therefore included alongside FIFO, severity-only, age-only, and composite JDSS.
 
-### 3.2 Key Evaluation Results:
+At near capacity, the mean urgent p90 wait is 83.3 days for FIFO, 16.8 for threat-first, and 19.4 for JDSS. At above capacity, it is 101.0, 16.4, and 18.4 days, respectively. Urgent unresolved cases are also much fewer under both urgency-aware policies than under FIFO in these scenarios. JDSS does not beat threat-first on urgent-tail waits; at the near- and above-capacity settings, JDSS leaves more non-urgent cases unresolved than threat-first. Pending waits are censored at the simulation horizon. These results show how the specified policies behave under these assumptions; they do not demonstrate real-world latency reduction, legal urgency accuracy, or absence of starvation.
 
-| Scheduling Strategy | Total Cases | Critical Cases | Avg Wait Days (Critical) | Median Wait Days (Critical) | 90th Percentile Wait (Critical) |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **FIFO (Traditional)** | 860 | 89 | 63.73 days | 43.0 days | 131.0 days |
-| **LIFO (Recency Skew)** | 860 | 89 | 90.91 days | 86.0 days | 131.0 days |
-| **Random Docket** | 860 | 89 | 76.04 days | 80.0 days | 129.4 days |
-| **AI Agent (Proposed)** | **860** | **89** | **16.28 days** | **8.0 days** | **39.2 days** |
+### 4.2 Retrieval benchmark
 
-### 3.3 Core Findings:
-1. **Critical Case Turnaround Improvement:** The AI agent reduces the average resolution time of critical/high-severity matters from **63.73 days to 16.28 days**—a **74.45% speedup**.
-2. **Backlog Threat Decay:** The cumulative severity index of pending cases decays rapidly under AI prioritization, drastically minimizing public harm and prolonging of urgent fundamental rights cases.
-3. **Fairness Preservation:** The demographic parity difference between criminal and civil listings remained balanced without starvation of civil matters.
+The exploratory benchmark uses a small hand-written query set and compares BM25, Legal-BERT, a hybrid ranker, and reciprocal-rank fusion. The saved results report top-result examples, ranking overlap, and a few expected-IPC-section hit proxies for BNS queries. There are no graded relevance judgments; therefore NDCG, Recall, accuracy, and significance claims are not supported by this artifact. The BNS proxies are limited and include negative/ambiguous outcomes, so they should be treated as examples for debugging rather than a performance estimate. A future benchmark should use held-out queries, documented relevance labels, per-query metrics, and explicit handling for split/merged/no-equivalent statutory mappings.
 
----
+### 4.3 Model attribution and summarization
 
-## 4. Artifacts & Generated Figures
-- `evaluation/simulation_results/critical_case_resolution_time.png`: Bar comparison across scheduling regimes.
-- `evaluation/simulation_results/backlog_decay_curve.png`: Trajectory of docket severity decay over time.
-- `evaluation/simulation_results/simulation_metrics.json`: Raw simulation parameters and distribution metrics.
+The XGBoost training targets are generated from the rule formula. Model fit and SHAP values describe the surrogate's approximation of those constructed targets; they are not evidence of independent legal judgment. Summarization ROUGE and statutory-preservation results are automatic text-overlap measures on the evaluated sample and do not establish factual or legal correctness.
 
----
+### 4.4 Lawyer-score pilot
 
-## 5. Conclusion
-The proposed agentic judicial decision support framework demonstrates that combining domain-adapted transformers (Legal-BERT) with stateful multi-agent deliberation (LangGraph) and explainable prioritization can significantly alleviate courtroom congestion while upholding transparency and fairness.
+On a supplied 28-case score sheet, applying the current rule to the supplied severity, threat, impact, and age inputs produced Spearman rank correlation $\rho=0.908$ (bootstrap 95\% interval 0.728--0.982), Kendall $\tau=0.811$, score MAE 0.202/10, and 5/5 overlap in the highest-ranked cases. Threat-first, severity-only, and age-only baselines had Spearman correlations of 0.664, 0.565, and 0.562. The previously stored system scores had $\rho=0.963$ and MAE 0.188 on the 15 cases whose severity, threat, and impact inputs match the supplied ratings. These are descriptive pilot results. The supplied cases are ordered by final score, so baseline ties were broken alphabetically; FIFO is approximated by case age because filing dates were not provided. If the final lawyer scores were computed from the same formula and weights, the score agreement is not independent validation. The 28-case results do not establish generalization or inter-rater reliability.
+
+## 5. Limitations and Next Steps
+
+The simulator uses assumed capacity, service targets, arrival rates, and scenario urgency; its arrivals are resampled historical profiles rather than observed filings. The retrieval benchmark lacks relevance judgments and the statute map needs documented coverage, provenance, and ambiguity classes before it can be treated as a validated legal resource. The fairness checks are descriptive and rule-based. The scoring formula's weights and textual categories are policy choices. Evaluation can be strengthened by calibrating scenarios to public docket statistics, reporting paired effects and non-urgent wait costs, creating a reproducible retrieval test set, comparing Indian-law encoders, and adding citation treatment and court-hierarchy signals.
+
+The system should be presented as an assistive research prototype. Its score, retrieval results, and generated memo are inputs for human inspection, not legal conclusions or automated listing decisions.
