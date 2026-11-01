@@ -1,0 +1,5 @@
+Synthetic Noise Proxy (not an expert),Spearman Rank Correlation (rho),Descriptive p-value (not validation),Interpretation
+Proxy 1 (AI score + Gaussian noise),0.965,7.4230e-12,Synthetic correlation by construction
+Proxy 2 (AI score + Gaussian noise),0.959,2.7102e-11,Synthetic correlation by construction
+Proxy 3 (AI score + Gaussian noise),0.952,1.1249e-10,Synthetic correlation by construction
+Mean of synthetic proxies,0.958,3.1833e-11,Synthetic correlation by construction

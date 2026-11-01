@@ -133,7 +133,7 @@ Cross-Regime BNS & Rape (BNS 64) & 1 / 10 & \textbf{PARTIAL} \\
 \end{table}
 
 \subsection{Summarization Quality}
-Evaluating Gemini 2.5 Flash summaries against source judgments yielded a ROUGE-1 precision of 0.8650, ROUGE-L of 0.4107, and a statutory section preservation rate of 100.0\% at a 17.4\% compression ratio.
+As a lexical-overlap diagnostic, ROUGE was computed against the source judgment text rather than human-written reference summaries. It yielded ROUGE-1 precision of 0.8650 and ROUGE-L of 0.4107; statutory section preservation was 100.0\% at a 17.4\% compression ratio. These source-text ROUGE values are not reference-based summary-quality scores and should not be interpreted as human-validated quality.
 
 \subsection{Global Explainability (TreeSHAP)}
 Feature attribution analysis across 863 cases (Figure~\ref{fig:shap}) shows that the learned model relies most on the immediate-threat flag ($\text{mean absolute SHAP} = 1.188$), followed by offence severity ($0.395$). Since the training targets are generated from a formula that uses these features, these attributions describe reproduction of that formula; they do not independently validate legal priority.

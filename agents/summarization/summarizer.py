@@ -25,10 +25,6 @@ class SummarizationAgent:
             print("Warning: GEMINI_API_KEY environment variable is not set.")
             self.gemini_model = None
 
-        # DB
-        self.conn = psycopg2.connect(DATABASE_URL)
-        register_vector(self.conn)
-
         # Cache
         self.chunk_cache = {}
         print("✅ Summarization Agent ready.\n")
@@ -122,33 +118,33 @@ JUDGMENT TEXT:
         return self._call_gemini(prompt)
 
     def run_batch(self, limit=3):
-        cur = self.conn.cursor()
-        cur.execute("""
-            SELECT case_id FROM cases
-            WHERE case_summary IS NULL
-            LIMIT %s;
-        """, (limit,))
+        conn = psycopg2.connect(DATABASE_URL)
+        register_vector(conn)
+        try:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT case_id FROM cases
+                    WHERE case_summary IS NULL
+                    LIMIT %s;
+                """, (limit,))
+                cases = cur.fetchall()
 
-        cases = cur.fetchall()
-        for (case_id,) in cases:
-            summary_text = self.generate_structured_summary(case_id)
-            if summary_text == "Summary failed":
-                print("   ❌ Skipping Case (Error/Timeout)\n")
-                continue
+            for (case_id,) in cases:
+                summary_text = self.generate_structured_summary(case_id)
+                if summary_text == "Summary failed":
+                    print("   ❌ Skipping Case (Error/Timeout)\n")
+                    continue
 
-            update_cur = self.conn.cursor()
-            update_cur.execute("""
-                UPDATE cases
-                SET case_summary = %s
-                WHERE case_id = %s
-            """, (summary_text, case_id))
-
-            self.conn.commit()
-            update_cur.close()
-            print("   ✅ Stored.\n")
-
-        cur.close()
-        self.conn.close()
+                with conn.cursor() as update_cur:
+                    update_cur.execute("""
+                        UPDATE cases
+                        SET case_summary = %s
+                        WHERE case_id = %s
+                    """, (summary_text, case_id))
+                conn.commit()
+                print("   ✅ Stored.\n")
+        finally:
+            conn.close()
         print("🏁 Done.")
 
 if __name__ == "__main__":

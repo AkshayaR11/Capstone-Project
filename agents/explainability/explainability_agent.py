@@ -184,18 +184,23 @@ class ExplainabilityAgent:
         recency = max(0.0, 1.0 - age / 3650.0) if valid_age else 0.5
 
         components = {
-            "severity_contribution": severity_norm * 3.5,
-            "societal_impact_contribution": impact_norm * 2.5,
-            "immediate_threat_contribution": threat_norm * 3.0,
-            "recency_contribution": recency,
+            "case_type": 0.0,
+            "num_ipc_sections": 0.0,
+            "num_cpc_sections": 0.0,
+            "num_precedents": 0.0,
+            "total_words": 0.0,
+            "case_age_days": recency,
+            "max_severity_score": severity_norm * 3.5,
+            "societal_impact_score": impact_norm * 2.5,
+            "immediate_threat_flag": threat_norm * 3.0,
         }
         total = sum(components.values())
         if total > 10.0:
             components = {key: value * (10.0 / total) for key, value in components.items()}
         rounded = {key: round(value, 2) for key, value in components.items()}
         displayed_total = round(min(total, 10.0), 2)
-        rounded["recency_contribution"] = round(
-            rounded["recency_contribution"] + displayed_total - sum(rounded.values()), 2
+        rounded["case_age_days"] = round(
+            rounded["case_age_days"] + displayed_total - sum(rounded.values()), 2
         )
         return rounded
 
