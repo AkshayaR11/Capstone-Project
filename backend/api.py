@@ -442,7 +442,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                     "bias_score": result[7],
                     "bias_details": result[8] if result[8] is not None else "Automated audit unavailable.",
                     "bias_flags": result[9].split(",") if (result[9] and result[9].strip()) else [],
-                    "similar_cases": similar_cases
+                    "precedents": similar_cases
                 })
             except Exception as rec_err:
                 print(f"[WARNING] Cache hit reconciliation failed: {rec_err}")
@@ -620,7 +620,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
                 "bias_score": bias_score,
                 "bias_details": bias_details,
                 "bias_flags": bias_flags_list,
-                "similar_cases": similar_cases
+                "precedents": similar_cases
             })
         except Exception as rec_err:
             print(f"[WARNING] Cache miss reconciliation failed: {rec_err}")
@@ -661,33 +661,14 @@ async def process_pdf_upload(file: UploadFile = File(...)):
 
 @app.post("/search")
 async def search_cases(req: SearchRequest):
-    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, PRECEDENT_SEARCH_AGENT, BIAS_AGENT
+    global PRIORITIZATION_AGENT
     if not req.query:
         raise HTTPException(status_code=400, detail="Query cannot be empty")
 
     if not PRIORITIZATION_AGENT:
         from agents.prioritization.prioritizer import PrioritizationAgent
         PRIORITIZATION_AGENT = PrioritizationAgent()
-    if not EXPLAINABILITY_AGENT:
-        from agents.explainability.explainability_agent import ExplainabilityAgent
-        EXPLAINABILITY_AGENT = ExplainabilityAgent()
 
-    if not BIAS_AGENT:
-        from agents.fairness.bias_agent import BiasAgent
-        BIAS_AGENT = BiasAgent()
-
-    encoded_input = tokenizer(
-        [req.query.lower()],
-        padding=True,
-        truncation=True,
-        max_length=512,
-        return_tensors='pt'
-    )
-    with torch.no_grad():
-        model_output = model(**encoded_input)
-    query_emb = mean_pooling(model_output, encoded_input['attention_mask'])
-    query_emb = F.normalize(query_emb, p=2, dim=1).numpy()[0]
-        
     conn = None
     cur = None
     try:
@@ -748,27 +729,6 @@ async def search_cases(req: SearchRequest):
                 case_date=r[2] if r[2] else None
             )
 
-            # Generate Explainability attributions
-            features_for_explain = {
-                "case_type": r[8] if r[8] else "civil",
-                "num_ipc_sections": r[9] if r[9] is not None else 0,
-                "num_cpc_sections": r[10] if r[10] is not None else 0,
-                "num_precedents": r[11] if r[11] is not None else 0,
-                "total_words": r[15] if r[15] is not None else 1000,
-                "case_age_days": resolve_case_age_days(r[12], r[2]),
-                "max_severity_score": r[3] if r[3] is not None else 3.0,
-                "immediate_threat_flag": r[13] if r[13] is not None else 0,
-                "societal_impact_score": r[14] if r[14] is not None else 1
-            }
-            contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
-            current_priority_score = PRIORITIZATION_AGENT.compute_priority_score(
-                severity=features_for_explain["max_severity_score"],
-                societal_impact=features_for_explain["societal_impact_score"],
-                immediate_threat=features_for_explain["immediate_threat_flag"],
-                case_age_days=features_for_explain["case_age_days"],
-                case_type=features_for_explain["case_type"],
-            )
-            
             results.append({
                 "case_id": r[0],
                 "score": round(float(score), 6),
@@ -787,7 +747,6 @@ async def search_cases(req: SearchRequest):
                     "immediate_threat_flag": features_for_explain["immediate_threat_flag"],
                     "case_age_days": features_for_explain["case_age_days"],
                 },
-                "contributions": contributions,
                 "bias_score": r[16],
                 "bias_details": r[17] if r[17] is not None else "Automated audit unavailable.",
                 "bias_flags": r[18].split(",") if (r[18] and r[18].strip()) else []
@@ -824,14 +783,10 @@ async def get_pending_priority_queue(
     Returns pending cases ordered by AI Priority Score (highest priority first).
     Includes summary statistics and agent explanation traces.
     """
-    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT
+    global PRIORITIZATION_AGENT
     if not PRIORITIZATION_AGENT:
         from agents.prioritization.prioritizer import PrioritizationAgent
         PRIORITIZATION_AGENT = PrioritizationAgent()
-    if not EXPLAINABILITY_AGENT:
-        from agents.explainability.explainability_agent import ExplainabilityAgent
-        EXPLAINABILITY_AGENT = ExplainabilityAgent()
-
     conn = None
     cur = None
     try:
@@ -919,19 +874,6 @@ async def get_pending_priority_queue(
                 case_date=r[4] if r[4] else None
             )
 
-            features_for_explain = {
-                "case_type": r[2] if r[2] else "civil",
-                "num_ipc_sections": r[9] if r[9] is not None else 0,
-                "num_cpc_sections": r[10] if r[10] is not None else 0,
-                "num_precedents": r[11] if r[11] is not None else 0,
-                "total_words": r[15] if r[15] is not None else 1000,
-                "case_age_days": resolve_case_age_days(r[12], r[4]),
-                "max_severity_score": float(r[5]) if r[5] is not None else 3.0,
-                "immediate_threat_flag": r[13] if r[13] is not None else 0,
-                "societal_impact_score": r[14] if r[14] is not None else 1
-            }
-            contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
-
             results.append({
                 "rank": rank,
                 "case_id": r[0],
@@ -951,7 +893,6 @@ async def get_pending_priority_queue(
                     "immediate_threat_flag": r[13],
                     "case_age_days": resolve_case_age_days(r[12], r[4]),
                 },
-                "contributions": contributions,
                 "bias_score": r[16],
                 "bias_details": r[17] if r[17] is not None else "Automated audit unavailable.",
                 "bias_flags": r[18].split(",") if (r[18] and r[18].strip()) else []
@@ -1020,14 +961,6 @@ async def reconcile_case_by_id(case_id: str):
             "societal_impact_score": r[14] if r[14] is not None else 1
         }
         contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
-        current_priority_score = PRIORITIZATION_AGENT.compute_priority_score(
-            severity=features_for_explain["max_severity_score"],
-            societal_impact=features_for_explain["societal_impact_score"],
-            immediate_threat=features_for_explain["immediate_threat_flag"],
-            case_age_days=features_for_explain["case_age_days"],
-            case_type=features_for_explain["case_type"],
-        )
-
         # Retrieve similar precedents
         similar_cases = []
         try:
@@ -1056,11 +989,11 @@ async def reconcile_case_by_id(case_id: str):
             "source_text": r[6] if r[6] else "",
             "priority_score": current_priority_score,
             "severity": float(r[5]) if r[5] is not None else 3.0,
-            "contributions": contributions,
             "bias_score": r[16],
             "bias_details": r[17] if r[17] is not None else "",
             "bias_flags": r[18].split(",") if (r[18] and r[18].strip()) else [],
-            "similar_cases": similar_cases
+            "precedents": similar_cases,
+            "contributions": contributions
         })
 
         return {

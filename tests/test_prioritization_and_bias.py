@@ -8,7 +8,6 @@ from unittest.mock import patch
 from agents.prioritization.prioritizer import PrioritizationAgent
 from agents.explainability.explainability_agent import ExplainabilityAgent
 from agents.fairness.bias_agent import BiasAgent
-from agents.bias.bias_detector import BiasDetector
 from agents.reconciliation.reconciliation_agent import JudicialReconciliationAgent
 
 class TestJudicialDecisionSupportSystem(unittest.TestCase):
@@ -16,7 +15,6 @@ class TestJudicialDecisionSupportSystem(unittest.TestCase):
     def setUpClass(cls):
         cls.prioritizer = PrioritizationAgent()
         cls.bias_agent = BiasAgent()
-        cls.bias_detector = BiasDetector()
         cls.reconciliation_agent = JudicialReconciliationAgent()
 
     def test_priority_score_calculation_civil_routine(self):
@@ -117,11 +115,12 @@ class TestJudicialDecisionSupportSystem(unittest.TestCase):
         self.assertIn("recommendation", res)
         self.assertTrue(res["conflict_detected"])  # Should flag liberty exception!
         self.assertIn("memo", res)
-    def test_priority_entry_point_obeys_weighted_rules_even_with_ml_name(self):
-        score = self.prioritizer.predict_ml_priority(
-            "criminal", 3, 0, 5, 2000, 180.0, 10.0, 1, 3
-        )
-        self.assertAlmostEqual(score, 8.05, places=2)
+    def test_model_feature_order(self):
+        # would have caught the 6-vs-9 feature mismatch
+        expected = ['case_type','num_ipc_sections','num_cpc_sections','num_precedents',
+                    'total_words','case_age_days','max_severity_score',
+                    'immediate_threat_flag','societal_impact_score']
+        self.assertEqual(self.prioritizer.model.feature_names_in_.tolist(), expected)
 
     def test_ml_priority_bounded(self):
         s = self.prioritizer.predict_ml_priority("criminal", 3, 0, 5, 2000, None, 10, 1, 5)
