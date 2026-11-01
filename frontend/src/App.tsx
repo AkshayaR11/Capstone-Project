@@ -54,33 +54,26 @@ interface CaseResult {
   relevance_reason?: string;
 }
 
-const isRuleBasedTrace = (trace: string | undefined) =>
-  Boolean(trace?.includes("baseline Rule-Based framework"));
-
 const renderPriorityComponents = (r: CaseResult) => (
   <div className="score-attributions">
     <strong className="score-attributions-title">Priority score formula</strong>
     <p className="score-attributions-note">
-      min(10, severity used ÷ 10 × 3.5 + societal impact ÷ 5 × 2.5 + immediate threat × 3 + recency)
+      min(10, severity used ÷ 10 × 3.5 + societal impact ÷ 5 × 2.5 + immediate threat × 3 + age factor)
     </p>
     <p className="score-attributions-note">
-      Severity used is capped at 4 for civil cases. Recency = max(0, 1 − case age in days ÷ 3650); when age is unavailable, the formula uses 0.5.
+      Severity used is capped at 4 for civil cases. Aging points = min(1, max(0, case age in days ÷ 3650)); older cases gain points up to the 1-point cap at 10 years. When age is unavailable, the formula uses 0.5.
     </p>
     <div className="priority-feature-grid">
       <div><span>Case type</span><b>{r.priority_features?.case_type || r.case_type || 'Unavailable'}{(r.priority_features?.case_type || r.case_type)?.toLowerCase() === 'civil' ? ' (civil cap applies)' : ''}</b></div>
       <div><span>Severity (raw / 10)</span><b>{r.priority_features?.max_severity_score ?? r.severity ?? 'Unavailable'}</b></div>
       <div><span>Societal impact (raw / 5)</span><b>{r.priority_features?.societal_impact_score ?? 'Unavailable'}</b></div>
       <div><span>Immediate threat (0/1)</span><b>{r.priority_features?.immediate_threat_flag ?? 'Unavailable'}</b></div>
-      <div><span>Case age (days)</span><b>{r.priority_features?.case_age_days ?? 'Unavailable'}</b></div>
+      <div><span>Case age (days)</span><b>{r.priority_features?.case_age_days == null ? 'Unknown; neutral age factor used' : r.priority_features.case_age_days}</b></div>
     </div>
     <div className="priority-score-result">
       <span>Final priority score</span><b>{Number.isFinite(r.priority_score) ? `${r.priority_score?.toFixed(2)} / 10` : 'Unavailable'}</b>
     </div>
-    <p className="score-attributions-note">
-      {isRuleBasedTrace(r.priority_explanation)
-        ? 'This formula produces the displayed score.'
-        : 'The displayed score is the XGBoost model prediction. This formula is the rule-based reference used to create training labels; it does not calculate the model prediction.'}
-    </p>
+    <p className="score-attributions-note">These components add up to the displayed priority score.</p>
   </div>
 );
 
@@ -307,8 +300,7 @@ function App() {
     if (score >= 8.0) return "Critical";
     if (score >= 6.0) return "High";
     if (score >= 4.0) return "Medium";
-    if (score >= 2.0) return "Low";
-    return "Very Low";
+    return "Low";
   }
 
   const getPriorityClass = (score?: number) => {

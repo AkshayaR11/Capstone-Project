@@ -10,6 +10,7 @@ import sys
 import re
 import json
 import hashlib
+import math
 from datetime import datetime
 from pathlib import Path
 from rank_bm25 import BM25Okapi
@@ -41,6 +42,18 @@ def mean_pooling(model_output, attention_mask):
     sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
     sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
     return sum_embeddings / sum_mask
+
+
+def resolve_case_age_days(case_age_days, case_date):
+    """Prefer saved filing age, then derive recency from the known case date."""
+    try:
+        age = float(case_age_days)
+        if math.isfinite(age) and age >= 0:
+            return age
+    except (TypeError, ValueError):
+        pass
+    from scripts.extract_features import age_days_from_case_date
+    return age_days_from_case_date(case_date, as_of_date=datetime.now())
 
 class SearchRequest(BaseModel):
     query: str
@@ -124,7 +137,7 @@ def retrieve_hybrid_candidates(query_text: str, year_filter: str, top_k: int):
             case_type=record[8] or "Unknown",
             num_ipc_sections=record[9] if record[9] is not None else 0,
             num_cpc_sections=record[10] if record[10] is not None else 0,
-            case_age_days=record[12],
+            case_age_days=resolve_case_age_days(record[12], record[2]),
             num_precedents=record[11] if record[11] is not None else 0,
             severity=float(record[3]) if record[3] is not None else 3.0,
             immediate_threat=record[13] if record[13] is not None else 0,
@@ -138,7 +151,7 @@ def retrieve_hybrid_candidates(query_text: str, year_filter: str, top_k: int):
             "num_cpc_sections": record[10] if record[10] is not None else 0,
             "num_precedents": record[11] if record[11] is not None else 0,
             "total_words": record[15] if record[15] is not None else 1000,
-            "case_age_days": record[12] if record[12] is not None else 365.0,
+            "case_age_days": resolve_case_age_days(record[12], record[2]),
             "max_severity_score": float(record[3]) if record[3] is not None else 3.0,
             "immediate_threat_flag": record[13] if record[13] is not None else 0,
             "societal_impact_score": record[14] if record[14] is not None else 1,
@@ -270,6 +283,29 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         if not text.strip():
             raise HTTPException(status_code=400, detail="Could not extract text from PDF")
 
+        # Extract scoring metadata before cache lookup as cached documents may
+        # have been scored by the older ML path or older metadata rules.
+        from scripts.extract_features import extract_priority_metadata
+        from agents.prioritization.scoring import compute_priority_score
+        metadata = extract_priority_metadata(text, as_of_date=datetime.now())
+        case_type = metadata["case_type"]
+        regime = metadata["legal_regime"]
+        ipc_sections_list = metadata["ipc_sections"]
+        bns_sections_list = metadata["bns_sections"]
+        cpc_sections_list = metadata["cpc_sections"]
+        severity = metadata["severity"]
+        date_str = metadata["case_date"]
+        case_age_val = metadata["case_age_days"]
+        num_precedents = metadata["num_precedents"]
+        immediate_threat = metadata["immediate_threat_flag"]
+        societal_impact = metadata["societal_impact_score"]
+        total_words = metadata["total_words"]
+        priority_score = compute_priority_score(
+            severity, societal_impact, immediate_threat, case_age_val, case_type
+        )
+        ipc_str = ",".join(ipc_sections_list)
+        bns_str = ",".join(bns_sections_list)
+
         # Generate sha256 Content Hash
         content_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
         
@@ -306,31 +342,49 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             
         if result and result[0]:
             print(f"🔥 Fast Cache Hit! Returned {result[10]} instantly without hitting Gemini.")
+
+            # Refresh metadata and score for a cache hit using today's rules.
+            cur.execute("""
+                UPDATE cases
+                SET case_type = %s, legal_regime = %s, ipc_sections = %s, bns_sections = %s,
+                    cpc_sections = %s, num_ipc_sections = %s, num_bns_sections = %s,
+                    num_cpc_sections = %s, num_precedents = %s, total_words = %s,
+                    case_date = %s, case_age_days = %s, max_severity_score = %s,
+                    immediate_threat_flag = %s, societal_impact_score = %s, priority_score = %s
+                WHERE case_id = %s
+            """, (
+                case_type, regime, ipc_str, bns_str, ",".join(cpc_sections_list),
+                len(ipc_sections_list), len(bns_sections_list), len(cpc_sections_list),
+                num_precedents, total_words, date_str, case_age_val, severity,
+                immediate_threat, societal_impact, priority_score, result[10]
+            ))
+            conn.commit()
             
             # Generate explanation for cache hit
             explanation = PRIORITIZATION_AGENT.generate_explanation(
-                case_type=result[6] if result[6] else "Unknown",
-                num_ipc_sections=result[11] if result[11] is not None else 0,
-                num_cpc_sections=result[12] if result[12] is not None else 0,
-                case_age_days=result[14] if result[14] is not None else None,
-                num_precedents=result[13] if result[13] is not None else 0,
-                severity=result[1] if result[1] is not None else 3.0,
-                immediate_threat=result[15] if result[15] is not None else 0,
-                societal_impact=result[16] if result[16] is not None else 1,
-                case_date=result[18] if result[18] is not None else None
+                case_type=case_type,
+                num_ipc_sections=len(ipc_sections_list),
+                num_cpc_sections=len(cpc_sections_list),
+                case_age_days=case_age_val,
+                num_precedents=num_precedents,
+                severity=severity,
+                immediate_threat=immediate_threat,
+                societal_impact=societal_impact,
+                case_date=date_str,
+                scoring_method="lawyer-weighted deterministic rules"
             )
 
             # Generate dynamic contributions for cache hit with correct index splits
             features_for_explain = {
-                "case_type": result[6] if result[6] else "civil",
-                "num_ipc_sections": result[11] if result[11] is not None else 0,
-                "num_cpc_sections": result[12] if result[12] is not None else 0,
-                "num_precedents": result[13] if result[13] is not None else 0,
-                "total_words": result[17] if result[17] is not None else 1000,
-                "case_age_days": result[14] if result[14] is not None else 365.0,
-                "max_severity_score": float(result[1]) if result[1] is not None else 3.0,
-                "immediate_threat_flag": result[15] if result[15] is not None else 0,
-                "societal_impact_score": result[16] if result[16] is not None else 1
+                "case_type": case_type,
+                "num_ipc_sections": len(ipc_sections_list),
+                "num_cpc_sections": len(cpc_sections_list),
+                "num_precedents": num_precedents,
+                "total_words": total_words,
+                "case_age_days": case_age_val,
+                "max_severity_score": severity,
+                "immediate_threat_flag": immediate_threat,
+                "societal_impact_score": societal_impact
             }
             contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
             
@@ -378,11 +432,11 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             try:
                 reconciliation = RECONCILIATION_AGENT.reconcile({
                     "case_id": result[10] if (len(result) > 10 and result[10]) else filename_id,
-                    "case_type": result[6] if result[6] else "civil",
-                    "legal_regime": result[2] if result[2] else "ipc",
+                    "case_type": case_type,
+                    "legal_regime": regime,
                     "summary": result[0],
-                    "priority_score": float(result[5]) if result[5] is not None else 5.0,
-                    "severity": float(result[1]) if result[1] is not None else 3.0,
+                    "priority_score": priority_score,
+                    "severity": float(severity),
                     "contributions": contributions,
                     "bias_score": result[7],
                     "bias_details": result[8] if result[8] is not None else "Automated audit unavailable.",
@@ -395,19 +449,19 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             return {
                 "case_id": result[10] if (len(result) > 10 and result[10]) else filename_id,
                 "summary": result[0],
-                "severity": result[1],
-                "regime": result[2],
-                "ipc_sections": result[3],
-                "bns_sections": result[4],
-                "priority_score": result[5],
-                "case_type": result[6],
+                "severity": severity,
+                "regime": regime,
+                "ipc_sections": ipc_str,
+                "bns_sections": bns_str,
+                "priority_score": priority_score,
+                "case_type": case_type,
                 "priority_explanation": explanation,
                 "priority_features": {
-                    "case_type": result[6],
-                    "max_severity_score": result[1],
-                    "societal_impact_score": result[16],
-                    "immediate_threat_flag": result[15],
-                    "case_age_days": result[14],
+                    "case_type": case_type,
+                    "max_severity_score": severity,
+                    "societal_impact_score": societal_impact,
+                    "immediate_threat_flag": immediate_threat,
+                    "case_age_days": case_age_val,
                 },
                 "similar_cases": similar_cases,
                 "contributions": contributions,
@@ -434,71 +488,13 @@ async def process_pdf_upload(file: UploadFile = File(...)):
         # Generates raw string via Gemini
         raw_summary_string = UPLOAD_AGENT.summarize_upload_stream(text)
         
-        # EXTRACT FEATURES NATIVELY
-        from scripts.extract_features import (
-            extract_case_type, detect_legal_regime, extract_ipc_sections, extract_bns_sections,
-            load_mappings, calculate_severity, build_bns_severity, translate_ipc_to_bns, IPC_SEVERITY,
-            extract_date, parse_date, count_precedents, calculate_pending_days
+        priority_score = PRIORITIZATION_AGENT.compute_priority_score(
+            severity=severity,
+            societal_impact=societal_impact,
+            immediate_threat=immediate_threat,
+            case_age_days=case_age_val,
+            case_type=case_type
         )
-        
-        ipc_to_bns, cpc_valid_sections = load_mappings("data/mappings.json")
-        bns_severity_map = build_bns_severity(ipc_to_bns)
-        
-        case_type = extract_case_type(text)
-        regime = detect_legal_regime(None, text)
-        ipc_sections_list = []
-        bns_sections_list = []
-        cpc_sections_list = []
-        severity = 3
-        
-        if case_type == "criminal":
-            if regime == "IPC":
-                ipc_sections_list = extract_ipc_sections(text)
-                bns_equivalent = translate_ipc_to_bns(ipc_sections_list, ipc_to_bns)
-                bns_sections_list = [b for b in bns_equivalent if not b.endswith("?")]
-                severity = calculate_severity(ipc_sections_list, IPC_SEVERITY)
-            else:
-                bns_sections_list = extract_bns_sections(text)
-                severity = calculate_severity(bns_sections_list, bns_severity_map)
-        else:
-            from scripts.extract_features import extract_cpc_sections
-            cpc_sections_list = extract_cpc_sections(text, cpc_valid_sections)
-            severity = min(2 + len(cpc_sections_list), 6)
-                
-        bns_str = ",".join(bns_sections_list)
-        ipc_str = ",".join(ipc_sections_list)
-        
-        # Calculate dynamic filing date and case age
-        date_str = extract_date(text)
-        parsed_date = parse_date(date_str)
-        case_age_val = calculate_pending_days(parsed_date, text)
-        
-        # Calculate dynamic priority score using Prioritization Agent
-        num_precedents = count_precedents(text)
-        immediate_threat = PRIORITIZATION_AGENT.check_immediate_threat(text)
-        societal_impact = PRIORITIZATION_AGENT.calculate_societal_impact(text)
-        
-        if PRIORITIZATION_AGENT.model is not None:
-            total_words = len(text.split())
-            priority_score = PRIORITIZATION_AGENT.predict_ml_priority(
-                case_type=case_type,
-                num_ipc_sections=len(ipc_sections_list),
-                num_cpc_sections=len(cpc_sections_list),
-                num_precedents=num_precedents,
-                total_words=total_words,
-                case_age_days=case_age_val,
-                max_severity_score=float(severity),
-                immediate_threat_flag=immediate_threat,
-                societal_impact_score=societal_impact
-            )
-        else:
-            priority_score = PRIORITIZATION_AGENT.compute_priority_score(
-                severity=int(severity),
-                societal_impact=societal_impact,
-                immediate_threat=immediate_threat,
-                case_age_days=case_age_val,
-                case_type=case_type
-            )
             
         explanation = PRIORITIZATION_AGENT.generate_explanation(
             case_type=case_type,
@@ -519,7 +515,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
             "num_cpc_sections": len(cpc_sections_list),
             "num_precedents": num_precedents,
             "total_words": len(text.split()),
-            "case_age_days": case_age_val if case_age_val is not None else 365.0,
+            "case_age_days": case_age_val,
             "max_severity_score": float(severity),
             "immediate_threat_flag": immediate_threat,
             "societal_impact_score": societal_impact
@@ -663,7 +659,7 @@ async def process_pdf_upload(file: UploadFile = File(...)):
 
 @app.post("/search")
 async def search_cases(req: SearchRequest):
-    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, PRECEDENT_SEARCH_AGENT
+    global PRIORITIZATION_AGENT, EXPLAINABILITY_AGENT, PRECEDENT_SEARCH_AGENT, BIAS_AGENT
     if not req.query:
         raise HTTPException(status_code=400, detail="Query cannot be empty")
 
@@ -677,6 +673,18 @@ async def search_cases(req: SearchRequest):
     if not BIAS_AGENT:
         from agents.fairness.bias_agent import BiasAgent
         BIAS_AGENT = BiasAgent()
+
+    encoded_input = tokenizer(
+        [req.query.lower()],
+        padding=True,
+        truncation=True,
+        max_length=512,
+        return_tensors='pt'
+    )
+    with torch.no_grad():
+        model_output = model(**encoded_input)
+    query_emb = mean_pooling(model_output, encoded_input['attention_mask'])
+    query_emb = F.normalize(query_emb, p=2, dim=1).numpy()[0]
         
     conn = None
     cur = None
@@ -730,7 +738,7 @@ async def search_cases(req: SearchRequest):
                 case_type=r[8] if r[8] else "Unknown",
                 num_ipc_sections=r[9] if r[9] is not None else 0,
                 num_cpc_sections=r[10] if r[10] is not None else 0,
-                case_age_days=r[12] if r[12] is not None else None,
+                case_age_days=resolve_case_age_days(r[12], r[2]),
                 num_precedents=r[11] if r[11] is not None else 0,
                 severity=float(r[3]) if r[3] is not None else 3.0,
                 immediate_threat=r[13] if r[13] is not None else 0,
@@ -745,12 +753,19 @@ async def search_cases(req: SearchRequest):
                 "num_cpc_sections": r[10] if r[10] is not None else 0,
                 "num_precedents": r[11] if r[11] is not None else 0,
                 "total_words": r[15] if r[15] is not None else 1000,
-                "case_age_days": r[12] if r[12] is not None else 365.0,
+                "case_age_days": resolve_case_age_days(r[12], r[2]),
                 "max_severity_score": r[3] if r[3] is not None else 3.0,
                 "immediate_threat_flag": r[13] if r[13] is not None else 0,
                 "societal_impact_score": r[14] if r[14] is not None else 1
             }
             contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
+            current_priority_score = PRIORITIZATION_AGENT.compute_priority_score(
+                severity=features_for_explain["max_severity_score"],
+                societal_impact=features_for_explain["societal_impact_score"],
+                immediate_threat=features_for_explain["immediate_threat_flag"],
+                case_age_days=features_for_explain["case_age_days"],
+                case_type=features_for_explain["case_type"],
+            )
             
             results.append({
                 "case_id": r[0],
@@ -760,15 +775,15 @@ async def search_cases(req: SearchRequest):
                 "summary": r[4] if r[4] else "AI Synopsis Pending Processing.",
                 "bns_sections": r[5] if r[5] else "",
                 "ipc_sections": r[6] if r[6] else "",
-                "priority_score": r[7] if r[7] is not None else 0.0,
+                "priority_score": current_priority_score,
                 "case_type": r[8] if r[8] else "Unknown",
                 "priority_explanation": exp,
                 "priority_features": {
                     "case_type": r[8],
-                    "max_severity_score": r[3],
-                    "societal_impact_score": r[14],
-                    "immediate_threat_flag": r[13],
-                    "case_age_days": r[12],
+                    "max_severity_score": features_for_explain["max_severity_score"],
+                    "societal_impact_score": features_for_explain["societal_impact_score"],
+                    "immediate_threat_flag": features_for_explain["immediate_threat_flag"],
+                    "case_age_days": features_for_explain["case_age_days"],
                 },
                 "contributions": contributions,
                 "bias_score": r[16],
@@ -818,23 +833,8 @@ async def get_pending_priority_queue(
 
         where_sql = " WHERE " + " AND ".join(where_clauses) if where_clauses else ""
 
-        # Query stats
-        stats_sql = f"""
-            SELECT 
-                COUNT(*) as total_count,
-                COUNT(*) FILTER (WHERE priority_score >= 8.0) as critical_count,
-                COUNT(*) FILTER (WHERE priority_score >= 6.0 AND priority_score < 8.0) as high_count,
-                AVG(priority_score) as avg_priority
-            FROM cases {where_sql};
-        """
-        cur.execute(stats_sql, params)
-        stats_row = cur.fetchone()
-        total_count = stats_row[0] or 0
-        critical_count = stats_row[1] or 0
-        high_count = stats_row[2] or 0
-        avg_priority = round(float(stats_row[3]), 2) if stats_row[3] is not None else 0.0
-
-        # Query ordered cases
+        # Recompute the queue from stored feature metadata so old ML scores do
+        # not keep controlling scheduling after the rule-based policy change.
         query_sql = f"""
             SELECT 
                 case_id, priority_score, case_type, legal_regime, case_date,
@@ -844,21 +844,44 @@ async def get_pending_priority_queue(
                 bias_score, bias_details, bias_flags
             FROM cases
             {where_sql}
-            ORDER BY priority_score DESC NULLS LAST, case_age_days DESC NULLS LAST
-            LIMIT %s OFFSET %s;
         """
-        cur.execute(query_sql, params + [limit, offset])
-        records = cur.fetchall()
+        cur.execute(query_sql, params)
+        db_records = cur.fetchall()
+
+        ranked_records = []
+        for record in db_records:
+            record_case_type = record[2] or "civil"
+            record_severity = record[5] if record[5] is not None else 3.0
+            record_threat = record[13] if record[13] is not None else 0
+            record_impact = record[14] if record[14] is not None else 1
+            record_age_days = resolve_case_age_days(record[12], record[4])
+            record_score = PRIORITIZATION_AGENT.compute_priority_score(
+                severity=record_severity,
+                societal_impact=record_impact,
+                immediate_threat=record_threat,
+                case_age_days=record_age_days,
+                case_type=record_case_type,
+            )
+            ranked_records.append((record_score, record))
+        ranked_records.sort(
+            key=lambda item: (item[0], resolve_case_age_days(item[1][12], item[1][4]) or -1),
+            reverse=True,
+        )
+        total_count = len(ranked_records)
+        critical_count = sum(1 for score, _ in ranked_records if score >= 8.0)
+        high_count = sum(1 for score, _ in ranked_records if 6.0 <= score < 8.0)
+        avg_priority = round(sum(score for score, _ in ranked_records) / total_count, 2) if total_count else 0.0
+        page_records = ranked_records[offset:offset + limit]
 
         results = []
-        for idx, r in enumerate(records):
+        for idx, (current_priority_score, r) in enumerate(page_records):
             rank = offset + idx + 1
             
             exp = PRIORITIZATION_AGENT.generate_explanation(
                 case_type=r[2] if r[2] else "Unknown",
                 num_ipc_sections=r[9] if r[9] is not None else 0,
                 num_cpc_sections=r[10] if r[10] is not None else 0,
-                case_age_days=r[12] if r[12] is not None else None,
+                case_age_days=resolve_case_age_days(r[12], r[4]),
                 num_precedents=r[11] if r[11] is not None else 0,
                 severity=float(r[5]) if r[5] is not None else 3.0,
                 immediate_threat=r[13] if r[13] is not None else 0,
@@ -872,7 +895,7 @@ async def get_pending_priority_queue(
                 "num_cpc_sections": r[10] if r[10] is not None else 0,
                 "num_precedents": r[11] if r[11] is not None else 0,
                 "total_words": r[15] if r[15] is not None else 1000,
-                "case_age_days": r[12] if r[12] is not None else 365.0,
+                "case_age_days": resolve_case_age_days(r[12], r[4]),
                 "max_severity_score": float(r[5]) if r[5] is not None else 3.0,
                 "immediate_threat_flag": r[13] if r[13] is not None else 0,
                 "societal_impact_score": r[14] if r[14] is not None else 1
@@ -882,7 +905,7 @@ async def get_pending_priority_queue(
             results.append({
                 "rank": rank,
                 "case_id": r[0],
-                "priority_score": round(float(r[1]), 2) if r[1] is not None else 0.0,
+                "priority_score": current_priority_score,
                 "case_type": r[2] if r[2] else "Unknown",
                 "legal_regime": r[3] if r[3] else "Unknown",
                 "date": r[4] if r[4] else "Unknown",
@@ -896,7 +919,7 @@ async def get_pending_priority_queue(
                     "max_severity_score": r[5],
                     "societal_impact_score": r[14],
                     "immediate_threat_flag": r[13],
-                    "case_age_days": r[12],
+                    "case_age_days": resolve_case_age_days(r[12], r[4]),
                 },
                 "contributions": contributions,
                 "bias_score": r[16],
@@ -930,6 +953,9 @@ async def reconcile_case_by_id(case_id: str):
         print("🏛️ Loading Judicial Reconciliation Agent...")
         from agents.reconciliation.reconciliation_agent import JudicialReconciliationAgent
         RECONCILIATION_AGENT = JudicialReconciliationAgent()
+    if not PRIORITIZATION_AGENT:
+        from agents.prioritization.prioritizer import PrioritizationAgent
+        PRIORITIZATION_AGENT = PrioritizationAgent()
     if not EXPLAINABILITY_AGENT:
         from agents.explainability.explainability_agent import ExplainabilityAgent
         EXPLAINABILITY_AGENT = ExplainabilityAgent()
@@ -957,12 +983,19 @@ async def reconcile_case_by_id(case_id: str):
             "num_cpc_sections": r[10] if r[10] is not None else 0,
             "num_precedents": r[11] if r[11] is not None else 0,
             "total_words": r[15] if r[15] is not None else 1000,
-            "case_age_days": r[12] if r[12] is not None else 365.0,
+            "case_age_days": resolve_case_age_days(r[12], r[4]),
             "max_severity_score": float(r[5]) if r[5] is not None else 3.0,
             "immediate_threat_flag": r[13] if r[13] is not None else 0,
             "societal_impact_score": r[14] if r[14] is not None else 1
         }
         contributions = EXPLAINABILITY_AGENT.compute_marginal_attributions(features_for_explain)
+        current_priority_score = PRIORITIZATION_AGENT.compute_priority_score(
+            severity=features_for_explain["max_severity_score"],
+            societal_impact=features_for_explain["societal_impact_score"],
+            immediate_threat=features_for_explain["immediate_threat_flag"],
+            case_age_days=features_for_explain["case_age_days"],
+            case_type=features_for_explain["case_type"],
+        )
 
         # Retrieve similar precedents
         similar_cases = []
@@ -989,7 +1022,7 @@ async def reconcile_case_by_id(case_id: str):
             "case_type": r[2] if r[2] else "civil",
             "legal_regime": r[3] if r[3] else "ipc",
             "summary": r[6] if r[6] else "",
-            "priority_score": float(r[1]) if r[1] is not None else 5.0,
+            "priority_score": current_priority_score,
             "severity": float(r[5]) if r[5] is not None else 3.0,
             "contributions": contributions,
             "bias_score": r[16],

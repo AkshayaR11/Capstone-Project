@@ -28,10 +28,8 @@ def assign_category(score):
         return "High"
     elif score >= 4:
         return "Medium"
-    elif score >= 2:
-        return "Low"
     else:
-        return "Very Low"
+        return "Low"
 
 
 # ==============================

@@ -19,6 +19,11 @@ import os
 # Ensure parent directory is in sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config import MAPPINGS_FILE_PATH
+from agents.prioritization.scoring import (
+    calculate_societal_impact as _calculate_societal_impact,
+    check_immediate_threat as _check_immediate_threat,
+    compute_priority_score as _compute_priority_score,
+)
 
 # ==============================
 # CONFIG
@@ -67,12 +72,24 @@ def load_mappings(path: str) -> tuple[dict, list]:
 def extract_case_type(text: str) -> str:
     text_lower = text.lower()
 
-    # 1. Authoritative check on the Supreme Court Jurisdiction Header in first 3000 chars
-    header_area = text_lower[:3000]
-    if "civil appellate jurisdiction" in header_area or "civil appeal" in header_area or "civil writ" in header_area or "civil original jurisdiction" in header_area:
-        return "civil"
-    if "criminal appellate jurisdiction" in header_area or "criminal appeal" in header_area or "criminal writ" in header_area or "criminal original jurisdiction" in header_area:
+    # Case-number labels are especially useful for SLP applications and affidavits,
+    # which may not have the judgment-style appellate-jurisdiction heading.
+    header_area = text_lower[:5000]
+    slp_type = re.search(r"\bslp\s*\(\s*(civil|criminal|crl\.?)\s*\)", header_area)
+    if slp_type:
+        return "criminal" if slp_type.group(1).startswith("cr") else "civil"
+    criminal_heading = re.search(
+        r"\bslp\s*\(\s*(?:criminal|crl\.?)\s*\)|\bcriminal\s+(?:appellate\s+jurisdiction|appeal|writ)\b",
+        header_area,
+    )
+    civil_heading = re.search(
+        r"\bslp\s*\(\s*civil\s*\)|\bcivil\s+(?:appellate\s+jurisdiction|appeal|writ|original\s+jurisdiction)\b",
+        header_area,
+    )
+    if criminal_heading:
         return "criminal"
+    if civil_heading:
+        return "civil"
 
     # 2. Keyword-based signals fallback
     criminal_signals = [
@@ -102,7 +119,18 @@ def detect_legal_regime(case_date: datetime | None, text: str) -> str:
     Returns 'BNS' or 'IPC'.
     BNS (Bharatiya Nyaya Sanhita) replaced IPC on July 1 2024.
     """
-    if re.search(r'\bbns\b|bharatiya nyaya sanhita|bharatiya nagarik suraksha', text.lower()):
+    text_lower = text.lower()
+    explicit_bns_sections = re.search(
+        r"(?:sections?|u/s|under)\s+[\d,()/\s-]+\s+(?:of\s+the\s+)?(?:bns|bharatiya nyaya sanhita)", text_lower
+    )
+    explicit_ipc_sections = re.search(
+        r"(?:sections?|u/s|under)\s+[\d,()/\s-]+\s+(?:of\s+the\s+)?(?:ipc|indian penal code)", text_lower
+    )
+    if explicit_bns_sections and not explicit_ipc_sections:
+        return "BNS"
+    if explicit_ipc_sections and not explicit_bns_sections:
+        return "IPC"
+    if re.search(r'\bbns\b|bharatiya nyaya sanhita|bharatiya nagarik suraksha', text_lower) and not re.search(r'\bipc\b|indian penal code', text_lower):
         return "BNS"
     if case_date and case_date >= BNS_CUTOFF:
         return "BNS"
@@ -124,6 +152,9 @@ def extract_ipc_sections(text: str) -> list[str]:
     text_lower = text.lower()
 
     patterns = [
+        # Explicit statute-first citations: IPC 302/34, Indian Penal Code 302.
+        r'\bipc[, \t]*(?:sections?\s*)?([\d]+[a-z]?(?:[/,\s]+[\d]+[a-z]?)*)',
+        r'indian penal code(?:,?\s*1860)?[, \t]*sections?\s+([\d]+[a-z]?(?:[/,\s]+[\d]+[a-z]?)*)',
         # u/s 302 ipc  |  u/s 302/34 ipc
         r'u/s\s+([\d]+[a-z]?(?:[/,\s]+[\d]+[a-z]?)*)\s+ipc',
         # section(s) 302, 307 ipc  |  section 302 ipc
@@ -160,6 +191,8 @@ def extract_bns_sections(text: str) -> list[str]:
     text_lower = text.lower()
 
     patterns = [
+        # Explicit statute-first citations: BNS 103, Bharatiya Nyaya Sanhita 103.
+        r'(?:\bbns\b|bharatiya nyaya sanhita)[,\s]+(?:sections?\s*)?([\d]+[a-z]?(?:[/,\s]+[\d]+[a-z]?)*)',
         r'u/s\s+([\d]+[a-z]?(?:[/,\s]+[\d]+[a-z]?)*)\s+bns',
         r'sections?\s+([\d]+[a-z]?(?:[,/\s]+(?:and\s+)?[\d]+[a-z]?)*)\s+(?:read\s+with\s+[\d]+[a-z]?\s+)?bns',
         r'bharatiya nyaya sanhita.*?section\s+([\d]+[a-z]?)',
@@ -262,14 +295,23 @@ IPC_SEVERITY = {
     "409": 5,    # Criminal breach of trust by public servant
     # 3 — Lower severity
     "379": 3,    # Theft
-    "323": 2,    # Voluntarily causing hurt
-    "427": 2,    # Mischief causing damage
-    "504": 2,    # Intentional insult to provoke breach of peace
+    "323": 3,    # Voluntarily causing hurt
+    "427": 3,    # Mischief causing damage
+    "504": 3,    # Intentional insult to provoke breach of peace
 }
 
 # BNS equivalents (key BNS sections -> severity)
-# This will be auto-derived from IPC_SEVERITY + mappings.json at runtime
+# Derived from the approved IPC mapping, then corrected for sections where multiple
+# IPC offences map to one BNS section. Direct values follow the supplied lawyer rubric.
 BNS_SEVERITY: dict = {}
+BNS_SEVERITY_OVERRIDES = {
+    "64": 10, "65": 10, "66": 10, "70": 10,  # Rape / aggravated rape
+    "80": 9, "103": 10, "105": 9,             # Dowry death / murder / homicide
+    "109": 8, "61": 8, "310": 8,              # Attempt murder / conspiracy / dacoity
+    "117": 6, "118": 6, "309": 6, "85": 6,   # Grievous hurt / robbery / cruelty
+    "318": 5, "316": 5,                         # Cheating / breach of trust
+    "303": 3, "115": 3,                         # Theft / simple hurt
+}
 
 
 def build_bns_severity(ipc_to_bns: dict) -> dict:
@@ -280,6 +322,7 @@ def build_bns_severity(ipc_to_bns: dict) -> dict:
         if bns_sec:
             # Take the max in case multiple IPC sections map to same BNS
             bns_sev[bns_sec] = max(bns_sev.get(bns_sec, 0), score)
+    bns_sev.update(BNS_SEVERITY_OVERRIDES)
     return bns_sev
 
 
@@ -304,16 +347,7 @@ def calculate_severity(sections: list[str], severity_map: dict) -> int:
 # Any case involving bail/custody/restraint = needs urgent attention
 # ==============================
 def check_immediate_threat(text: str) -> int:
-    urgent_patterns = [
-        r'\bbail petition\b', r'\banticipatory bail\b',
-        r'\bhabeas corpus\b',
-        r'\bdomestic violence\b',
-        r'\bcustody\b',
-        r'\bthreat to life\b', r'\blife in danger\b',
-        r'\bprotection order\b',
-    ]
-    text_lower = text.lower()
-    return int(any(re.search(p, text_lower) for p in urgent_patterns))
+    return _check_immediate_threat(text)
 
 
 # ==============================
@@ -322,21 +356,7 @@ def check_immediate_threat(text: str) -> int:
 # High-impact = affects many people or public interest.
 # ==============================
 def calculate_societal_impact(text: str) -> int:
-    text_lower = text.lower()
-    score = 1
-
-    if re.search(r'\bpublic interest litigation\b|\b(pil)\b', text_lower):
-        score += 3
-    if re.search(r'\benvironmental impact\b|\benvironmental protection\b|\bpollution control\b|\becological damage\b', text_lower):
-        score += 2
-    if re.search(r'\bconstitutional validity\b|\bconstitutionality\b|\bconstitutional bench\b|\bviolation of fundamental rights?\b', text_lower):
-        score += 2
-    if re.search(r'\bcorruption prevention\b|\bprevention of corruption\b|\bcbi investigation\b|\bterrorist act\b|\bfinancial scam\b', text_lower):
-        score += 2
-    if re.search(r'\bclass action lawsuit\b|\bmassive protest\b|\bgang rape\b|\borganized crime syndicates?\b', text_lower):
-        score += 1
-
-    return min(score, 5)
+    return _calculate_societal_impact(text)
 
 
 # ==============================
@@ -354,23 +374,9 @@ def compute_priority_score(
     case_age_days: float | None,
     case_type: str
 ) -> float:
-    # Normalise each to 0-1 range
-    sev_norm    = severity / 10.0
-    impact_norm = societal_impact / 5.0
-    threat_norm = float(immediate_threat)          # already 0 or 1
-
-    # Recency: cases < 1 year old score 1.0, scaling down over 10 years
-    if case_age_days is not None:
-        recency = max(0.0, 1.0 - (case_age_days / 3650))
-    else:
-        recency = 0.5  # unknown age = neutral
-
-    # Civil cases cap severity contribution (no IPC sections)
-    if case_type == "civil":
-        sev_norm = min(sev_norm, 0.4)
-
-    raw = (sev_norm * 3.5) + (impact_norm * 2.5) + (threat_norm * 3.0) + (recency * 1.0)
-    return round(min(raw, 10.0), 2)
+    return _compute_priority_score(
+        severity, societal_impact, immediate_threat, case_age_days, case_type
+    )
 
 
 # ==============================
@@ -388,6 +394,7 @@ def extract_date(text: str) -> str | None:
     patterns = [
         r'\d{1,2}/\d{1,2}/\d{4}',
         r'\d{1,2}-\d{1,2}-\d{4}',
+        r'\d{1,2}\.\d{1,2}\.\d{4}',
         r'(?i)\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*,?\s*\d{4}',
         r'(?i)(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}\s*,?\s*\d{4}',
     ]
@@ -402,7 +409,9 @@ def parse_date(date_str: str | None) -> datetime | None:
     if not date_str:
         return None
     # Normalize string: remove commas, dots, standardize spaces, strip whitespace
-    clean_str = date_str.replace(",", "").replace(".", "").replace("\n", " ").strip()
+    clean_str = date_str.replace(",", "").replace("\n", " ").strip()
+    if re.fullmatch(r"\d{1,2}\.\d{1,2}\.\d{4}", clean_str):
+        clean_str = clean_str.replace(".", "/")
     clean_str = re.sub(r'\s+', ' ', clean_str)
     
     # Try common formats
@@ -422,12 +431,33 @@ def parse_date(date_str: str | None) -> datetime | None:
             return datetime(int(year_match.group(1)), 1, 1)
         except ValueError:
             pass
+def _normalize_docket_year(year_text: str) -> int | None:
+    year = int(year_text)
+    if len(year_text) == 4:
+        return year
+    # Two-digit docket years are common (for example, W.P. No. 11055/86).
+    return 2000 + year if year <= 49 else 1900 + year
+
+
+def extract_writ_petition_year(text: str) -> int | None:
+    """Get the filing year from a writ-petition number, including /YY format."""
+    text_lower = (text or "")[:20000].lower()
+    pattern = (
+        r"\b(?:writ\s+petition|w\.?\s*p\.?)\s*(?:no\.?|number)?\s*"
+        r"[\d,]+\s*(?:/\s*|\bof\s+)(19\d{2}|20\d{2}|\d{2})\b"
+    )
+    match = re.search(pattern, text_lower)
+    return _normalize_docket_year(match.group(1)) if match else None
+
+
 def extract_filing_year(text: str) -> int | None:
-    text_lower = text.lower()
+    text_lower = (text or "")[:20000].lower()
+    writ_year = extract_writ_petition_year(text_lower)
+    if writ_year is not None:
+        return writ_year
     patterns = [
-        r'(?:appeal|petition|wp|no\.?)\s+\d+\s+of\s+(\d{4})',
-        r'no\.\s+\d+\s+of\s+(\d{4})',
-        r'of\s+(19\d{2}|20\d{2})\b'
+        r"\b(?:slp|special leave petition|civil appeal|criminal appeal|trp|transfer petition|c\.?a\.?|crl\.?\s*a\.?)\b.{0,120}?\bnos?\.?\s*[\d][\d,-]*\s*(?:/\s*|\bof\s+)(19\d{2}|20\d{2})\b",
+        r"\b(?:appeal|petition|application)\s+(?:no\.?\s*)?[\d,/-]+\s+of\s+(19\d{2}|20\d{2})\b",
     ]
     for pattern in patterns:
         match = re.search(pattern, text_lower)
@@ -436,28 +466,119 @@ def extract_filing_year(text: str) -> int | None:
     return None
 
 
-def calculate_pending_days(judgment_date: datetime | None, text: str) -> float | None:
-    filing_year = extract_filing_year(text)
-    if not filing_year:
+def extract_filing_date(text: str) -> datetime | None:
+    """Prefer a labelled filing/institution date over dates in the case narrative."""
+    date_pattern = (
+        r"(\d{1,2}[./-]\d{1,2}[./-]\d{4}|"
+        r"\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*,?\s+\d{4}|"
+        r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4})"
+    )
+    match = re.search(
+        rf"(?:date\s+of\s+(?:filing|institution)|filing\s+date|filed\s+on|instituted\s+on)\s*(?:is|:|dated)?\s*{date_pattern}",
+        text or "",
+        flags=re.IGNORECASE,
+    )
+    return parse_date(match.group(1)) if match else None
+
+
+def calculate_pending_days(
+    judgment_date: datetime | None,
+    text: str,
+    as_of_date: datetime | None = None,
+) -> float | None:
+    filing_date = extract_filing_date(text)
+    if filing_date is not None:
+        # For a reported disposed case, measure filing-to-disposal. For a still
+        # pending filing with no judgment date, measure filing-to-as-of date.
+        ref_date = judgment_date or as_of_date or datetime.now()
+        pending_days = (ref_date - filing_date).days
+        return float(pending_days) if pending_days >= 0 else None
+
+    filing_year = extract_writ_petition_year(text) or extract_filing_year(text)
+    if filing_year is not None:
+        if judgment_date is not None:
+            # A docket number gives a year, not an exact date. Use the requested
+            # judgment-year minus filing-year duration in whole years.
+            age_years = judgment_date.year - filing_year
+            return float(max(0, age_years) * 365)
+        reference_date = as_of_date or datetime.now()
+        start_date = datetime(filing_year, 1, 1)
+        pending_days = (reference_date - start_date).days
+        return float(pending_days) if pending_days >= 0 else None
+
+    if judgment_date is not None:
+        # Older reported judgments often omit the original filing year. Use the
+        # decision date as an explicit recency proxy instead of returning NULL.
+        reference_date = as_of_date or datetime.now()
+        return float(max(0, (reference_date - judgment_date).days))
+    return None
+
+
+def age_days_from_case_date(case_date: str | datetime | None, as_of_date: datetime | None = None) -> float | None:
+    """Use a known decision/case date as the recency proxy when filing age is absent."""
+    parsed_date = case_date if isinstance(case_date, datetime) else parse_date(case_date)
+    if parsed_date is None:
         return None
-    
-    filing_date = datetime(filing_year, 1, 1)
-    ref_date = judgment_date if (judgment_date and judgment_date < datetime.now()) else datetime.now()
-    
-    pending_days = (ref_date - filing_date).days
-    if pending_days < 0:
-        return None
-    return float(pending_days)
+    reference_date = as_of_date or datetime.now()
+    return float(max(0, (reference_date - parsed_date).days))
+
+
+def extract_priority_metadata(
+    text: str,
+    as_of_date: datetime | None = None,
+    mappings: tuple[dict, list] | None = None,
+) -> dict:
+    """Extract the shared case features used by the upload and corpus pipelines."""
+    ipc_to_bns, cpc_valid_sections = mappings or load_mappings(MAPPINGS_FILE)
+    bns_severity_map = build_bns_severity(ipc_to_bns)
+    case_type = extract_case_type(text)
+    case_date = extract_date(text)
+    parsed_date = parse_date(case_date)
+    legal_regime = detect_legal_regime(parsed_date, text)
+
+    ipc_sections: list[str] = []
+    bns_sections: list[str] = []
+    cpc_sections: list[str] = []
+    severity = 3
+
+    if case_type == "criminal":
+        # Score explicit IPC and BNS charges independently so mixed citations or
+        # a stale regime label cannot hide the highest-severity charge.
+        ipc_sections = extract_ipc_sections(text)
+        bns_sections = extract_bns_sections(text)
+        if legal_regime == "IPC" and not bns_sections:
+            equivalents = translate_ipc_to_bns(ipc_sections, ipc_to_bns)
+            bns_sections = [section for section in equivalents if not section.endswith("?")]
+        candidate_scores = []
+        if ipc_sections:
+            candidate_scores.append(calculate_severity(ipc_sections, IPC_SEVERITY))
+        if bns_sections:
+            candidate_scores.append(calculate_severity(bns_sections, bns_severity_map))
+        severity = max(candidate_scores, default=3)
+    else:
+        cpc_sections = extract_cpc_sections(text, cpc_valid_sections)
+
+    age_days = calculate_pending_days(parsed_date, text, as_of_date=as_of_date)
+    return {
+        "case_type": case_type,
+        "legal_regime": legal_regime,
+        "ipc_sections": ipc_sections,
+        "bns_sections": bns_sections,
+        "cpc_sections": cpc_sections,
+        "severity": severity,
+        "case_date": case_date,
+        "case_age_days": age_days,
+        "immediate_threat_flag": check_immediate_threat(text),
+        "societal_impact_score": calculate_societal_impact(text),
+        "num_precedents": count_precedents(text),
+        "total_words": len((text or "").split()),
+    }
 
 
 # ==============================
 # MAIN FEATURE EXTRACTION
 # ==============================
 def extract_all_features():
-    # Load mappings once
-    ipc_to_bns, cpc_valid_sections = load_mappings(MAPPINGS_FILE)
-    bns_severity_map = build_bns_severity(ipc_to_bns)
-
     chunk_files = list(Path(CHUNKS_DIR).glob("*_chunks.json"))
     print(f"\nProcessing {len(chunk_files)} cases...\n")
 
@@ -470,47 +591,23 @@ def extract_all_features():
         case_id = data["case_id"]
         chunks  = data["chunks"]
         full_text = " ".join(c["text"] for c in chunks)
-
-        # ── Case type ──────────────────────────────────────────────
-        case_type = extract_case_type(full_text)
-
-        # ── Date & regime ──────────────────────────────────────────
-        date_str    = extract_date(full_text)
-        parsed_date = parse_date(date_str)
-        case_age    = calculate_pending_days(parsed_date, full_text)
-        regime      = detect_legal_regime(parsed_date, full_text)
-
-        # ── Section extraction ────────────────────────────────────
-        ipc_sections = []
-        bns_sections = []
-        cpc_sections = []
-        severity     = 3   # civil baseline
-
-        if case_type == "criminal":
-            if regime == "IPC":
-                ipc_sections = extract_ipc_sections(full_text)
-                # Translate IPC -> BNS equivalent for reference
-                bns_equivalent = translate_ipc_to_bns(ipc_sections, ipc_to_bns)
-                bns_sections   = [b for b in bns_equivalent if not b.endswith("?")]
-                severity = calculate_severity(ipc_sections, IPC_SEVERITY)
-            else:  # BNS regime
-                bns_sections = extract_bns_sections(full_text)
-                # Also try extracting any residual IPC references (older citation in judgment)
-                ipc_sections = extract_ipc_sections(full_text)
-                severity = calculate_severity(bns_sections, bns_severity_map)
-        else:
-            # Civil case — CPC only
-            cpc_sections = extract_cpc_sections(full_text, cpc_valid_sections)
-
-        # ── Priority signals ──────────────────────────────────────
-        immediate_threat  = check_immediate_threat(full_text)
-        societal_impact   = calculate_societal_impact(full_text)
-        priority_score    = compute_priority_score(
+        metadata = extract_priority_metadata(full_text)
+        case_type = metadata["case_type"]
+        regime = metadata["legal_regime"]
+        date_str = metadata["case_date"]
+        case_age = metadata["case_age_days"]
+        ipc_sections = metadata["ipc_sections"]
+        bns_sections = metadata["bns_sections"]
+        cpc_sections = metadata["cpc_sections"]
+        severity = metadata["severity"]
+        immediate_threat = metadata["immediate_threat_flag"]
+        societal_impact = metadata["societal_impact_score"]
+        priority_score = compute_priority_score(
             severity, societal_impact, immediate_threat, case_age, case_type
         )
 
         # ── Misc stats ────────────────────────────────────────────
-        num_precedents = count_precedents(full_text)
+        num_precedents = metadata["num_precedents"]
         total_words    = sum(c["word_count"] for c in chunks)
 
         all_features.append({
